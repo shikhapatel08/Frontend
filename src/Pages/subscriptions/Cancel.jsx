@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router";
-import "./cancel.css";
+import "./Cancel.css";
 import { ThemeContext } from "../../Context/ThemeContext";
 
 const Cancel = () => {
