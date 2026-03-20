@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router";
-import "./success.css";
+import "./Success.css";
 import { ThemeContext } from "../../Context/ThemeContext";
 
 const Success = () => {
