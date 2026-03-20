@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import Button from "../../Components/Button/Button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../ResetPassword/ResetPassword.css";
-import "../OtpPage/OtpPage.css";
+import "../OtpPage/otpPage.css";
 import login from "../../assets/login.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
