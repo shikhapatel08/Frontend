@@ -1,0 +1,110 @@
+/* Container */
+.transactions-container {
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  background-color: inherit;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  overflow-x: auto;
+}
+
+.transactions-title {
+  margin-bottom: 15px;
+  font-size: 22px;
+  color: inherit;
+}
+
+/* Table Styles */
+.transactions-container table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.transactions-container th,
+.transactions-container td {
+  padding: 12px 15px;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Table Header */
+.transactions-container th {
+  background-color: inherit;
+  color: inherit;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+/* Row Hover Effect */
+.transactions-container tbody tr:hover {
+  background-color: inherit;
+  transition: background 0.3s;
+}
+
+/* Status Colors */
+.status-success {
+  color: #16a34a; /* Green */
+  font-weight: 600;
+}
+
+.status-pending {
+  color: #f97316; /* Orange */
+  font-weight: 600;
+}
+
+.status-failed {
+  color: #dc2626; /* Red */
+  font-weight: 600;
+}
+
+/* Invoice Link */
+.transactions-container a {
+  color: #2563eb; /* Blue */
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.transactions-container a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Table for Mobile */
+@media (max-width: 768px) {
+  .transactions-container table,
+  .transactions-container thead,
+  .transactions-container tbody,
+  .transactions-container th,
+  .transactions-container td,
+  .transactions-container tr {
+    display: block;
+  }
+
+  .transactions-container thead tr {
+    display: none;
+  }
+
+  .transactions-container tbody tr {
+    margin-bottom: 15px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px;
+  }
+
+  .transactions-container td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+
+  .transactions-container td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    width: 45%;
+    text-align: left;
+    font-weight: 600;
+    color: #555;
+  }
+}

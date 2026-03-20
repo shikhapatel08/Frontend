@@ -1,0 +1,106 @@
+.bolcked-container {
+    background: inherit;
+    min-height: 100vh;
+    width: 100%;
+    padding: 20px 30px;
+    color: inherit;
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+    margin-bottom: 25px;
+    color: inherit;
+    transition: color 0.2s;
+}
+
+.back-button h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.back-button svg {
+    flex-shrink: 0;
+    stroke-width : 2;
+    transition: transform 0.2s;
+}
+
+
+.back-button:hover svg {
+    transform: translateX(-2px);
+}
+
+.blocked-account p {
+    margin: 10px 0 20px 0;
+    font-weight: 600;
+    font-size: 14px;
+    color: inherit;
+}
+
+.blocked-users {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.blocked-users img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.blocked-users span {
+    flex: 1;
+    margin-left: 10px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.blocked-users button {
+    background-color: #2563eb;
+    color: inherit;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.blocked-users button:hover {
+    background-color: #1e40af;
+}
+
+@media (max-width : 1024px) {
+    .blocked-container {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .blocked-users {
+        /* flex-direction: column; */
+        align-items: flex-start;
+        gap: 10px;
+        width: 650px;
+    }
+
+    /* .blocked-users img {
+        width: 35px;
+        height: 35px;
+    }
+
+    .blocked-users button {
+        align-self: flex-end;
+    } */
+}

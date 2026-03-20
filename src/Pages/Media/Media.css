@@ -1,0 +1,282 @@
+.Media {
+    padding-top: 10px;
+}
+
+.no-link {
+    text-align: center;
+    margin-top: 40px;
+    color: inherit;
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    margin-bottom: 25px;
+    color: inherit;
+    transition: color 0.2s;
+}
+
+.back-button h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.back-button svg {
+    flex-shrink: 0;
+    transition: transform 0.2s;
+}
+
+.hamburger-icon {
+    display: none;
+}
+
+.tabs {
+    display: flex;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+.tabs span {
+    flex: 1;
+    text-align: center;
+    padding: 12px;
+    cursor: pointer;
+    font-weight: 500;
+    color: inherit;
+}
+
+.tabs .active {
+    color: #548ce0;
+    border-bottom: 3px solid #548ce0;
+}
+
+.media-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    padding: 10px;
+}
+
+.media-item {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 10px;
+    background: inherit;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.media-item img,
+.media-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.media-item audio {
+    width: 90%;
+}
+
+.Docs {
+    padding: 10px;
+}
+
+/* list */
+.docs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* card */
+.doc-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    border-radius: 12px;
+    background: inherit;
+    text-decoration: none;
+    color: inherit;
+    transition: 0.25s;
+    border: 1px solid #f1f1f1;
+}
+
+.doc-item:hover {
+    background: inherit;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+/* icon box */
+.doc-icon {
+    min-width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: inherit;
+}
+
+.doc-icon svg {
+    font-size: 22px;
+}
+
+/* colors */
+.pdf {
+    color: #e53935;
+}
+
+.word {
+    color: #2a5699;
+}
+
+.ppt {
+    color: #d24726;
+}
+
+.default {
+    color: gray;
+}
+
+/* info */
+.doc-info {
+    /* flex: 1;  */
+    overflow: hidden;
+}
+
+.doc-name {
+    font-size: 15px;
+    font-weight: 500;
+    margin: 0;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* date */
+.doc-meta {
+    text-align: left;
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 3px;
+}
+
+.LinkPage {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 15px;
+}
+
+/* card */
+.link-card {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    padding: 14px;
+    border-radius: 12px;
+    background: inherit;
+    text-decoration: none;
+    color: #111827;
+    border: 1px solid #f1f1f1;
+    transition: 0.25s;
+}
+
+.link-card:hover {
+    background: inherit;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+/* icon */
+.link-icon {
+    min-width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.link-icon svg {
+    font-size: 18px;
+    color: #6366f1;
+}
+
+/* info */
+.link-info {
+    /* flex: 1; */
+    overflow: hidden;
+}
+
+.link-url {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.link-date {
+    font-size: 12px;
+    color:inherit;
+    margin-right: 150px;
+}
+
+/* empty */
+.no-links {
+    text-align: center;
+    margin-top: 40px;
+    color:inherit;
+}
+
+.loader-conatainer {
+    display: grid;
+    place-items: center;
+    height: 100vh;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+    width: 50px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+        radial-gradient(farthest-side, #54514e 94%, #0000) top/8px 8px no-repeat,
+        conic-gradient(#0000 30%, #3e3b37);
+    -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 8px), #000 0);
+    animation: l13 1s infinite linear;
+}
+
+@keyframes l13 {
+    100% {
+        transform: rotate(1turn)
+    }
+}
+
+@media (max-width : 1024px) {
+    .Media {
+        margin-left: 0px;
+    }
+
+    .back {
+        display: none;
+    }
+
+    .hamburger-icon {
+        display: block;
+    }
+
+}

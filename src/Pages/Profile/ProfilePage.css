@@ -1,0 +1,278 @@
+/* ==================== BODY ==================== */
+body {
+  background-color: inherit;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* ==================== PROFILE CONTAINER ==================== */
+.profile-container {
+  background-color: inherit;
+  text-align: center;
+  padding-bottom: 50px;
+  height: 100vh;
+  width: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+  position: relative;
+  transition: 0.3s;
+}
+
+/* ==================== HEADER & COVER ==================== */
+.profile-header {
+  position: relative;
+  width: 100%;
+}
+
+.cover {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, #c3dbff, #4a90e2);
+  border-radius: 10px 10px 0 0;
+  overflow: hidden;
+}
+
+.cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* hamburger */
+.hamburger-icon {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  display: none;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* ==================== PROFILE IMAGE ==================== */
+.profile-image {
+  position: absolute;
+  bottom: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 5px solid #fff;
+  object-fit: cover;
+}
+
+/* ==================== PROFILE INFO ==================== */
+.profile-info {
+  margin-top: 70px;
+}
+
+.profile-info h2 {
+  margin: 10px 0 5px;
+  color: inherit;
+}
+
+.designation {
+  color: inherit;
+}
+
+.location {
+  color: #5382aa;
+  font-size: 14px;
+}
+
+/* ==================== STATS ==================== */
+.profile-stats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin: 20px 0;
+}
+
+.profile-stats h3 {
+  color: #6a7b8a;
+  margin-bottom: 5px;
+}
+
+.profile-stats p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+/* ==================== BUTTONS ==================== */
+.profile-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn.upload {
+  background: #777;
+  color: inherit;
+}
+
+/* ==================== TABS ==================== */
+.profile-tabs {
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 12px 0;
+}
+
+.profile-tabs span {
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+}
+
+.profile-tabs .active {
+  color: #5382aa;
+}
+
+.bottom-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 40px;
+  background: inherit;
+}
+
+.box {
+  background: inherit;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  border: 1px solid #333;
+
+  transition: 0.3s;
+}
+
+.box h3 {
+  margin-bottom: 10px;
+  color: inherit;
+}
+
+.box p {
+  color: #a4a894;
+  font-size: 14px;
+
+}
+
+.box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(224, 222, 222, 0.15);
+}
+
+/* ========================================================= */
+/* ==================== TABLET ============================== */
+/* ========================================================= */
+
+@media (max-width: 1024px) {
+
+  .profile-container {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .hamburger-icon {
+    display: block;
+  }
+
+  .cover {
+    height: 170px;
+  }
+
+  .profile-image {
+    width: 100px;
+    height: 100px;
+    bottom: -50px;
+  }
+
+  .profile-stats {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+
+/* ========================================================= */
+/* ==================== MOBILE ============================== */
+/* ========================================================= */
+
+@media (max-width: 768px) {
+
+  .profile-container {
+    height: auto;
+    min-height: 100vh;
+    /* padding: 20px 15px; */
+    text-align: center;
+  }
+
+  .cover {
+    height: 150px;
+    border-radius: 0;
+  }
+
+  .cover-img {
+    border-radius: 0;
+  }
+
+  .profile-image {
+    width: 90px;
+    height: 90px;
+    bottom: -45px;
+  }
+
+  .profile-info {
+    margin-top: 55px;
+  }
+
+  .profile-buttons {
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+  }
+
+  .btn {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .profile-stats {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* ========================================================= */
+/* ==================== SMALL MOBILE ======================== */
+/* ========================================================= */
+
+@media (max-width: 480px) {
+
+  .profile-info h2 {
+    font-size: 18px;
+  }
+
+  .designation,
+  .location {
+    font-size: 12px;
+  }
+
+  .btn {
+    font-size: 13px;
+    padding: 9px;
+  }
+}

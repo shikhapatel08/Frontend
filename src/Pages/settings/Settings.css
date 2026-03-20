@@ -1,0 +1,176 @@
+.settings {
+    display: flex;
+    padding: 0;
+    margin: 0;
+    background-color: inherit;
+    color: black;
+    margin-left: 230px;
+    height: 100%;
+    overflow: hidden;
+}
+
+.settings-sidebar {
+    width: 230px;
+    border-right: 1px solid #ddd;
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.backbtn {
+    display: block;
+}
+
+.settings-menu {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 100%;
+    overflow-y: auto;
+    padding-left: 10px;
+}
+
+.settings-menu ul {
+    width: 100%;
+    max-width: 190px;
+    /* control menu width */
+    padding: 0;
+}
+
+.settings-detail {
+    flex: 1;
+    width: 100%;
+}
+
+.setting-title {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+}
+
+.setting-title h2 {
+    text-align: center;
+    margin: 0;
+}
+
+.hamburger-icon {
+
+    display: none;
+}
+
+.settings-menu p {
+    margin: 15px 0 5px 20px;
+    font-weight: 600;
+    font-size: 14px;
+    color: inherit;
+}
+
+.settings-menu ul li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 10px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: 0.2s;
+}
+
+.settings-menu li:hover {
+    background-color: inherit;
+}
+
+.settings-menu li.active {
+    /* background-color: inherit;    */
+}
+
+.settings,
+.settings-sidebar,
+.settings-menu {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+}
+
+html,
+body,
+#root {
+    width: 100%;
+}
+
+
+@media (max-width : 1024px) {
+    .settings {
+        margin-left: 0px;
+    }
+
+    .backbtn {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .settings {
+        display: block;
+        margin-left: 0;
+        width: 100%;
+        height: 100vh;
+        flex-direction: column;
+        padding: 0;
+    }
+
+    .setting-title {
+        display: flex;
+        align-items: center;
+    }
+
+    /* Sidebar full screen */
+    .settings-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: #fff;
+        z-index: 10;
+
+        display: flex;
+        flex-direction: column;
+    }
+
+    .setting-title h2 {
+        flex: 1;
+    }
+
+    .settings-menu ul {
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .settings-menu ul li {
+        width: 90%;
+        max-width: 500px;
+    }
+
+    .settings.show-detail .settings-sidebar {
+        display: none;
+    }
+
+    .settings-detail {
+        width: 100%;
+    }
+
+    .settings.show-detail .setting-menu-detail {
+        display: block;
+    }
+
+    .hamburger-icon {
+        display: block;
+    }
+
+    .backbtn {
+        display: none;
+    }
+}

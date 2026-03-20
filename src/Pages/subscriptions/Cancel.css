@@ -1,0 +1,87 @@
+.cancel-container{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:linear-gradient(135deg,#fef2f2,#fee2e2);
+}
+
+.cancel-card{
+  background:inherit;
+  padding:40px;
+  border-radius:16px;
+  max-width:400px;
+  width:100%;
+  text-align:center;
+  box-shadow:0 10px 25px rgba(0,0,0,0.15);
+}
+
+.cancel-icon{
+  width:80px;
+  height:80px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:inherit;
+  border-radius:50%;
+}
+
+.cross-icon{
+  width:40px;
+  height:40px;
+  color:#dc2626;
+}
+
+.cancel-title{
+  margin-top:20px;
+  font-size:28px;
+  font-weight:bold;
+  color:#1f2937;
+}
+
+.cancel-text{
+  margin-top:10px;
+  color:inherit;
+  font-size:15px;
+}
+
+.cancel-buttons{
+  margin-top:30px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.retry-button{
+  width:100%;
+  padding:12px;
+  border:none;
+  background:#dc2626;
+  color:inherit;
+  font-weight:600;
+  border-radius:8px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.retry-button:hover{
+  background:#b91c1c;
+}
+
+.home-button{
+  width:100%;
+  padding:12px;
+  border:1px solid #d1d5db;
+  background:inherit;
+  color:#374151;
+  font-weight:600;
+  border-radius:8px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.home-button:hover{
+  background:inherit;
+}

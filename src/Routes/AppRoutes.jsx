@@ -1,0 +1,40 @@
+/* eslint-disable no-unused-vars */
+import { Route, Routes, useLocation } from "react-router-dom";
+import Sidebar from '../Components/Common Components/Common/SideBar/SideBar'
+import AuthRoutes from "./RouteGuard";
+import { appRoutes } from "./routesConfig";
+import RouteGuard from "./RouteGuard";
+
+
+export default function AppRoutes() {
+    // ================================= Hook ================================= //
+    const location = useLocation();
+    const hideNavbarOn = ["/", "/signup", '/OtpPage', '/success', '/cancel', '/ResetPassword'];
+
+    return (
+        <>
+            {!hideNavbarOn.includes(location.pathname) && (
+                <>
+                    {/* <Navbar /> */}
+                    <Sidebar />
+                </>
+            )}
+
+            {/* ================================= Routes ================================= */}
+            <Routes>
+                {appRoutes.map(({ path, element: Component, isPrivate }) => (
+                    <Route
+                        key={path}
+                        path={path}
+                        element={
+                            <RouteGuard isPrivate={isPrivate}>
+                                <Component />
+                            </RouteGuard>
+                        }
+                    />
+                ))}
+            </Routes>
+
+        </>
+    )
+}
