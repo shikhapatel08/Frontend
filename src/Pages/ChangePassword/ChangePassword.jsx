@@ -69,7 +69,7 @@ export default function ChangePassword({ onBack }) {
     return (
         <div className="changepassword-container" style={getThemeStyle(theme)}>
             <form onSubmit={formik.handleSubmit} style={{ marginTop: "40px", color: 'black' }}>
-                <span onClick={onBack} className="back-btn"><BackbtnIcon /></span>
+                <span onClick={onBack} className="back-btn" style={{color : 'white'}}><BackbtnIcon /></span>
                 <span><h3>Change Password</h3></span>
 
                 {/* Old Password */}

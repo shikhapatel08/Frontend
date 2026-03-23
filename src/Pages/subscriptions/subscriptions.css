@@ -90,6 +90,11 @@
     border: 2px solid #6366f1;
 }
 
+.subscription-header h2 {
+    margin-left: 40px;
+    margin-top: 10px;
+}
+
 
 /* ==================== Responsive ==================== */
 @media (max-width: 1024px) {

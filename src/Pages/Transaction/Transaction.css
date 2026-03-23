@@ -4,23 +4,27 @@
   font-family: 'Arial', sans-serif;
   background-color: inherit;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  overflow-x: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  max-height: 100vh;
+  overflow-y: auto;
 }
 
+/* Title */
 .transactions-title {
+  margin-left: 34px;
   margin-bottom: 15px;
   font-size: 22px;
   color: inherit;
 }
 
-/* Table Styles */
+/* Table */
 .transactions-container table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 600px;
 }
 
+/* Table cells */
 .transactions-container th,
 .transactions-container td {
   padding: 12px 15px;
@@ -28,40 +32,37 @@
   border-bottom: 1px solid #e0e0e0;
 }
 
-/* Table Header */
+/* Header */
 .transactions-container th {
-  background-color: inherit;
-  color: inherit;
   font-weight: 600;
   text-transform: uppercase;
   font-size: 14px;
 }
 
-/* Row Hover Effect */
+/* Hover */
 .transactions-container tbody tr:hover {
-  background-color: inherit;
-  transition: background 0.3s;
+  background-color: rgba(0, 0, 0, 0.03);
 }
 
-/* Status Colors */
+/* Status */
 .status-success {
-  color: #16a34a; /* Green */
+  color: #16a34a;
   font-weight: 600;
 }
 
 .status-pending {
-  color: #f97316; /* Orange */
+  color: #f97316;
   font-weight: 600;
 }
 
 .status-failed {
-  color: #dc2626; /* Red */
+  color: #dc2626;
   font-weight: 600;
 }
 
-/* Invoice Link */
+/* Links */
 .transactions-container a {
-  color: #2563eb; /* Blue */
+  color: #2563eb;
   text-decoration: none;
   font-weight: 500;
 }
@@ -70,8 +71,19 @@
   text-decoration: underline;
 }
 
-/* Responsive Table for Mobile */
+
 @media (max-width: 768px) {
+
+  .transactions-container {
+    /* padding: 12px; */
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .transactions-title {
+    font-size: 18px;
+  }
+
   .transactions-container table,
   .transactions-container thead,
   .transactions-container tbody,
@@ -79,32 +91,43 @@
   .transactions-container td,
   .transactions-container tr {
     display: block;
+    width: 100%;
   }
 
-  .transactions-container thead tr {
+  .transactions-container thead {
     display: none;
   }
 
   .transactions-container tbody tr {
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     background: #fff;
-    border-radius: 8px;
-    padding: 10px;
+    border-radius: 10px;
+    padding: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
 
   .transactions-container td {
-    text-align: right;
-    padding-left: 50%;
-    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border: none;
+    text-align: left;
   }
 
   .transactions-container td::before {
     content: attr(data-label);
-    position: absolute;
-    left: 15px;
-    width: 45%;
-    text-align: left;
     font-weight: 600;
     color: #555;
+  }
+}
+
+@media (max-width: 480px) {
+  .transactions-title {
+    font-size: 16px;
+  }
+
+  .transactions-container td {
+    font-size: 13px;
   }
 }

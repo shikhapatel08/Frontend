@@ -4,23 +4,41 @@ import { TransactionHistory } from "../../Redux/Features/subscriptions";
 import '../Transaction/Transaction.css'
 import { useLayoutStyle } from "../../Components/Common Components/Common/CommonComponents";
 import { ThemeContext } from "../../Context/ThemeContext";
+import { BackbtnIcon, MenuIcon } from "../../Components/Common Components/Icon/Icon";
+import { useNavigate } from "react-router-dom";
+import { toggleSidebar } from "../../Redux/Features/SideBarSlice";
 
 export default function Transaction({ type }) {
     const { transactionHistory } = useSelector(state => state.subscriptions);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const style = useLayoutStyle();
     const { getThemeStyle, theme } = useContext(ThemeContext);
 
     useEffect(() => {
         dispatch(TransactionHistory());
     }, []);
-    
+
+
+    const handleBackbtn = () => {
+        navigate(-1);
+    };
+
+    const handleHamburgerIcon = () => {
+        dispatch(toggleSidebar());
+    };
+
+
     return (
         <div className="transactions-container" style={{
             ...(type === "setting" ? {} : style),
             ...getThemeStyle(theme)
         }}>
-            <h2 className="transactions-title">Transactions</h2>
+            <div>
+                <span className='back-btn' onClick={handleBackbtn}><BackbtnIcon /></span>
+                <span className="hamburger-icon" onClick={handleHamburgerIcon}><MenuIcon /></span>
+                <h2 className="transactions-title">Transactions</h2>
+            </div>
 
             <table>
                 <thead>
@@ -34,7 +52,7 @@ export default function Transaction({ type }) {
                     </tr>
                 </thead>
 
-                <tbody> 
+                <tbody>
                     {transactionHistory?.map((item) => (
                         <tr key={item.id}>
                             <td data-label="Plan">{item.Plan?.type}</td>

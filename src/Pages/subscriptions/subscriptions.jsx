@@ -1,11 +1,12 @@
 import { useContext, useEffect } from "react";
 import "./subscriptions.css";
 
-import { BackbtnIcon } from "../../Components/Common Components/Icon/Icon";
+import { BackbtnIcon, MenuIcon } from "../../Components/Common Components/Icon/Icon";
 
 import { useDispatch, useSelector } from "react-redux";
 import { Fetchsubscriptiondata, subscribeToChat, subscriptionCheckout } from "../../Redux/Features/subscriptions";
 import { ThemeContext } from "../../Context/ThemeContext";
+import { toggleSidebar } from "../../Redux/Features/SideBarSlice";
 
 export default function SubscriptionPlans({ user, onBack }) {
 
@@ -24,7 +25,7 @@ export default function SubscriptionPlans({ user, onBack }) {
 
 
     // console.log("loading:", loading) ;
-// console.log("plans:", plans);
+    // console.log("plans:", plans);
     useEffect(() => {
         dispatch(subscribeToChat());
         dispatch(Fetchsubscriptiondata());
@@ -59,6 +60,10 @@ export default function SubscriptionPlans({ user, onBack }) {
         );
     }
 
+    const handleHamburgerIcon = () => {
+        dispatch(toggleSidebar());
+    };
+
     /* ---------------- UI ---------------- */
 
     return (
@@ -67,13 +72,12 @@ export default function SubscriptionPlans({ user, onBack }) {
 
             {/* HEADER */}
 
-            <div className="back-button">
-
-                <span
-                    className="back-btn"
-                    onClick={onBack}
-                >
+            <div className="subscription-header">
+                <span className="back-btn" onClick={onBack}>
                     <BackbtnIcon />
+                </span>
+                <span className="hamburger-icon" onClick={handleHamburgerIcon}>
+                    <MenuIcon />
                 </span>
 
                 <h2>Subscription</h2>

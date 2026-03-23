@@ -63,7 +63,7 @@ export default function Blocked({ onBack }) {
     return (
         <div className="bolcked-container" style={getThemeStyle(theme)}>
 
-            <div className="back-button">
+            <div>
                 <span className='back-btn' onClick={onBack}><BackbtnIcon /></span>
                 <span><h2>Blocked accounts</h2></span>
             </div>

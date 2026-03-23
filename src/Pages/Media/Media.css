@@ -271,8 +271,8 @@
         margin-left: 0px;
     }
 
-    .back {
-        display: none;
+    .back-btn {
+        display: none !important
     }
 
     .hamburger-icon {

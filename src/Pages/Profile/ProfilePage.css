@@ -254,11 +254,15 @@ body {
     flex-direction: column;
     gap: 12px;
   }
-}
 
-/* ========================================================= */
-/* ==================== SMALL MOBILE ======================== */
-/* ========================================================= */
+  .bottom-section {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 10px;
+    background: inherit;
+  }
+}
 
 @media (max-width: 480px) {
 

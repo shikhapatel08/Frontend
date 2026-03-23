@@ -96,12 +96,12 @@ export default function StarredMsg({ type, chatId }) {
                     <h2>Starred</h2>
                 </div>
 
-                <span
+                {/* <span
                     onClick={handleBack}
                     className="back-btn"
                 >
                     <BackbtnIcon />
-                </span>
+                </span> */}
 
                 <span onClick={handleSidebar}>
                     <MenuIcon />

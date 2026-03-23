@@ -4,6 +4,7 @@ import { Delete } from "./DeleteSlice";
 import { BlockedUser } from "./BlockedSlice";
 import { PinedUser } from "./Pinslice";
 import { MuteUser } from "./MuteSlice";
+import { toast } from "react-toastify";
 
 const BASE_API = import.meta.env.VITE_API_URL;
 // ================================= Create or Get Chat ================================= //
@@ -40,9 +41,12 @@ export const fetchMyChats = createAsyncThunk(
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
+      }); 
       return res.data.data;
     } catch (error) {
+      if(error.response?.status === 401){
+        toast.error("Session Expired Please Login again!")
+      }
       return thunkAPI.rejectWithValue(error.message);
     }
   }
@@ -217,7 +221,7 @@ const createChatSlice = createSlice({
         if (newchat.length < 10) {
           state.hasMore = false;
         } else {
-          state.page = + 1;
+          state.page =+ 1;
         }
       })
       .addCase(fetchMyChats.rejected, (state, action) => {

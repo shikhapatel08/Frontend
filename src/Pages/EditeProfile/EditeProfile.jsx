@@ -83,12 +83,12 @@ export default function ProfileSettings({ onBack, type }) {
       ...getThemeStyle(theme)
     }}     >
       <div className="title" style={getThemeStyle(theme)}>
+        <span onClick={onBack} className="back-btn"><BackbtnIcon /></span>
         <span><h2 style={{
           marginTop: '13px',
           marginLeft: '24px'
         }}>Edit Profile</h2></span>
       </div>
-      <span onClick={onBack} className="back-btn"><BackbtnIcon /></span>
 
       <div className="settings-form">
 

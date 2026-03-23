@@ -206,12 +206,12 @@ export default function Settings() {
                         </h2>
                     </div>
 
-                    <span
+                    {/* <span
                         onClick={handleBack}
                         className="back-btn"
                     >
                         <BackbtnIcon />
-                    </span>
+                    </span> */}
 
                     <span onClick={handleSidebar}>
                         <MenuIcon />

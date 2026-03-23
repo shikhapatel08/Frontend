@@ -90,7 +90,7 @@ export default function Notification() {
             <div className="title">
                 <span><h2>Notification</h2></span>
             </div>
-            <span onClick={handleBackbtn} className="back-btn"><BackbtnIcon /></span>
+            {/* <span onClick={handleBackbtn} className="back-btn"><BackbtnIcon /></span> */}
             <span onClick={handleSidebar}><MenuIcon /></span>
             <InfiniteScroll
                 dataLength={notifications.length}

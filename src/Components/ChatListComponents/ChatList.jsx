@@ -10,7 +10,7 @@ import { Delete } from "../../Redux/Features/DeleteSlice";
 import { toggleSidebar } from "../../Redux/Features/SideBarSlice";
 import profileImg from "../../assets/Profile/profile.svg";
 import '../../Pages/ChatList/ChatListPage.css'
-import { BlockIcon, DeleteIcon, EditProfileIcon, MenuDotsIcon, MenuIcon, MuteIcon, PinIcon } from "../Common Components/Icon/Icon";
+import { BlockIcon, DeleteIcon, EditProfileIcon, Icon, MenuDotsIcon, MenuIcon, MuteIcon, PinIcon } from "../Common Components/Icon/Icon";
 import GlobalModal from "../Global Modal/GlobalModal";
 import BlockedChatModal from "../Modal/BlockedUser";
 import DeleteChatModal from "../Modal/DeleteChat";
@@ -20,6 +20,9 @@ import { useUnreadCount } from "./CustomHook/useUnreadCount";
 import { useChatUpdate } from "./CustomHook/useChatUpdate";
 import { useNotifications } from "./CustomHook/useNotifications";
 import { useEditText } from "./CustomHook/useEditText";
+import { useModal } from "../../Context/ModalContext";
+import SendMsgModal from "../Modal/SendMessageModal";
+import Button from "../Button/Button";
 
 export default function ChatList() {
     const dispatch = useDispatch();
@@ -27,6 +30,7 @@ export default function ChatList() {
     const { messages } = useSelector(state => state.message);
     const Signup = useSelector(state => state.signup.SignupUser);
     const Signin = useSelector(state => state.signin.SigninUser);
+    const { openModal, closeModal } = useModal();
 
     const user = Object.keys(Signin).length > 0 ? Signin : Signup;
     const JoinUser = user.id;
@@ -114,6 +118,16 @@ export default function ChatList() {
             : trimmed;
     };
 
+    const handleButton = () => {
+        openModal(
+            <GlobalModal onClose={closeModal}>
+                <SendMsgModal
+                    onCancel={closeModal}
+                />
+            </GlobalModal>
+        )
+    }
+
     return (
         <div className="Message-detail">
             {/* {loading ? (
@@ -171,7 +185,17 @@ export default function ChatList() {
                             </div>
                         )
                     })) : (
-                        <p style={{ color: 'grey' }}>Chat will appear here after you send or receive a message.</p>
+                        <>
+                            <p style={{ color: 'grey' }}>Chat will appear here after you send or receive a message.</p>
+
+                            <div className="ConversationPanel-placeholder">
+                                <span><Icon /></span>
+                                <h2>Your messages</h2>
+                                <p>Send a message to start a chat.</p>
+                                <br></br>
+                                <Button onClick={handleButton}>Send Message</Button>
+                            </div>
+                        </>
                     )
                 }
             </InfiniteScroll>
