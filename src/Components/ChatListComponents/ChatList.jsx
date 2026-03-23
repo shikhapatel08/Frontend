@@ -35,6 +35,8 @@ export default function ChatList() {
     const user = Object.keys(Signin).length > 0 ? Signin : Signup;
     const JoinUser = user.id;
 
+    const isMobile = window.innerWidth < 768
+
     useUnreadCount(messages);
     useNotifications(chats, selectedChat, messages);
     useChatUpdate(messages, chats);
@@ -188,13 +190,16 @@ export default function ChatList() {
                         <>
                             <p style={{ color: 'grey' }}>Chat will appear here after you send or receive a message.</p>
 
-                            <div className="ConversationPanel-placeholder">
-                                <span><Icon /></span>
-                                <h2>Your messages</h2>
-                                <p>Send a message to start a chat.</p>
-                                <br></br>
-                                <Button onClick={handleButton}>Send Message</Button>
-                            </div>
+                            {isMobile &&
+
+                                <div className="ConversationPanel-placeholder">
+                                    <span><Icon /></span>
+                                    <h2>Your messages</h2>
+                                    <p>Send a message to start a chat.</p>
+                                    <br></br>
+                                    <Button onClick={handleButton}>Send Message</Button>
+                                </div>
+                            }
                         </>
                     )
                 }
