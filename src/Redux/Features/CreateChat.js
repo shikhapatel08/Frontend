@@ -41,11 +41,13 @@ export const fetchMyChats = createAsyncThunk(
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }); 
+      });
       return res.data.data;
     } catch (error) {
-      if(error.response?.status === 401){
-        toast.error("Session Expired Please Login again!")
+      if (error.response?.status === 401) {
+        toast.error("Session Expired Please Login again!");
+        localStorage.removeItem("token");
+        window.location.href = "/";
       }
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -221,7 +223,7 @@ const createChatSlice = createSlice({
         if (newchat.length < 10) {
           state.hasMore = false;
         } else {
-          state.page =+ 1;
+          state.page = + 1;
         }
       })
       .addCase(fetchMyChats.rejected, (state, action) => {
