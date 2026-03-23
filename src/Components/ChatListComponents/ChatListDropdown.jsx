@@ -106,10 +106,15 @@ export default function ChatListDropdown({
     };
 
     const DeleteChat = async (chat) => {
-        await dispatch(Delete(chat?.id)).then(() => {
-        })
-        toast.success('Chat deleted successfully!');
-        closeModal();
+        try {
+            await dispatch(Delete(chat?.id)).unwrap();
+
+            toast.success('Chat deleted successfully!');
+            closeModal();
+
+        } catch (error) {
+            toast.error('Failed to delete chat');
+        }
     };
 
     const handleDelete = (chat) => {
