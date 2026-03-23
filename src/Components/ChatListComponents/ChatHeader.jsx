@@ -44,7 +44,7 @@ export default function ChatHeader({ selectedChat, JoinUser, currentChat }) {
   return (
     <>
       <div className="ConversationPanel-left" style={getThemeStyle(theme)}>
-        <span className="back-btn" onClick={handleBackbtn} style={{ color: 'black' }}><BackbtnIcon /></span>
+        <span className="back-btn" onClick={handleBackbtn}><BackbtnIcon /></span>
         <div className="Message-Profile-img" onClick={() => handleProfile(liveUser?.id)}>
           <img src={liveUser?.photo ? liveUser?.photo : profileImg} alt='profile' />
         </div>

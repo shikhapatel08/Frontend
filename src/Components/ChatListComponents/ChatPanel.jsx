@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 import { SelectedMessage } from "../../Redux/Features/SearchMsgSlice";
 import Searching from "../Modal/Seraching";
 import { FaFileAlt, FaFileExcel, FaFilePdf, FaFileWord } from "react-icons/fa";
-import { AttachmentIcon, BackbtnIcon, DoubleTicksIcon, Icon, SendMsgIcon, SerachIcon, SingleTicksIcon, StarIcon } from "../Common Components/Icon/Icon";
+import { AttachmentIcon, BackbtnIcon, DoubleTicksIcon, Icon, MenuIcon, SendMsgIcon, SerachIcon, SingleTicksIcon, StarIcon } from "../Common Components/Icon/Icon";
 import StarredMsg from "../../Pages/Starred Msg/StarredMsg";
 import GlobalModal from "../Global Modal/GlobalModal";
 import DeleteMsg from "../Modal/DeleteMsg";
@@ -22,6 +22,7 @@ import ChatInput from "./ChatInput";
 import BlockedChatModal from "../Modal/BlockedUser";
 import Button from "../Button/Button";
 import SendMsgModal from "../Modal/SendMessageModal";
+import { toggleSidebar } from "../../Redux/Features/SideBarSlice";
 
 
 export default function ChatPanel() {
@@ -76,11 +77,11 @@ export default function ChatPanel() {
         }
         const updatedChat = { ...chat, is_block: !chat.is_block };
         if (selectedChat?.id === chat.id) {
-        dispatch(SelectedChat({
-            ...selectedChat,
-            is_block: updatedChat.is_block
-        }));
-    }
+            dispatch(SelectedChat({
+                ...selectedChat,
+                is_block: updatedChat.is_block
+            }));
+        }
     };
 
     const handleBlocked = (chat) => {
@@ -185,13 +186,16 @@ export default function ChatPanel() {
         )
     }
 
-    console.log(selectedChat)
+    const handleHamburgerIcon = () => {
+        dispatch(toggleSidebar());
+    };
+
+    // console.log(selectedChat)
     // console.log(chats)
 
     return (
         // ================================= Chat Window ================================= //
         <div className="ConversationPanel-User">
-
             {selectedChat ? (
                 <>
                     {/* Chat Header */}
@@ -297,13 +301,18 @@ export default function ChatPanel() {
 
                 </>
             ) : (
-                <div className="ConversationPanel-placeholder">
-                    <span><Icon /></span>
-                    <h2>Your messages</h2>
-                    <p>Send a message to start a chat.</p>
-                    <br></br>
-                    <Button onClick={handleButton}>Send Message</Button>
-                </div>
+                <>
+                    <span className="Menu" onClick={handleHamburgerIcon}><MenuIcon /></span>
+
+                    <div className="ConversationPanel-placeholder">
+                        <span><Icon /></span>
+                        <h2>Your messages</h2>
+                        <p>Send a message to start a chat.</p>
+                        <br></br>
+                        <Button onClick={handleButton}>Send Message</Button>
+                    </div>
+                </>
+
             )}
         </div>
     );

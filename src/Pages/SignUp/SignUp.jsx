@@ -48,7 +48,7 @@ const Signup = () => {
     // ---------------- SIGNUP ----------------
 
     const handleSubmit = async (values) => {
-        if (loading) return
+        if (loading) return;
         try {
 
             await dispatch(AddUser(values)).unwrap();

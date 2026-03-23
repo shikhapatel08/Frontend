@@ -6,18 +6,21 @@
   justify-content: center;
   align-items: center;
   z-index: 999;
+  padding: 10px; /* important for small screens */
 }
 
 .modal-box {
   position: relative;
   background: white;
   color: black;
-  width: 90%;
+  width: 100%;
   max-width: 600px;
   text-align: start;
   border-radius: 12px;
   padding: 20px;
   border: 1px solid #e5e7eb;
+  max-height: 90vh;  /* prevent overflow */
+  overflow-y: auto;  /* scroll if content is big */
 }
 
 .modal-close {
@@ -29,4 +32,25 @@
   border: none;
   cursor: pointer;
   color: inherit;
+}
+
+/* 📱 Small screens */
+@media (max-width: 480px) {
+  .modal-box {
+    padding: 15px;
+    border-radius: 10px;
+  }
+
+  .modal-close {
+    font-size: 20px;
+    top: 8px;
+    right: 10px;
+  }
+}
+
+/* 📱 Extra small (very small phones) */
+@media (max-width: 360px) {
+  .modal-box {
+    padding: 12px;
+  }
 }

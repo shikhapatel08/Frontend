@@ -620,38 +620,38 @@
 }
 
 .date-separator {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  margin: 15px 0;
-  color: #888;
-  font-size: 12px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 15px 0;
+    color: #888;
+    font-size: 12px;
 }
 
 .date-separator::before,
 .date-separator::after {
-  content: "";
-  flex: 1;
-  border-bottom: 1px solid #444;
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #444;
 }
 
 .date-separator::before {
-  margin-right: 10px;
+    margin-right: 10px;
 }
 
 .date-separator::after {
-  margin-left: 10px;
+    margin-left: 10px;
 }
 
 .new-message-divider {
-  text-align: center;
-  margin: 10px auto;
-  font-size: 12px;
-  color: #6e84b4;
-  background: rgba(110, 138, 189, 0.15);
-  padding: 5px 12px;
-  border-radius: 10px;
-  width: fit-content;
+    text-align: center;
+    margin: 10px auto;
+    font-size: 12px;
+    color: #6e84b4;
+    background: rgba(110, 138, 189, 0.15);
+    padding: 5px 12px;
+    border-radius: 10px;
+    width: fit-content;
 }
 
 .ConversationPanel-placeholder {
@@ -1094,12 +1094,8 @@
         display: block;
     }
 
-    .hide-chat {
-        display: none;
-    }
-
-    .hide-list {
-        display: none;
+    .mobile-hide {
+        display: none !important;
     }
 
     .ConversationPanel-User {
