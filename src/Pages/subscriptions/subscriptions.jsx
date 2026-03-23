@@ -64,6 +64,7 @@ export default function SubscriptionPlans({ user, onBack }) {
         dispatch(toggleSidebar());
     };
 
+    console.log(plans.type);
     /* ---------------- UI ---------------- */
 
     return (

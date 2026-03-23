@@ -132,7 +132,7 @@ const subscriptionsSlice = createSlice({
         Data: [],
         customerId: localStorage.getItem("customerId") || null,
         transactionHistory: [],
-        type: localStorage.getItem('Subscription Type') || null,
+        type: localStorage.getItem('SubscriptionType') || null,
     },
     reducers: {
         setType: (state, action) => {
@@ -174,7 +174,7 @@ const subscriptionsSlice = createSlice({
                 state.error = null;
                 const type = action.payload.data.Plan?.type;
                 state.type = type;
-                localStorage.setItem('Subscription Type', action.payload.data.Plan?.type)
+                localStorage.setItem('SubscriptionType', action.payload.data.Plan?.type)
 
             })
             .addCase(Fetchsubscriptiondata.rejected, (state, action) => {

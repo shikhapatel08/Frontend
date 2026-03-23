@@ -55,7 +55,7 @@ export default function ChangePassword({ onBack }) {
                     if (err?.status === 400 || err?.code === 400 || err?.response?.status === 400) {
                         toast.error("Old Password doesn't match!");
                     } else {
-                        toast.error("Something went Wrong!")
+                        toast.error(err.message)
                     }
                 })
         },

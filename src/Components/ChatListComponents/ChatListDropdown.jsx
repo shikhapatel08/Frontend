@@ -45,10 +45,10 @@ export default function ChatListDropdown({
         //     ? chat.filter(c => c.is_pin)
         //     : [];
         const pinnedChats = chats.filter(c => c.is_pin);
-        const limit = type === 'Premium' ? 5 : 3;
+        const limit = type === 'Premium' ? 5 : 2;
 
         if (!chat.is_pin && pinnedChats.length >= limit) {
-            toast.error(`You can only pin ${limit} chats on ${type} plan`);
+            toast.error(`You can only pin ${limit} chats`);
             return;
         }
 

@@ -12,7 +12,7 @@ export const useEditText = () => {
 
 
         const handleEdit = (data) => {
-            console.log("Edit",data)
+            // console.log("Edit",data)
             dispatch(updateMessageInstant({ msgId: data.id, text: data.text }))
         }
         socket.on("edit_msg", handleEdit)

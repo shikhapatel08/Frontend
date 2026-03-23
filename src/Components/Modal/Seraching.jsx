@@ -70,7 +70,7 @@ export default function Searching() {
         // }));
 
         dispatch(SelectedMessage(data.msgId));
-        console.log(data.msgId)
+        // console.log(data.msgId)
         closeModal();
     };
 
@@ -116,8 +116,8 @@ export default function Searching() {
                 >
                     {searchResults.length > 0 && (
                         <div className="search-results">
-                            {searchResults.map((data) => (
-                                <div key={data.id} className="search-item" onClick={() => handleItem(data)} >
+                            {searchResults.map((data ,i) => (
+                                <div key={i} className="search-item" onClick={() => handleItem(data)} >
                                     <p>{data.text}</p>
                                 </div>
                             ))}

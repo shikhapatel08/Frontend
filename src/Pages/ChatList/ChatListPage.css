@@ -297,7 +297,7 @@
     border-bottom: 1px solid #ececec;
 }
 
-.back-btn {
+.back {
     display: none;
 }
 
@@ -1072,6 +1072,8 @@
     .hamburger-icon {
         display: block;
     }
+    
+    
 }
 
 @media (max-width: 768px) {
@@ -1091,7 +1093,7 @@
         z-index: 10;
     }
 
-    .back-btn {
+    .back {
         display: block;
     }
 

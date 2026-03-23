@@ -6,8 +6,7 @@ import { ThemeContext } from "../../Context/ThemeContext";
 const Success = () => {
   const navigate = useNavigate();
   const { theme, getThemeStyle } = useContext(ThemeContext); //theme toggle/ style apply
-
-  console.log("HEllo")
+  localStorage.setItem("subscriptionType", "premium");
   return (
     <div className="success-container" style={getThemeStyle(theme)}>
       <div className="success-card">

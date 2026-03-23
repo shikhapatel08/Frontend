@@ -12,7 +12,6 @@ import { SelectedMessage } from "../../Redux/Features/SearchMsgSlice";
 import Searching from "../Modal/Seraching";
 import { FaFileAlt, FaFileExcel, FaFilePdf, FaFileWord } from "react-icons/fa";
 import { AttachmentIcon, BackbtnIcon, DoubleTicksIcon, Icon, MenuIcon, SendMsgIcon, SerachIcon, SingleTicksIcon, StarIcon } from "../Common Components/Icon/Icon";
-import StarredMsg from "../../Pages/Starred Msg/StarredMsg";
 import GlobalModal from "../Global Modal/GlobalModal";
 import DeleteMsg from "../Modal/DeleteMsg";
 import ChatHeader from "./ChatHeader";
@@ -130,17 +129,21 @@ export default function ChatPanel() {
     }, [openMenuId]);
 
     useEffect(() => {
-        if (selectedChat?.id) {
-            dispatch(resetMessages())
-            dispatch(FetchMessages({ chatId: selectedChat.id, page: 1 }));
-        }
-    }, [selectedChat?.id, dispatch]);
+        if (!selectedChat?.id) return;
 
+        const isValidChat = chats.some(chat => chat.id === selectedChat.id);
+
+        if (!isValidChat) return;
+
+        dispatch(resetMessages());
+        dispatch(FetchMessages({ chatId: selectedChat.id, page: 1 }));
+
+    }, [selectedChat?.id, dispatch]);
 
     useEffect(() => {
         if (!JoinUser) return;
         dispatch(fetchMyChats({ page: 1 }));
-    }, [JoinUser, dispatch]);
+    }, [JoinUser, selectedChat?.id, dispatch]);
 
 
     useEffect(() => {

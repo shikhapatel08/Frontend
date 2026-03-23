@@ -46,14 +46,13 @@ export default function ConversationPanelMiddle({
 
     const fetchMore = useCallback(() => {
         // if (!hasMore) return;
-        console.log('HEllo')
         dispatch(FetchMessages({
             chatId: selectedChat.id,
             page: page
         }));
     }, [page, hasMore, selectedChat]);
-    console.log("hasMore:", hasMore);
-    console.log(page)
+    // console.log("hasMore:", hasMore);
+    // console.log(page)
 
     useEffect(() => {
         if (selectedMessageId && chatRefs.current[selectedMessageId]) {

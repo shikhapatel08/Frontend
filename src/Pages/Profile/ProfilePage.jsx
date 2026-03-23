@@ -109,7 +109,7 @@ export default function ProfilePage({ onBack, type }) {
     { key: "links", label: "Links" },
     { key: "starred", label: "Starred" },
   ];
-
+  
   return (
     <div className="profile-container" style={{ ...(type === 'setting' ? {} : style), ...getThemeStyle(theme) }}>
       {user.length === 0 ? (
@@ -129,11 +129,10 @@ export default function ProfilePage({ onBack, type }) {
             </div>
 
 
-
             <div className="profile-image-wrapper">
               {/* ================================= Click on image to open file selector ================================= */}
               <img
-                src={avatarPreview && user?.id === User?.id // show preview only for self
+                src={avatarPreview && user?.id === User?.id 
                   ? avatarPreview
                   : User?.photo || profile}
                 alt="profile"
@@ -217,21 +216,21 @@ export default function ProfilePage({ onBack, type }) {
               <div className="tab-content">
 
                 {activeTab === "media" && (
-                  <MediaPage chatId={User?.id} />
+                  <MediaPage chatId={selectedChat?.id} />
                 )}
 
                 {activeTab === "docs" && (
-                  <DocsPage chatId={User?.id} />
+                  <DocsPage chatId={selectedChat?.id} />
                 )}
 
                 {activeTab === "links" && (
-                  <LinkPage chatId={User?.id} />
+                  <LinkPage chatId={selectedChat?.id} />
                 )}
 
                 {activeTab === "starred" && (
                   <StarredMsg
                     type="Chat"
-                    chatId={User?.id}
+                    chatId={selectedChat?.id}
                   />
                 )}
 

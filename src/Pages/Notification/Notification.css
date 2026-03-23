@@ -150,6 +150,19 @@
     color: inherit;
 }
 
+.DropdownMenu {
+    position: absolute;
+    z-index: 9999 !important;
+    top: 50%;
+    right: 0;
+    background: inherit;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    min-width: 180px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    padding: 4px 0;
+}
 
 @media (max-width : 1024px) {
 
@@ -180,10 +193,11 @@
         height: 40px;
     }
 
-    .title{
+    .title {
         margin-left: 15px;
 
     }
+
     .hamburger-icon {
         display: block;
     }

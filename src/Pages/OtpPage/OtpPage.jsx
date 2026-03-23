@@ -68,17 +68,21 @@ export default function OtpPage() {
             .required("OTP is required")
     });
 
+
     /* ---------------- SUBMIT ---------------- */
 
     const handleSubmit = (values) => {
 
+
         dispatch(verifyOtp({
             email: values.email,
-            otp: values.otp
+            otp: values.otp,
+            action: action
         }))
             .unwrap()
             .then(() => {
                 localStorage.setItem("otpVerified", "true");
+
                 if (flow === "signup") {
                     toast.success("Account created successfully!");
                     navigate("/MessagePage");
@@ -139,7 +143,7 @@ export default function OtpPage() {
                                     <p className="timer" style={{ color: 'grey', textAlign: 'right' }}>OTP expires in {formatTime(timer)}</p>
                                 ) : (
                                     <p
-                                        style={{ textAlign: 'right', marginBottom: '4px' , color: 'blue'}}
+                                        style={{ textAlign: 'right', marginBottom: '4px', color: 'blue' }}
                                         onClick={handleResendOtp}
                                         className="reset-password"
                                     >

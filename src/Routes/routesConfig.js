@@ -21,7 +21,7 @@ export const appRoutes = [
     { path: "/", element: Signin, isPrivate: false },
     { path: "/Signup", element: Signup, isPrivate: false },
     { path: "/OtpPage", element: OtpPage, isPrivate: false },
-    { path: "/ResetPassword", element: ResetPassword, isPrivate: false },
+    { path: "/ResetPassword", element: ResetPassword, isPrivate: true },
     { path: "/MessagePage", element: MessagePage, isPrivate: true },
     { path: "/Search", element: SearchPage, isPrivate: true },
     { path: "/Settings", element: Settings, isPrivate: true },

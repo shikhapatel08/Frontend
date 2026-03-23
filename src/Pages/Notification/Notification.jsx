@@ -137,7 +137,7 @@ export default function Notification() {
                                         }}
                                     ><MenuDotsIcon /></span>
                                     {openMenuId === item.id &&
-                                        <div className="Dropdown-Menu" ref={dropdownRef}>
+                                        <div className="DropdownMenu" ref={dropdownRef} style={getThemeStyle(theme)}>
                                             <div className="Dropdown-Item"
                                                 onClick={(e) => {
                                                     e.preventDefault();

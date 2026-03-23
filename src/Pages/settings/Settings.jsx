@@ -129,23 +129,26 @@ export default function Settings() {
     /* ---------------- BILLING ---------------- */
 
     const handleBilling = async () => {
-        try {
-            const subData = await dispatch(
-                SubscriptionUserData()
-            ).unwrap();
-            const id = subData?.customerId || customerId;
-            const res = await dispatch(
-                BillingPortal(id)
-            ).unwrap();
-            if (res?.url) {
-                window.location.assign(res.url);
-            }
+    try {
+        const subData = await dispatch(SubscriptionUserData()).unwrap();
 
-        } catch (err) {
-            console.error(err);
+        const id = subData?.customerId || customerId;
+
+        if (!id) {
+            console.error("Customer ID not found");
+            return;
         }
-    };
 
+        const res = await dispatch(BillingPortal(id)).unwrap();
+
+        if (res?.url) {
+            window.location.assign(res.url);
+        }
+
+    } catch (err) {
+        console.error(err);
+    }
+};
     /* ---------------- PAGE RENDER ---------------- */
 
     const renderPage = () => {
