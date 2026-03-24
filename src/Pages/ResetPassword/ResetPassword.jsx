@@ -13,15 +13,15 @@ export default function ResetPassword() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const email = location.state?.email;
+    const phone = location.state?.phone;
 
     /* ---------------- GUARD ---------------- */
 
     useEffect(() => {
-        if (!email) {
+        if (!phone) {
             navigate("/");
         }
-    }, [email, navigate]);
+    }, [phone, navigate]);
 
     /* ---------------- FORM ---------------- */
 
@@ -44,7 +44,7 @@ export default function ResetPassword() {
 
     const handleSubmit = (values) => {
         const payload = {
-            email: email,
+            phone: phone,
             newPass: values.password
         }
         dispatch(ForgotPassword(payload))

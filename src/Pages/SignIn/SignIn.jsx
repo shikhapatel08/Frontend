@@ -19,16 +19,16 @@ const Signin = () => {
     // ---------------- INITIAL VALUES ----------------
 
     const initialValues = {
-        email: "",
+        phone: "",
         password: "",
     };
 
     // ---------------- VALIDATION ----------------
 
     const validationSchema = Yup.object({
-        email: Yup.string()
-            .email("Invalid email format")
-            .required("Email is required"),
+        phone: Yup.string()
+            // .email("Invalid email format")
+            .required("Phone is required"),
         password: Yup.string()
             .min(6, "Password must be at least 6 characters")
             .matches(/[a-z]/, "Must contain at least one lowercase letter")
@@ -59,7 +59,7 @@ const Signin = () => {
                 err?.status === 400 ||
                 err?.message?.includes("Invalid")
             ) {
-                toast.error("Please verify your Email or Password!");
+                toast.error("Please verify your Phone or Password!");
             }
             else if (
                 err?.message === "Network Error" ||
@@ -77,19 +77,19 @@ const Signin = () => {
 
     const handleForgotPassword = (values) => {
 
-        if (!values.email) {
-            toast.error("Enter email first");
+        if (!values.phone) {
+            toast.error("Enter Phone num first");
             return;
         }
 
         dispatch(SendOtp({
-            email: values.email,
-            action: "forgot_password"
+            phone: values.phone,
+            // action: "forgot_password"
         }));
 
         navigate("/OtpPage", {
             state: {
-                email: values.email,
+                phone: values.phone,
                 from: "forgot_password",
                 action: "forgot_password"
             }
@@ -117,8 +117,8 @@ const Signin = () => {
                         >
                             {({ values }) => (
                                 <Form>
-                                    <Field type="email" name="email" placeholder="Email" />
-                                    <ErrorMessage name="email" component="span" className="error" />
+                                    <Field type="number" name="phone" placeholder="Phone Num" />
+                                    <ErrorMessage name="phone" component="span" className="error" />
 
                                     <div className="password-field">
                                         <Field

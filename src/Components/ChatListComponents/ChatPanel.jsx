@@ -129,15 +129,18 @@ export default function ChatPanel() {
 
     useEffect(() => {
 
+        if (!selectedChat?.id) return;
+
         dispatch(resetMessages());
         dispatch(FetchMessages({ chatId: selectedChat?.id, page: 1 }));
 
-    }, [selectedChat?.id, dispatch]);
+    }, [selectedChat?.id]);
 
     useEffect(() => {
         if (!JoinUser) return;
         dispatch(fetchMyChats({ page: 1 }));
-    }, [JoinUser, dispatch]);
+
+    }, [JoinUser]);
 
 
     useEffect(() => {

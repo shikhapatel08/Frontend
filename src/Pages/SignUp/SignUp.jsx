@@ -55,14 +55,14 @@ const Signup = () => {
 
             await dispatch(
                 SendOtp({
-                    email: values.email,
-                    action: "signup"
+                    phone: values.phone,
+                    // action: "signup"
                 })
             );
 
             navigate("/OtpPage", {
                 state: {
-                    email: values.email,
+                    phone: values.phone,
                     from: "signup",
                     action: "signup"
                 }
@@ -78,7 +78,7 @@ const Signup = () => {
                 backendMessage.errors.forEach(e => toast.error(e));
             }
             else if (err?.status === 500) {
-                toast.error("Email or Phone number already registered!");
+                toast.error("Phone or Phone number already registered!");
             }
             else if (backendMessage?.message) {
                 toast.error(backendMessage.message);

@@ -15,6 +15,7 @@ import ChangePassword from "../ChangePassword/ChangePassword";
 import Blocked from "../Blocked/BlockedPage";
 import Transaction from "../Transaction/Transaction";
 import { ThemeContext } from "../../Context/ThemeContext";
+import { toast } from "react-toastify";
 
 export default function Settings() {
 
@@ -136,6 +137,7 @@ export default function Settings() {
 
         if (!id) {
             console.error("Customer ID not found");
+            toast.error('This feature is available for Premium users only');
             return;
         }
 
