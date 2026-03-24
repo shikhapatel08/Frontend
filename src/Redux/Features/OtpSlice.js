@@ -7,11 +7,11 @@ const BASE_API = import.meta.env.VITE_API_URL;
 
 export const SendOtp = createAsyncThunk(
     "otp/sendOtp",
-    async ({ phone }, thunkAPI) => {
+    async ({ email , action}, thunkAPI) => {
         try {
-            const res = await axios.post(`${BASE_API}/api/v1/users/send-otp`, {
-                phone: phone.toString(),
-                // action: action
+            const res = await axios.post(`${BASE_API}/api/v1/users/send-otp`, { 
+                email,
+                action : action
             });
             return res.data;
         } catch (error) {
@@ -24,9 +24,9 @@ export const SendOtp = createAsyncThunk(
 
 export const verifyOtp = createAsyncThunk(
     "otp/verifyOtp",
-    async ({ phone, otp }, thunkAPI) => {
+    async ({email , otp}, thunkAPI) => {
         try {
-            const res = await axios.post(`${BASE_API}/api/v1/users/verify-otp`, { phone: phone.toString(), otp: otp.toString() });
+            const res = await axios.post(`${BASE_API}/api/v1/users/verify-otp`, { email, otp });
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);

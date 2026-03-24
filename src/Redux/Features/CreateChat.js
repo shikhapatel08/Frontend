@@ -127,6 +127,7 @@ const createChatSlice = createSlice({
     },
     UnreadCount: (state, action) => {
       const { chatId, unread_count } = action.payload;
+      console.log(action.payload)
       state.chats = state.chats.map(chat =>
         Number(chat.id) === Number(chatId)
           ? { ...chat, unread_count }

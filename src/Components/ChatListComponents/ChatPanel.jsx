@@ -129,8 +129,6 @@ export default function ChatPanel() {
 
     useEffect(() => {
 
-        if (!selectedChat?.id) return;
-        
         dispatch(resetMessages());
         dispatch(FetchMessages({ chatId: selectedChat?.id, page: 1 }));
 
