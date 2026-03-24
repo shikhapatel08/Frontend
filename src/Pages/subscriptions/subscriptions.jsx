@@ -8,7 +8,7 @@ import { Fetchsubscriptiondata, subscribeToChat, subscriptionCheckout } from "..
 import { ThemeContext } from "../../Context/ThemeContext";
 import { toggleSidebar } from "../../Redux/Features/SideBarSlice";
 
-export default function SubscriptionPlans({ user, onBack }) {
+export default function SubscriptionPlans() {
 
     /* ---------------- HOOKS ---------------- */
 
@@ -19,13 +19,10 @@ export default function SubscriptionPlans({ user, onBack }) {
     const { theme, getThemeStyle } = useContext(ThemeContext);
 
     const currentPlan = Data?.Plan?.type;
-    const userPlan = user?.subscription || "free";
+
 
     /* ---------------- FETCH DATA ---------------- */
 
-
-    // console.log("loading:", loading) ;
-    // console.log("plans:", plans);
     useEffect(() => {
         dispatch(subscribeToChat());
         dispatch(Fetchsubscriptiondata());
@@ -64,7 +61,9 @@ export default function SubscriptionPlans({ user, onBack }) {
         dispatch(toggleSidebar());
     };
 
-    console.log(plans.type);
+    const handleBackbtn = () => {
+        navigate(-1);
+    };
     /* ---------------- UI ---------------- */
 
     return (
@@ -74,7 +73,7 @@ export default function SubscriptionPlans({ user, onBack }) {
             {/* HEADER */}
 
             <div className="subscription-header">
-                <span className="back-btn" onClick={onBack}>
+                <span className="back-btn" onClick={handleBackbtn}>
                     <BackbtnIcon />
                 </span>
                 <span className="hamburger-icon" onClick={handleHamburgerIcon}>
@@ -115,15 +114,13 @@ export default function SubscriptionPlans({ user, onBack }) {
 
                 {plans?.data.map((plan) => {
 
-                    const isCurrentPlan =
-                        currentPlan === plan.type &&
-                        Data?.status === "Active";
+                    const isCurrentPlan = currentPlan?.toLowerCase() === plan.type?.toLowerCase();
 
                     return (
 
                         <div
                             key={plan.id}
-                            className={`plan-card ${userPlan === plan.type ? "active" : ""} ${plan.type === "Premium" ? "most-popular" : ""}`}>
+                            className={`plan-card ${currentPlan === plan.type ? "active" : ""} ${plan.type === "Premium" ? "most-popular" : ""}`}>
 
                             {/* PLAN HEADER */}
 

@@ -139,7 +139,7 @@ const Signup = () => {
                                 <ErrorMessage name="password" component="span" className="error" />
 
                                 <br />
-                                <Button type="submit" className='Signup-btn' disabled={loading}>Create Account</Button>
+                                <Button type="submit" className='Signup-btn'>{loading ? 'Loading...' : 'Create Account'}</Button>
                                 <div className="login-footer">
                                     <span className="login-text">
                                         Don't have an account?

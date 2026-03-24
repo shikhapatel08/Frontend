@@ -40,7 +40,6 @@ export default function DocsPage({ type, chatId }) {
                             dataLength={Docs.length}
                             next={fetchDocs}
                             hasMore={hasMore}
-                            // scrollableTarget="scrollableDiv"
                             scrollThreshold={0.8}
                             style={{ display: 'flex', flexDirection: 'column' }}
                         >

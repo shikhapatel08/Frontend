@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./ProfilePage.css";
 import profile from '../../assets/Profile/profile.svg'
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { DeleteProfile } from "../../Redux/Features/DeleteProfileSlice";
 import { useModal } from "../../Context/ModalContext";
@@ -14,15 +14,13 @@ import MediaPage from "../Media/MediaPage";
 import StarredMsg from "../Starred Msg/StarredMsg";
 import DocsPage from "../Media/DocPage";
 import LinkPage from "../Media/LinkPage";
-import { ProfileUser } from "../../Redux/Features/ProfileSlice";
+import { AnotherUserProfile, ProfileUser } from "../../Redux/Features/ProfileSlice";
 import { BackbtnIcon, MenuIcon } from "../../Components/Common Components/Icon/Icon";
 import { useLayoutStyle } from "../../Components/Common Components/Common/CommonComponents";
 import { SelectedChat } from "../../Redux/Features/CreateChat";
 import { ThemeContext } from "../../Context/ThemeContext";
 
 export default function ProfilePage({ onBack, type }) {
-  // const userId = useSelector(state => state.alluser.User?.id);
-  // const navigate = useNavigate();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -30,8 +28,8 @@ export default function ProfilePage({ onBack, type }) {
   const { closeModal } = useModal();
 
   const { loading } = useSelector(state => state.uploading);
-  const User = useSelector(state => state.profileuser.User);
-  const { selectedChat , chats } = useSelector(state => state.createchat);
+  const { User, AnotherUser } = useSelector(state => state.profileuser);
+  const { selectedChat, chats } = useSelector(state => state.createchat);
 
   const Signup = useSelector(state => state.signup.SignupUser);
   const Signin = useSelector(state => state.signin.SigninUser);
@@ -42,15 +40,23 @@ export default function ProfilePage({ onBack, type }) {
   const { theme, getThemeStyle } = useContext(ThemeContext);
 
   const user = Object.keys(Signin).length > 0 ? Signin : Signup;
-  const isOwnProfile = String(user?.id) === String(id);
+
+  const location = useLocation();
+
+  const from = location.state?.from;
+  const userId = location.state?.userId;
+
+  const isOwnProfile = from === "Sidebar";
 
   /* ---------------- FETCH PROFILE ---------------- */
 
   useEffect(() => {
-    if (id) {
-      dispatch(ProfileUser(id));
+    if (from === 'Sidebar') {
+      dispatch(ProfileUser());
+    } else {
+      dispatch(AnotherUserProfile(userId));
     }
-  }, [id]);
+  }, [from]);
 
   useEffect(() => {
     if (User?.photo) {
@@ -109,10 +115,14 @@ export default function ProfilePage({ onBack, type }) {
     { key: "links", label: "Links" },
     { key: "starred", label: "Starred" },
   ];
-  
+
+
+  const Data = isOwnProfile ? User : AnotherUser;
+
+
   return (
     <div className="profile-container" style={{ ...(type === 'setting' ? {} : style), ...getThemeStyle(theme) }}>
-      {user.length === 0 ? (
+      {Data.length === 0 ? (
         <div className='loader-conatainer'>
           <div className="loader"></div>
         </div>
@@ -132,9 +142,11 @@ export default function ProfilePage({ onBack, type }) {
             <div className="profile-image-wrapper">
               {/* ================================= Click on image to open file selector ================================= */}
               <img
-                src={avatarPreview && user?.id === User?.id 
-                  ? avatarPreview
-                  : User?.photo || profile}
+                src={
+                  isOwnProfile && avatarPreview
+                    ? avatarPreview
+                    : Data?.photo || profile
+                }
                 alt="profile"
                 className="profile-image"
                 onClick={openFilePicker}
@@ -150,8 +162,8 @@ export default function ProfilePage({ onBack, type }) {
           </div>
 
           <div className="profile-info">
-            <h2>{User?.name}</h2>
-            <p>{User?.email}</p>
+            <h2>{Data?.name}</h2>
+            <p>{Data?.email}</p>
           </div>
 
           {isOwnProfile && (

@@ -5,7 +5,6 @@ import { LogoutUser } from '../../../../Redux/Features/LogoutSlice';
 import { useModal } from '../../../../Context/ModalContext';
 import GlobalModal from '../../../Global Modal/GlobalModal';
 import LogoutModal from '../../../Modal/LogoutModal';
-import { ProfileUser } from '../../../../Redux/Features/ProfileSlice';
 import { disconnectSocket } from '../../../../Socket.io/socket';
 import { closeSidebar, openSidebar } from '../../../../Redux/Features/SideBarSlice';
 import { Logo, LogoutIcon, MediaIcon, MessageIcon, NotificationIcon, ProfileIcon, SerachIcon, SettingIcon, SideBarClose, SideBarOpen, StarIcon, SubscriptionIcon } from '../../Icon/Icon';
@@ -24,14 +23,16 @@ export default function Sidebar() {
     const Signin = useSelector(state => state.signin.SigninUser);
     const user = Object.keys(Signin).length > 0 ? Signin : Signup;
 
+    const User = useSelector(state => state.profileuser.User);
+
     const { type } = useSelector(state => state.subscriptions);
     const { getThemeStyle, theme, toggleTheme } = useContext(ThemeContext);
 
 
     // ================================= Function ================================= //
 
-    const handleNavigate = (path) => {
-        navigate(path);
+    const handleNavigate = (path, options) => {
+        navigate(path, options);
         if (window.innerWidth <= 1024) {
             dispatch(closeSidebar());
         }
@@ -59,7 +60,7 @@ export default function Sidebar() {
     };
 
     const handleProfile = (userId) => {
-        handleNavigate(`/ProfilePage/${userId}`);
+        handleNavigate(`/ProfilePage`, { state: { from: 'Sidebar' } });
     };
 
     const handleResize = () => {
@@ -167,7 +168,7 @@ export default function Sidebar() {
                             <li onClick={() => handleProfile(user?.id)} className="profile-menu-item">
                                 <ProfileIcon />
                                 <div className="profile-text">
-                                    <span>{user?.name}</span>
+                                    <span>{User?.name}</span>
                                     <p>{type}</p>
                                 </div>
                             </li>

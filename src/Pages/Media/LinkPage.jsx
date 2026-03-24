@@ -24,32 +24,12 @@ export default function LinkPage({ type, chatId }) {
         fetchLinks(1);
     }, [type, chatId]);
 
-    // const FetchMore = () => {
-    //     if (!hasMore) return;
-
-    //     if (type === 'all') {
-    //         dispatch(GetLinks({ page }));
-    //     } else {
-    //         dispatch(GetLinksByChatId({ chatId, page }))
-    //     }
-
-    // }
-
-    // useEffect(() => {
-    //     if (type === 'all') {
-    //         dispatch(GetLinks({ page: 1 }));
-    //     } else {
-    //         dispatch(GetLinksByChatId({ chatId, page: 1 }))
-    //     }
-    // }, []);
-
     return (
         <div className="LinkPage">
             <InfiniteScroll
                 dataLength={Links.length}
                 next={fetchLinks}
                 hasMore={hasMore}
-                // scrollableTarget="scrollableDiv"
                 scrollThreshold={0.8}
                 style={{ display: 'flex', flexDirection: 'column' }}
             >

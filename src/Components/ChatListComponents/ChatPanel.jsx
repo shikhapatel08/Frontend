@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMyChats, SelectedChat } from "../../Redux/Features/CreateChat";
-import { ProfileUser } from "../../Redux/Features/ProfileSlice";
 import { useModal } from "../../Context/ModalContext";
 import { FetchMessages, PinMsg, Pinmsg, resetMessages, SendMessage, Starmsg, StarMsg } from "../../Redux/Features/SendMessage";
 import { DeleteMe } from "../../Redux/Features/DeleteMeSlice";
@@ -129,21 +128,16 @@ export default function ChatPanel() {
     }, [openMenuId]);
 
     useEffect(() => {
-        if (!selectedChat?.id) return;
-
-        const isValidChat = chats.some(chat => chat.id === selectedChat.id);
-
-        if (!isValidChat) return;
 
         dispatch(resetMessages());
-        dispatch(FetchMessages({ chatId: selectedChat.id, page: 1 }));
+        dispatch(FetchMessages({ chatId: selectedChat?.id, page: 1 }));
 
     }, [selectedChat?.id, dispatch]);
 
     useEffect(() => {
         if (!JoinUser) return;
         dispatch(fetchMyChats({ page: 1 }));
-    }, [JoinUser, selectedChat?.id, dispatch]);
+    }, [JoinUser, dispatch]);
 
 
     useEffect(() => {
@@ -192,10 +186,6 @@ export default function ChatPanel() {
     const handleHamburgerIcon = () => {
         dispatch(toggleSidebar());
     };
-
-    // console.log(selectedChat)
-    // console.log(chats)
-
     return (
         // ================================= Chat Window ================================= //
         <div className="ConversationPanel-User">

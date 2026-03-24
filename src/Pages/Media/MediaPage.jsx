@@ -16,24 +16,6 @@ export default function MediaPage({ type, chatId }) {
   const dispatch = useDispatch();
   const { Media, loading, page, hasMore } = useSelector((state) => state.media);
 
-  // const FetchMore = () => {
-  //   if (!hasMore) return;
-
-  //   if (type === 'all') {
-  //     dispatch(GetMedia({ page }));
-  //   } else {
-  //     dispatch(GetMediaByChatId({ chatId, page }));
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if (type === 'all') {
-  //     dispatch(GetMedia({ page: 1 }));
-  //   } else {
-  //     dispatch(GetMediaByChatId({ chatId, page: 1 }));
-  //   }
-  // }, []);
-
   const fetchMedia = () => {
     if (!hasMore) return;
     if (type === "all") {
@@ -58,7 +40,6 @@ export default function MediaPage({ type, chatId }) {
         dataLength={Media.length}
         next={fetchMedia}
         hasMore={hasMore}
-        // scrollableTarget="scrollableDiv"
         scrollThreshold={0.8}
         style={{ display: 'flex', flexDirection: 'column' }}
       >

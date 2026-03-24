@@ -61,7 +61,7 @@ const createChatSlice = createSlice({
     loading: false,
     error: null,
     chats: [],
-    selectedChat: /*JSON.parse(localStorage.getItem("selectedChat")) ||*/ null,
+    selectedChat: JSON.parse(localStorage.getItem("selectedChat")) || null,
     onlineUsers: {},
     page: 1,
     hasMore: true,
@@ -74,7 +74,7 @@ const createChatSlice = createSlice({
         return;
       }
       let formattedChat;
-      // ✅ Case 1 → from SearchPage (API response)
+      //Case 1 → from SearchPage (API response)
       if (payload?.data && payload?.receiver) {
         formattedChat = {
           id: payload.data.id,
@@ -90,7 +90,7 @@ const createChatSlice = createSlice({
         };
       }
 
-      // ✅ Case 2 → from ChatList
+      //Case 2 → from ChatList
       else {
 
         formattedChat = {
@@ -127,17 +127,15 @@ const createChatSlice = createSlice({
     },
     UnreadCount: (state, action) => {
       const { chatId, unread_count } = action.payload;
+      console.log(action.payload)
       state.chats = state.chats.map(chat =>
         Number(chat.id) === Number(chatId)
-          ? { ...chat, unread_count: unread_count }
+          ? { ...chat, unread_count }
           : chat
       );
     },
     UpdateChat: (state, action) => {
       const msg = action.payload;
-
-      // existingChatIndex !== -1 → chat is present in array
-      // existingChatIndex === -1 → chat is not in array
 
       // First, check if chat already exists
       const existingChatIndex = state.chats.findIndex(c => c.id === msg.chat?.id || msg.chat_id);
@@ -145,28 +143,18 @@ const createChatSlice = createSlice({
       if (existingChatIndex !== -1) {
         // Chat exists → update it
         const chat = state.chats[existingChatIndex];
+
         chat.updatedAt = msg.chat?.updatedAt || msg.updatedAt || chat.updatedAt;
         chat.last_message = msg.chat?.last_message || msg.text || chat.last_message;
         chat.last_message_time = msg.chat?.last_message_time || chat.last_message_time;
 
-        // Update unread count safely
-        if (state.selectedChat?.id !== chat.id) {
-          // Chat is not currently open → increment unread
-          if (chat.ChatSettings && chat.ChatSettings[0]) {
-            chat.ChatSettings[0].unread_count =
-              (chat.ChatSettings[0].unread_count || 0) + 1;
-          } else {
-            chat.ChatSettings = [{ unread_count: 1 }];
-          }
-        } else {
-          // Chat is open → reset unread
-          if (chat.ChatSettings && chat.ChatSettings[0]) {
-            chat.ChatSettings[0].unread_count = 0;
-          } else {
-            chat.ChatSettings = [{ unread_count: 0 }];
-          }
-        }
+        const settings = chat.ChatSettings?.[0];
 
+        if (state.selectedChat?.id !== chat.id) {
+          chat.unread_count = (chat.unread_count || 0) + 1;
+        } else {
+          chat.unread_count = 0;
+        }
         // Move updated chat to top
         state.chats = [
           chat,
@@ -181,6 +169,7 @@ const createChatSlice = createSlice({
           last_message_time: msg.chat.last_message_time || "",
           updatedAt: msg.chat.updatedAt || new Date().toISOString(),
           ChatSettings: [{ unread_count: msg.unread_count }],
+          unread_count: msg.unread_count,
           is_pin: false,
           is_muted: false,
           is_block: false,
@@ -191,7 +180,21 @@ const createChatSlice = createSlice({
         // Add to top without duplicating
         state.chats = [newChat, ...state.chats];
       }
-    }
+    },
+    seen: (state, action) => {
+      const cid = action.payload.cid;
+
+      state.chats = state.chats.map(chat =>
+        Number(chat.id) === Number(cid)
+          ? {
+            ...chat,
+            unread_count: 0,
+            ChatSettings: chat.ChatSettings?.map(s => ({ ...s, unread_count: 0 })),
+          }
+          : chat
+      );
+    },
+
   },
 
   extraReducers: (builder) => {
@@ -278,5 +281,5 @@ const createChatSlice = createSlice({
   },
 });
 
-export const { SelectedChat, updateOnlineStatus, UnreadCount, UpdateChat } = createChatSlice.actions;
+export const { SelectedChat, updateOnlineStatus, UnreadCount, UpdateChat, seen } = createChatSlice.actions;
 export default createChatSlice.reducer;

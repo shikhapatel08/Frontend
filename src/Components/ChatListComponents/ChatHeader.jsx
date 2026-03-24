@@ -21,7 +21,7 @@ export default function ChatHeader({ selectedChat, JoinUser, currentChat }) {
   };
 
   const handleProfile = (userId) => {
-    navigate(`/ProfilePage/${userId}`);
+    navigate(`/ProfilePage`, { state: { userId, from: "Chat" } });
   };
 
   const handleSearching = () => {

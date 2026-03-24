@@ -18,7 +18,6 @@ export default function OtpPage() {
     const location = useLocation();
     const navigate = useNavigate();
     const { loading } = useSelector((state) => state.otp);
-    // const {otpData} = useSelector(state => state.otp);
 
     const email = location.state?.email;
     const flow = location.state?.from;

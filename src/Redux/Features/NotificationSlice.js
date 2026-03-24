@@ -101,10 +101,6 @@ const NotificationSlice = createSlice({
             .addCase(SeenNotification.fulfilled, (state) => {
                 state.loading = false;
                 state.error = null;
-                // const updatedNotification = action.payload;
-                // state.notifications = state.notifications.map(notification =>
-                //     notification.id === updatedNotification.id ? updatedNotification : notification
-                // );
             })
             .addCase(SeenNotification.rejected, (state, action) => {
                 state.error = action.payload;

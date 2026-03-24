@@ -64,7 +64,6 @@ export default function Notification() {
 
     /* ---------------- NOTIFICATION CLICK ---------------- */
 
-    // 
 
     const handleNotification = (item) => {
         dispatch(SeenNotification(item.id));
@@ -96,7 +95,6 @@ export default function Notification() {
                 dataLength={notifications.length}
                 next={FetchMore}
                 hasMore={hasMore}
-                // scrollableTarget="scrollableDiv"
                 scrollThreshold={0.8}
                 style={{ display: 'flex', flexDirection: 'column' }}
             >

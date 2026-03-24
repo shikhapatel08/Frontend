@@ -26,7 +26,6 @@ export default function ConversationPanelMiddle({
     JoinUser,
     selectedChat,
     isOtherTyping,
-    // chatEndRef, 
     chatRefs,
     setReplyMsg,
     setIsOtherTyping,
@@ -45,14 +44,11 @@ export default function ConversationPanelMiddle({
     useStatus();
 
     const fetchMore = useCallback(() => {
-        // if (!hasMore) return;
         dispatch(FetchMessages({
             chatId: selectedChat.id,
             page: page
         }));
-    }, [page, hasMore, selectedChat]);
-    // console.log("hasMore:", hasMore);
-    // console.log(page)
+    }, [page, hasMore]);
 
     useEffect(() => {
         if (selectedMessageId && chatRefs.current[selectedMessageId]) {
@@ -68,11 +64,6 @@ export default function ConversationPanelMiddle({
             return () => clearTimeout(timer);
         }
     }, [selectedMessageId, messages]);
-
-    // useEffect(() => {
-    //     //  if (!socket) return;
-    //     console.log("SOCKET INSTANCE:", socket);
-    // }, []);
 
     return (
         <div
@@ -106,21 +97,9 @@ export default function ConversationPanelMiddle({
 
                             const showDate = currentDate !== prevDate;
 
-                            // const lastSeenId = 9;
-
-                            // const showNewDivider =
-                            //     msg.id === lastSeenId + 1 &&
-                            //     msg.senderId != currentChat?.id; // aa important che
 
                             return (
                                 <React.Fragment key={msg.id}>
-
-                                    {/* New Messages */}
-                                    {/* {showNewDivider && (
-                                        <div className="new-message-divider">
-                                            New Messages
-                                        </div>
-                                    )} */}
 
                                     {/* Date */}
                                     {showDate && (

@@ -132,13 +132,9 @@ const subscriptionsSlice = createSlice({
         Data: [],
         customerId: localStorage.getItem("customerId") || null,
         transactionHistory: [],
-        type: localStorage.getItem('SubscriptionType') || null,
+        type: localStorage.getItem('subscriptionType') || null,
     },
-    reducers: {
-        setType: (state, action) => {
-            state.type = action.payload;
-        }
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(subscribeToChat.pending, (state) => {
@@ -172,9 +168,10 @@ const subscriptionsSlice = createSlice({
             .addCase(Fetchsubscriptiondata.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
+                state.Data = action.payload.data;
                 const type = action.payload.data.Plan?.type;
                 state.type = type;
-                localStorage.setItem('SubscriptionType', action.payload.data.Plan?.type)
+                localStorage.setItem('subscriptionType', action.payload.data.Plan?.type)
 
             })
             .addCase(Fetchsubscriptiondata.rejected, (state, action) => {

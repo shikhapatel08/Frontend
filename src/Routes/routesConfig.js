@@ -31,9 +31,8 @@ export const appRoutes = [
     { path: "/notification", element: Notification, isPrivate: true },
     { path: "/StarredMsg", element: StarredMsg, isPrivate: true },
     { path: "/Media", element: Media, isPrivate: true },
-    { path: "/ProfilePage/:id", element: ProfilePage, isPrivate: true },
+    { path: "/ProfilePage", element: ProfilePage, isPrivate: true },
     { path: "/subscriptions", element: SubscriptionPlans, isPrivate: true },
     { path: "/success", element: Success, isPrivate: true },
     { path: "/cancel", element: Cancel, isPrivate: true },
-    // { path: "*", element: NotFoundComponent, isPrivate: false }
 ];

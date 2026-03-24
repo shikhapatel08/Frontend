@@ -2,7 +2,6 @@
 import { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMyChats, SelectedChat, UnreadCount, UpdateChat } from "../../Redux/Features/CreateChat";
-import { ProfileUser } from "../../Redux/Features/ProfileSlice";
 import { PinedUser } from "../../Redux/Features/Pinslice";
 import { MuteUser } from "../../Redux/Features/MuteSlice";
 import { BlockedUser } from "../../Redux/Features/BlockedSlice";

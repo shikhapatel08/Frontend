@@ -18,16 +18,12 @@ export default function SendMsgModal({ onCancel }) {
 
     const [searchText, setSearchText] = useState("");
     const [selectedUser, setSelectedUser] = useState(null);
-    
+
 
 
     useEffect(() => {
         dispatch(FetchAllUser());
     }, [dispatch]);
-
-    // const handleProfile = useCallback((userId) => {
-
-    // }, [dispatch, navigate]);
 
 
     useEffect(() => {
@@ -51,12 +47,12 @@ export default function SendMsgModal({ onCancel }) {
             .unwrap()
             .then(async (chat) => {
                 dispatch(SelectedChat(chat));
-                await dispatch(fetchMyChats({page : 1}));
+                await dispatch(fetchMyChats({ page: 1 }));
                 onCancel();
                 navigate("/MessagePage");
             }).catch(console.error);
     }, [dispatch]);
-    
+
     return (
         <div className="sendModal">
 

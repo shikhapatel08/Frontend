@@ -36,14 +36,11 @@ export default function ChatListDropdown({
     };
 
     const handleProfile = (userId) => {
-        navigate(`/ProfilePage/${userId}`);
+        navigate(`/ProfilePage`, { state: { userId, from: "Chat" } });
     };
 
     const handlePined = (chat) => {
-
-        // const pinnedChats = Array.isArray(chat)
-        //     ? chat.filter(c => c.is_pin)
-        //     : [];
+        
         const pinnedChats = chats.filter(c => c.is_pin);
         const limit = type === 'Premium' ? 5 : 2;
 

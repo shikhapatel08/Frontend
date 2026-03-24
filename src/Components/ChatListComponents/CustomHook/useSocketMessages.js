@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux";
-import { UpdateChat } from "../../../Redux/Features/CreateChat";
-import { addLocalMessage, deleteForEveryoneLocal, markChatSeen } from "../../../Redux/Features/SendMessage";
+import { seen, UpdateChat } from "../../../Redux/Features/CreateChat";
+import { addLocalMessage, deleteForEveryoneLocal } from "../../../Redux/Features/SendMessage";
 import { useSocket } from "../../../Context/SocketContext";
 
 export const useSocketMessages = (selectedChat, messages, chats) => {
@@ -58,7 +58,7 @@ export const useSocketMessages = (selectedChat, messages, chats) => {
 
         return () => socket.off("new_message", handleNewMessage);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedChat?.id, user?.id, messages, chats , socket]);
+    }, [selectedChat?.id, user?.id, messages, chats, socket]);
 
     useEffect(() => {
         if (!socket) return;
@@ -71,38 +71,24 @@ export const useSocketMessages = (selectedChat, messages, chats) => {
 
         return () => socket.off("deleted", handler);
     }, [dispatch, socket]);
-    // useEffect(() => {
-    //     const socket = socketRef.current;
-    //     if (!socket) return;
-    //     if (selectedChat) {
-    //         socket.emit("fe_seen", {
-    //             cid: selectedChat.id,
-    //             uid: user.id,
-    //         });
-    //     }
-    // }, [messages]);
-
-    // useEffect(() => {
-    //     const socket = socketRef.current;
-    //     if (!socket) return;
-
-    //     socket.on("seen", ({ cid }) => {
-    //         dispatch(markChatSeen(cid));
-    //     });
-
-    //     return () => socket.off("seen");
-    // }, []);
 
     useEffect(() => {
-        if (!socket || !selectedChat?.id) return;
-        socket.emit("fe_seen", { cid: selectedChat.id, uid: user?.id });
+        if (!socket) return;
+        if (selectedChat) {
+            socket.emit("fe_seen", {
+                cid: selectedChat.id,
+                uid: user.id,
+            });
+        }
+    }, [messages]);
+
+    useEffect(() => {
+        if (!socket) return;
 
         socket.on("seen", ({ cid }) => {
-            dispatch(markChatSeen(cid));
+            dispatch(seen(cid));
         });
 
         return () => socket.off("seen");
-    }, [messages, selectedChat?.id, user?.id, dispatch]);
-
-
+    }, []);
 }

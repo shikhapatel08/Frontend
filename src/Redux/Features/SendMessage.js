@@ -44,7 +44,7 @@ export const SendMessage = createAsyncThunk(
             } else if (error.response?.status === 400) {
                 toast.error('You are block in this chat');
             } else if (error.response?.status === 401) {
-                toast.error("File sharing is available only for premium user only.")
+                toast.error("File sharing is available only for Premium user only.")
             } else {
                 toast.error(error.message || "Failed to send message.");
             }
@@ -180,15 +180,6 @@ const MessageSlice = createSlice({
             if (msg) {
                 msg.text = text;
             }
-        },
-        markChatSeen: (state, action) => {
-            const { cid, myId } = action.payload;
-
-            state.messages.forEach(msg => {
-                if (msg.chat_id === cid && msg.sender_id === myId) {
-                    msg.is_read = true;
-                }
-            });
         },
         cansendMessage: (state, action) => {
             state.canSendMessage = action.payload;
@@ -375,5 +366,5 @@ const MessageSlice = createSlice({
 });
 
 
-export const { addLocalMessage, Starmsg, Pinmsg, deleteForEveryoneLocal, deleteForMeLocal, resetMessages, updateMessageInstant, markChatSeen, cansendMessage } = MessageSlice.actions;
+export const { addLocalMessage, Starmsg, Pinmsg, deleteForEveryoneLocal, deleteForMeLocal, resetMessages, updateMessageInstant, cansendMessage } = MessageSlice.actions;
 export default MessageSlice.reducer;

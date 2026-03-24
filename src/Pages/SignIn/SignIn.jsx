@@ -1,6 +1,5 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-// import { useContext } from "react";
 import Button from "../../Components/Button/Button";
 import { Link, useNavigate } from "react-router-dom";
 import '../SignIn/SignIn.css'
@@ -97,11 +96,6 @@ const Signin = () => {
         });
     }
 
-    // if (loading) {
-    //     <div class="loader"></div>
-    // }
-
-
     return (
         // ================================= SignIn Page ================================= //
         <div className="Signin">
@@ -144,7 +138,7 @@ const Signin = () => {
                                         Forgot Password?
                                     </span>
                                     <br></br>
-                                    <Button type="submit" className='signin-btn' disable={loading}>SignIn</Button>
+                                    <Button type="submit" className='signin-btn'>{loading ? 'Login...' : 'SignIn'}</Button>
                                     <div className="login-footer">
                                         <span className="login-text">
                                             Don't have an account?

@@ -23,7 +23,7 @@ export default function Searching() {
 
     // ================================= Function =================================//
     const handleClose = () => {
-        closeModal(); // modal બંધ
+        closeModal(); // modal Close
     };
 
     // ================================= USeEffect ================================= //
@@ -70,7 +70,6 @@ export default function Searching() {
         // }));
 
         dispatch(SelectedMessage(data.msgId));
-        // console.log(data.msgId)
         closeModal();
     };
 
@@ -116,7 +115,7 @@ export default function Searching() {
                 >
                     {searchResults.length > 0 && (
                         <div className="search-results">
-                            {searchResults.map((data ,i) => (
+                            {searchResults.map((data, i) => (
                                 <div key={i} className="search-item" onClick={() => handleItem(data)} >
                                     <p>{data.text}</p>
                                 </div>

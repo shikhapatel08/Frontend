@@ -41,6 +41,7 @@ export default function ProfileSettings({ onBack, type }) {
 
   const OnSubmit = async (values) => {
     try {
+
       await dispatch(
         UpdateUser({
           type: "profile",
@@ -49,7 +50,7 @@ export default function ProfileSettings({ onBack, type }) {
       ).unwrap();
       dispatch(setUserFromUpdate(values));
       toast.success("Profile updated successfully");
-      navigate(`/ProfilePage/${User?.id}`);
+      navigate(`/ProfilePage`, { state: { from: 'Sidebar' } });
 
     } catch (err) {
       toast.error("Profile update failed");
