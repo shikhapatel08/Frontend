@@ -227,14 +227,6 @@ const MessageSlice = createSlice({
                 } else {
                     state.messages.push(normalizedMessage);
                 }
-
-
-                // const msg = action.payload;
-                // state.messages.push({
-                //     // ...msg,
-                //     chatId: msg.msg?.chatId || msg.msg?.chat_id || msg.chat?.id,
-                //     createdAt: msg.createdAt || msg.created_at || new Date().toISOString()
-                // });
             })
             .addCase(SendMessage.rejected, (state, action) => {
                 const { tempId } = action.meta.arg;
@@ -251,40 +243,6 @@ const MessageSlice = createSlice({
             .addCase(FetchMessages.pending, (state) => {
                 state.loading = true;
             })
-            // .addCase(FetchMessages.fulfilled, (state, action) => {
-            //     state.loading = false;
-
-            //     const newMessages = action.payload.messages || action.payload;
-
-            //     if (newMessages.length === 0) {
-            //         state.hasMore = false;
-            //         return;
-            //     }
-
-            //     const normalized = newMessages.map(m => ({
-            //         ...m,
-            //         chatId: m.chatId || m.chat_id,
-            //         image_url: typeof m.image_url === "string"
-            //             ? JSON.parse(m.image_url || "[]")
-            //             : m.image_url || [],
-            //         is_star: m.setting?.[0]?.is_star || false,
-            //     }));
-
-            //     const existingIds = new Set(state.messages.map(m => m.id));
-            //     const unique = normalized.filter(m => !existingIds.has(m.id));
-
-            //     // 🔥 old chat → top ma add
-            //     state.messages = [...unique, ...state.messages];
-
-            //     state.page += 1;
-
-            //     if (newMessages.length < 10) {
-            //         state.hasMore = false;
-            //     }
-            //     console.log("Fetched messages:", action.payload.messages.length, "Current page:", state.page);
-            // })
-
-
             .addCase(FetchMessages.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
@@ -344,18 +302,6 @@ const MessageSlice = createSlice({
             .addCase(FetchMessages.rejected, (state, action) => {
                 state.error = action.payload;
             })
-
-            .addCase(StarMsg.fulfilled, () => {
-                // const updatedMsg = action.payload.message || action.payload.msg;
-                // state.messages = state.messages.map((msg) =>
-                //     msg?.id === updatedMsg?.id ? updatedMsg : msg
-                // );
-                // const msg = state.messages.find(m => m.id === action.payload);
-                // if (msg) {
-                //     msg.is_star = !msg.is_star;
-                // }
-            })
-
             .addCase(PinMsg.fulfilled, (state, action) => {
                 const updatedMsg = action.payload.message || action.payload.msg;
                 state.messages = state.messages.map((msg) =>

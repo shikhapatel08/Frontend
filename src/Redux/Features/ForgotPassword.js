@@ -7,9 +7,9 @@ const BASE_API = import.meta.env.VITE_API_URL;
 
 export const ForgotPassword = createAsyncThunk(
     "forgotPassword/ForgotPassword",
-    async ({ email, newPass }, thunkAPI) => {
+    async ({ phone, newPass }, thunkAPI) => {
         try {
-            const res = await axios.post(`${BASE_API}/api/v1/users/forgot-password`, { email, newPass });
+            const res = await axios.post(`${BASE_API}/api/v1/users/forgot-password`, { phone , newPass });
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);

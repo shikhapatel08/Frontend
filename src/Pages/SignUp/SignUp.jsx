@@ -55,14 +55,14 @@ const Signup = () => {
 
             await dispatch(
                 SendOtp({
-                    email: values.email,
+                    phone: values.phone,
                     action: "signup"
                 })
             );
 
             navigate("/OtpPage", {
                 state: {
-                    email: values.email,
+                    phone: values.phone,
                     from: "signup",
                     action: "signup"
                 }

@@ -23,7 +23,8 @@ export default function Sidebar() {
     const Signin = useSelector(state => state.signin.SigninUser);
     const user = Object.keys(Signin).length > 0 ? Signin : Signup;
 
-    const User = useSelector(state => state.profileuser.User);
+    const { User } = useSelector(state => state.profileuser);
+
 
     const { type } = useSelector(state => state.subscriptions);
     const { getThemeStyle, theme, toggleTheme } = useContext(ThemeContext);

@@ -19,7 +19,7 @@ export default function OtpPage() {
     const navigate = useNavigate();
     const { loading } = useSelector((state) => state.otp);
 
-    const email = location.state?.email;
+    const phone = location.state?.phone;
     const flow = location.state?.from;
     const action = location.state?.action;
 
@@ -28,10 +28,10 @@ export default function OtpPage() {
     /* ---------------- REDIRECT GUARD ---------------- */
 
     useEffect(() => {
-        if (!email || !flow) {
+        if (!phone || !flow) {
             navigate("/");
         }
-    }, [email, flow, navigate]);
+    }, [phone, flow, navigate]);
 
     /* ---------------- TIMER ---------------- */
 
@@ -57,7 +57,7 @@ export default function OtpPage() {
 
     const initialValues = {
         name: location.state?.name || "",
-        email: location.state?.email || "",
+        phone: location.state?.phone || "",
         otp: "",
     };
 
@@ -74,7 +74,7 @@ export default function OtpPage() {
 
 
         dispatch(verifyOtp({
-            email: values.email,
+            phone: values.phone,
             otp: values.otp,
             action: action
         }))
@@ -90,7 +90,7 @@ export default function OtpPage() {
                     navigate("/ResetPassword",
                         {
                             state: {
-                                email: values.email,
+                                phone: values.phone,
                                 otp: values.otp
                             }
                         }
@@ -105,7 +105,7 @@ export default function OtpPage() {
     /* ---------------- RESEND OTP ---------------- */
 
     const handleResendOtp = () => {
-        dispatch(SendOtp({ email, action }));
+        dispatch(SendOtp({ phone, action }));
         setTimer(120);
     };
 
