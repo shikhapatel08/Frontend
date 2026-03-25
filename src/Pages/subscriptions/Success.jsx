@@ -1,12 +1,19 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router";
 import "./Success.css";
 import { ThemeContext } from "../../Context/ThemeContext";
+import { useDispatch } from "react-redux";
+import { Fetchsubscriptiondata, UpdateType } from "../../Redux/Features/subscriptions";
 
 const Success = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { theme, getThemeStyle } = useContext(ThemeContext); //theme toggle/ style apply
-  localStorage.setItem("subscriptionType", "Premium");
+
+  useEffect(() => {
+    dispatch(Fetchsubscriptiondata());
+  }, []);
+
   return (
     <div className="success-container" style={getThemeStyle(theme)}>
       <div className="success-card">

@@ -42,8 +42,6 @@ const LogoutSlice = createSlice({
             .addCase(LogoutUser.fulfilled, (state) => {
                 state.loading = false;
                 state.error = null;
-                // state.User = action.payload.data;
-                // localStorage.setItem('User', JSON.stringify(action.payload.data));
             })
             .addCase(LogoutUser.rejected, (state, action) => {
                 state.error = action.payload;

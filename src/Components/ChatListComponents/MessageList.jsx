@@ -7,7 +7,6 @@ import { SelectedMessage } from "../../Redux/Features/SearchMsgSlice";
 import { FetchMessages } from "../../Redux/Features/SendMessage";
 import { DeleteMe } from "../../Redux/Features/DeleteMeSlice";
 import { DeleteEveryone } from "../../Redux/Features/DeleteEveryoneSlice";
-import DeleteMsg from "../Modal/DeleteMsg";
 import GlobalModal from "../Global Modal/GlobalModal";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { UpdateChat } from "../../Redux/Features/CreateChat";
@@ -18,7 +17,7 @@ import { useTypingIndicator } from "./CustomHook/useTypingIndicator";
 import { useNotifications } from "./CustomHook/useNotifications";
 import { useStatus } from "./CustomHook/useStatus";
 import { useSocket } from "../../Context/SocketContext";
-import { formatChat } from "./DateFormat";
+import { formatChatTime } from "./DateFormat";
 
 export default function ConversationPanelMiddle({
     messages,
@@ -88,11 +87,11 @@ export default function ConversationPanelMiddle({
                     {messages.length > 0 ?
                         (messages.map((msg, index) => {
 
-                            const currentDate = formatChat(msg.createdAt);
+                            const currentDate = formatChatTime(msg.createdAt, 'chat');
 
                             const prevDate =
                                 index > 0
-                                    ? formatChat(messages[index - 1].createdAt)
+                                    ? formatChatTime(messages[index - 1].createdAt , 'chat')
                                     : null;
 
                             const showDate = currentDate !== prevDate;

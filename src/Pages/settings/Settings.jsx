@@ -31,8 +31,7 @@ export default function Settings() {
     const Signup = useSelector((state) => state.signup.SignupUser);
     const Signin = useSelector((state) => state.signin.SigninUser);
     const { loading } = useSelector(state => state.subscriptions);
-
-    const user = Object.keys(Signin).length ? Signin : Signup;
+    const DeleteAccountLoading = useSelector(state => state.deleteprofile.loading);
 
     const { openModal, closeModal } = useModal();
 
@@ -121,6 +120,7 @@ export default function Settings() {
                         deleteProfile();
                         closeModal();
                     }}
+                    loading={DeleteAccountLoading}
                 />
             </GlobalModal>
         );
@@ -130,27 +130,27 @@ export default function Settings() {
     /* ---------------- BILLING ---------------- */
 
     const handleBilling = async () => {
-    try {
-        const subData = await dispatch(SubscriptionUserData()).unwrap();
+        try {
+            const subData = await dispatch(SubscriptionUserData()).unwrap();
 
-        const id = subData?.customerId || customerId;
+            const id = subData?.customerId || customerId;
 
-        if (!id) {
-            console.error("Customer ID not found");
-            toast.error('This feature is available for Premium users only');
-            return;
+            if (!id) {
+                console.error("Customer ID not found");
+                toast.error('This feature is available for Premium users only');
+                return;
+            }
+
+            const res = await dispatch(BillingPortal(id)).unwrap();
+
+            if (res?.url) {
+                window.location.assign(res.url);
+            }
+
+        } catch (err) {
+            console.error(err);
         }
-
-        const res = await dispatch(BillingPortal(id)).unwrap();
-
-        if (res?.url) {
-            window.location.assign(res.url);
-        }
-
-    } catch (err) {
-        console.error(err);
-    }
-};
+    };
     /* ---------------- PAGE RENDER ---------------- */
 
     const renderPage = () => {

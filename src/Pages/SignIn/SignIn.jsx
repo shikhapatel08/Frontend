@@ -27,6 +27,7 @@ const Signin = () => {
 
     const validationSchema = Yup.object({
         phone: Yup.string()
+            .matches(/^[0-9]{10}$/, "Phone must be 10 digits")
             // .email("Invalid email format")
             .required("Phone is required"),
         password: Yup.string()
@@ -75,26 +76,35 @@ const Signin = () => {
 
     // ---------------- FORGOT PASSWORD ----------------
 
-    const handleForgotPassword = (values) => {
-
-        if (!values.phone) {
-            toast.error("Enter Phone num first");
-            return;
-        }
-
-        dispatch(SendOtp({
-            phone: values.phone,
-            // action: "forgot_password"
-        }));
-
-        navigate("/OtpPage", {
-            state: {
-                phone: values.phone,
-                from: "forgot_password",
-                action: "forgot_password"
+    const handleForgotPassword = async (values) => {
+        try {
+            if (!values.phone) {
+                toast.error("Enter Phone num first");
+                return;
             }
-        });
-    }
+
+            const res = await dispatch(SendOtp({
+                phone: values.phone,
+                action: "forgot_password"
+            }));
+
+            // optional: check success
+            if (res?.payload?.success) {
+                navigate("/OtpPage", {
+                    state: {
+                        phone: values.phone,
+                        from: "forgot_password",
+                        action: "forgot_password"
+                    }
+                });
+            } else {
+                toast.error("Failed to send OTP");
+            }
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     return (
         // ================================= SignIn Page ================================= //

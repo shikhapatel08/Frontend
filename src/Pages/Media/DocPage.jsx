@@ -28,8 +28,12 @@ export default function DocsPage({ type, chatId }) {
     };
 
     useEffect(() => {
-        fetchDocs(1);
-    }, [type, chatId]);
+        if (type === "all") {
+            dispatch(GetDocs({ page: 1 }));
+        } else {
+            dispatch(GetDocsByChatId({ chatId, page: 1 }));
+        }
+    }, []);
 
     return (
         <div className="Docs">

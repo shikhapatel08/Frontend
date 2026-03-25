@@ -4,15 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchMyChats, SelectedChat, UnreadCount, UpdateChat } from "../../Redux/Features/CreateChat";
 import { PinedUser } from "../../Redux/Features/Pinslice";
 import { MuteUser } from "../../Redux/Features/MuteSlice";
-import { BlockedUser } from "../../Redux/Features/BlockedSlice";
 import { Delete } from "../../Redux/Features/DeleteSlice";
 import { toggleSidebar } from "../../Redux/Features/SideBarSlice";
 import profileImg from "../../assets/Profile/profile.svg";
 import '../../Pages/ChatList/ChatListPage.css'
 import { BlockIcon, DeleteIcon, EditProfileIcon, Icon, MenuDotsIcon, MenuIcon, MuteIcon, PinIcon } from "../Common Components/Icon/Icon";
 import GlobalModal from "../Global Modal/GlobalModal";
-import BlockedChatModal from "../Modal/BlockedUser";
-import DeleteChatModal from "../Modal/DeleteChat";
 import ChatListDropdown from "./ChatListDropdown";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useUnreadCount } from "./CustomHook/useUnreadCount";
@@ -111,7 +108,7 @@ export default function ChatList() {
 
     // ---------------- UTILS ----------------
 
-    const truncateMessage = (message, limit = 18) => {
+    const truncateMessage = (message, limit = 15) => {
         if (!message) return "";
         const trimmed = message.trim();
         return trimmed.length > limit

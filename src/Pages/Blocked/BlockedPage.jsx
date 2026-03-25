@@ -19,6 +19,7 @@ export default function Blocked({ onBack }) {
     const Signup = useSelector(state => state.signup.SignupUser);
     const Signin = useSelector(state => state.signin.SigninUser);
     const { getThemeStyle, theme } = useContext(ThemeContext);
+    const { loading } = useSelector(state => state.blocked);
 
     const user = Object.keys(Signin).length > 0 ? Signin : Signup;
     const JoinUser = user?.id;
@@ -54,6 +55,7 @@ export default function Blocked({ onBack }) {
                         Unblocked(user);
                         closeModal();
                     }}
+                    loading={loading}
                 />
             </GlobalModal>
         );

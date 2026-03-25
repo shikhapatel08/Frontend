@@ -5,12 +5,12 @@ import axios from "axios";
 const BASE_API = import.meta.env.VITE_API_URL;
 
 // ================================= Profile User ================================= //
-const token = localStorage.getItem('token');
 
 export const ProfileUser = createAsyncThunk(
     'profileuser/ProfileUser',
     async (thunkAPI) => {
         try {
+            const token = localStorage.getItem('token');
             const res = await axios.get(`${BASE_API}/api/v1/users/profile`,
                 {
                     headers: {
@@ -28,6 +28,7 @@ export const AnotherUserProfile = createAsyncThunk(
     'profileuser/AnotherUserProfile',
     async (userId, thunkAPI) => {
         try {
+            const token = localStorage.getItem('token');
             const res = await axios.post(`${BASE_API}/api/v1/users/other-user-profile`,
                 {
                     id: userId

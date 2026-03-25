@@ -55,8 +55,8 @@ export default function Media() {
 
             <div className="tab-content">
                 {activeTab === "media" && <MediaPage type="all" chatId={chats?.id} />}
-                {activeTab === "docs" && <DocsPage type='all' />}
-                {activeTab === "links" && <LinkPage type='all' />}
+                {activeTab === "docs" && <DocsPage type='all' chatId={chats?.id}/>}
+                {activeTab === "links" && <LinkPage type='all' chatId={chats?.id} />}
             </div>
 
         </div>

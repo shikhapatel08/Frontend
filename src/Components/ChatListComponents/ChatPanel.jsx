@@ -12,7 +12,6 @@ import Searching from "../Modal/Seraching";
 import { FaFileAlt, FaFileExcel, FaFilePdf, FaFileWord } from "react-icons/fa";
 import { AttachmentIcon, BackbtnIcon, DoubleTicksIcon, Icon, MenuIcon, SendMsgIcon, SerachIcon, SingleTicksIcon, StarIcon } from "../Common Components/Icon/Icon";
 import GlobalModal from "../Global Modal/GlobalModal";
-import DeleteMsg from "../Modal/DeleteMsg";
 import ChatHeader from "./ChatHeader";
 import MessageList from './MessageList'
 import FilePreviewList from "./FilePreviewList";
@@ -43,6 +42,7 @@ export default function ChatPanel() {
     const user = Object.keys(Signin).length > 0 ? Signin : Signup;
     const JoinUser = user?.id;
     const chatEndRef = useRef(null);
+    const { loading } = useSelector(state => state.blocked);
 
     const pinnedMessage = useMemo(() => {
         return messages?.filter(
@@ -92,6 +92,7 @@ export default function ChatPanel() {
                         Blocked(chat);
                         closeModal();
                     }}
+                    loading={loading}
                 />
             </GlobalModal>
         )

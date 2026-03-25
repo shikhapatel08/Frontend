@@ -29,6 +29,7 @@ const Signup = () => {
     const validationSchema = Yup.object({
         name: Yup.string()
             .required("Name is required")
+            .min(3, "Mimimum 3 Character")
             .max(20, "Maximum 20 Character"),
         email: Yup.string()
             .email("Invalid email")
@@ -56,7 +57,7 @@ const Signup = () => {
             await dispatch(
                 SendOtp({
                     phone: values.phone,
-                    // action: "signup"
+                    action: "signup"
                 })
             );
 
@@ -64,7 +65,7 @@ const Signup = () => {
                 state: {
                     phone: values.phone,
                     from: "signup",
-                    action: "signup"
+                    action: "signup" 
                 }
             });
 
@@ -78,7 +79,7 @@ const Signup = () => {
                 backendMessage.errors.forEach(e => toast.error(e));
             }
             else if (err?.status === 500) {
-                toast.error("Phone or Phone number already registered!");
+                toast.error("Email or Phone number already registered!");
             }
             else if (backendMessage?.message) {
                 toast.error(backendMessage.message);
@@ -89,8 +90,10 @@ const Signup = () => {
             else {
                 toast.error("Something went wrong");
             }
+            console.log(err.response)
         }
     };
+
 
     return (
         // ================================= Signup Page ================================= //

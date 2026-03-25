@@ -21,8 +21,12 @@ export default function LinkPage({ type, chatId }) {
     };
 
     useEffect(() => {
-        fetchLinks(1);
-    }, [type, chatId]);
+        if (type === "all") {
+            dispatch(GetLinks({ page: page }));
+        } else {
+            dispatch(GetLinksByChatId({ chatId, page: page }));
+        }
+    }, []);
 
     return (
         <div className="LinkPage">

@@ -21,7 +21,7 @@ export default function OtpPage() {
 
     const phone = location.state?.phone;
     const flow = location.state?.from;
-    const action = location.state?.action;
+    // const action = location.state?.action;
 
     const [timer, setTimer] = useState(120); // 10 min = 600 sec
 
@@ -76,7 +76,7 @@ export default function OtpPage() {
         dispatch(verifyOtp({
             phone: values.phone,
             otp: values.otp,
-            action: action
+            // action: action
         }))
             .unwrap()
             .then(() => {

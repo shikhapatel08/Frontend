@@ -20,7 +20,7 @@ export default function EditMsgModal({ onCancel, onConfirm, message }) {
             </div>
             <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
                 <button onClick={onCancel}>Cancel</button>
-                <Button type='button' disabled={!text.trim()} onClick={() => onConfirm(text)} >Edit</Button>
+                <Button type='button' disabled={!text.trim() || text.trim() === message.text.trim()} onClick={() => onConfirm(text)} >Edit</Button>
             </div>
         </div>
     )

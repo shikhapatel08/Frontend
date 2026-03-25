@@ -29,7 +29,7 @@ export default function ChatBubble({
     const dispatch = useDispatch();
     const { openModal, closeModal } = useModal();
     const [openMsgMenu, setOpenMsgMenu] = useState(null);
-    
+
     const Signup = useSelector(state => state.signup.SignupUser);
     const Signin = useSelector(state => state.signin.SigninUser);
     const { type } = useSelector(state => state.subscriptions);
@@ -159,6 +159,7 @@ export default function ChatBubble({
                     message={msg}
                     onCancel={closeModal}
                     onConfirm={(updatedText) => {
+                        if (!updatedText.trim() || updatedText === msg.text) return;
                         dispatch(updateMessageInstant({ msgId: msg.id, text: updatedText }));
 
                         dispatch(EditMsg({

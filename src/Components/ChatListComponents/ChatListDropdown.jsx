@@ -14,7 +14,7 @@ import GlobalModal from "../Global Modal/GlobalModal";
 import DeleteChatModal from "../Modal/DeleteChat";
 import BlockedChatModal from "../Modal/BlockedUser";
 import { ThemeContext } from "../../Context/ThemeContext";
-import { formatChat } from "./DateFormat";
+import { formatChatTime } from "./DateFormat";
 
 export default function ChatListDropdown({
     chat,
@@ -29,6 +29,8 @@ export default function ChatListDropdown({
     const [openMenuId, setOpenMenuId] = useState(null);
     const { type } = useSelector(state => state.subscriptions);
     const { getThemeStyle, theme } = useContext(ThemeContext);
+    const { loading } = useSelector(state => state.blocked);
+    const DeleteLoading = useSelector(state => state.delete.loading);
 
 
     const toggleMenu = (id) => {
@@ -40,7 +42,7 @@ export default function ChatListDropdown({
     };
 
     const handlePined = (chat) => {
-        
+
         const pinnedChats = chats.filter(c => c.is_pin);
         const limit = type === 'Premium' ? 5 : 2;
 
@@ -97,6 +99,7 @@ export default function ChatListDropdown({
                     onCancel={closeModal}
                     isBlocked={selectedChat?.is_block}
                     onConfirm={() => blocked(chat)}
+                    loading={loading}
                 />
             </GlobalModal>
         )
@@ -108,6 +111,7 @@ export default function ChatListDropdown({
 
             toast.success('Chat deleted successfully!');
             closeModal();
+            localStorage.removeItem('selectedChat');
 
         } catch (error) {
             toast.error('Failed to delete chat');
@@ -120,6 +124,7 @@ export default function ChatListDropdown({
                 <DeleteChatModal
                     onCancel={closeModal}
                     onConfirm={() => DeleteChat(chat)}
+                    loading={DeleteLoading}
                 />
             </GlobalModal>
         )
@@ -148,7 +153,7 @@ export default function ChatListDropdown({
                 }}
             >
                 <span style={{ color: "grey", fontSize: "13px" }}>
-                    {formatChat(chat?.last_message_time)}
+                    {formatChatTime(chat?.last_message_time, "list")}
                 </span>
 
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>

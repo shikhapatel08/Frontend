@@ -7,11 +7,11 @@ const BASE_API = import.meta.env.VITE_API_URL;
 
 export const SendOtp = createAsyncThunk(
     "otp/sendOtp",
-    async ({ phone }, thunkAPI) => {
+    async ({ phone, action }, thunkAPI) => {
         try {
             const res = await axios.post(`${BASE_API}/api/v1/users/send-otp`, {
                 phone: phone.toString(),
-                // action: action
+                action: action
             });
             return res.data;
         } catch (error) {

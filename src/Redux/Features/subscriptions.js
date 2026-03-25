@@ -134,7 +134,12 @@ const subscriptionsSlice = createSlice({
         transactionHistory: [],
         type: localStorage.getItem('subscriptionType') || null,
     },
-    reducers: {},
+    reducers: {
+        UpdateType: (state, action) => {
+            const type = action.payload;
+            state.type = type;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(subscribeToChat.pending, (state) => {
@@ -219,4 +224,7 @@ const subscriptionsSlice = createSlice({
             });
     },
 });
+
+export const { UpdateType } = subscriptionsSlice.actions;
+
 export default subscriptionsSlice.reducer;
