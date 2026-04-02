@@ -6,7 +6,20 @@
   justify-content: center;
   align-items: center;
   z-index: 999;
-  padding: 10px; /* important for small screens */
+  padding: 10px;
+  /* important for small screens */
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 10px;
 }
 
 .modal-box {
@@ -19,8 +32,8 @@
   border-radius: 12px;
   padding: 20px;
   border: 1px solid #e5e7eb;
-  max-height: 90vh;  /* prevent overflow */
-  overflow-y: auto;  /* scroll if content is big */
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-close {

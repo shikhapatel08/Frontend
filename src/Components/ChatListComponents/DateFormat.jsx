@@ -28,7 +28,7 @@ export const formatChatTime = (time, type = "list") => {
   const diffInMinutes = Math.floor(diffInMs / 60000);
 
   if (diffInMinutes < 1) return "Now";
-  if (diffInMinutes < 60) return `${diffInMinutes} min ago`;
+  if (diffInMinutes < 60) return `${diffInMinutes} min`;
 
   if (isToday) {
     return messageDate.toLocaleTimeString([], {

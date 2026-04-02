@@ -1,7 +1,6 @@
 import profile from '../../assets/Profile/profile.svg';
 import '../Blocked/BlockedPage.css';
 import { useDispatch, useSelector } from "react-redux";
-import { SelectedChat } from "../../Redux/Features/CreateChat";
 import { BlockedUser } from "../../Redux/Features/BlockedSlice";
 import { toast } from "react-toastify";
 import { useModal } from "../../Context/ModalContext";
@@ -14,7 +13,7 @@ import BlockedChatModal from '../../Components/Modal/BlockedUser';
 export default function Blocked({ onBack }) {
 
     const dispatch = useDispatch();
-    const { chats, selectedChat } = useSelector(state => state.createchat);
+    const { chats } = useSelector(state => state.createchat);
     const { openModal, closeModal } = useModal();
     const Signup = useSelector(state => state.signup.SignupUser);
     const Signin = useSelector(state => state.signin.SigninUser);
@@ -47,10 +46,10 @@ export default function Blocked({ onBack }) {
 
     const handleUnblock = (user) => {
         openModal(
-            <GlobalModal isclose={closeModal}>
+            <GlobalModal onClose={closeModal}>
                 <BlockedChatModal
                     onCancel={closeModal}
-                    isBlocked={SelectedChat?.is_block}
+                    isBlocked={true}
                     onConfirm={() => {
                         Unblocked(user);
                         closeModal();

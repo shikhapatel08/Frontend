@@ -58,9 +58,9 @@ export const NotificationIcon = () => {
     )
 }
 
-export const StarIcon = ({ size }) => {
+export const StarIcon = ({ size, color, fill }) => {
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
         </svg>
     )
@@ -236,8 +236,29 @@ export const AttachmentIcon = () => {
 
 export const SendMsgIcon = () => {
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-send" viewBox="0 0 16 16" >
-            <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.201L1.591 6.602l4.339 2.76z" />
+        <svg
+            width="24"
+            height="25"
+            viewBox="0 0 24 25"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <g clipPath="url(#clip0)">
+                <path
+                    d="M2.58549 3.1261C2.45994 3.0633 2.31929 3.037 2.17953 3.05019C2.03977 3.06338 1.90653 3.11553 1.79494 3.2007C1.68335 3.28588 1.59791 3.40066 1.54833 3.53199C1.49876 3.66332 1.48703 3.80593 1.51449 3.9436L3.61899 11.2186C3.65823 11.3542 3.73493 11.4759 3.84027 11.5699C3.94562 11.6638 4.07532 11.7261 4.21449 11.7496L12.7495 13.1791C13.1515 13.2586 13.1515 13.8346 12.7495 13.9141L4.21449 15.3436C4.07532 15.3671 3.94562 15.4294 3.84027 15.5233C3.73493 15.6173 3.65823 15.739 3.61899 15.8746L1.51449 23.1496C1.48703 23.2873 1.49876 23.4299 1.54833 23.5612C1.59791 23.6925 1.68335 23.8073 1.79494 23.8925C1.90653 23.9777 2.03977 24.0298 2.17953 24.043C2.31929 24.0562 2.45994 24.0299 2.58549 23.9671L22.0855 14.2171C22.2099 14.1547 22.3145 14.059 22.3876 13.9406C22.4607 13.8222 22.4994 13.6858 22.4994 13.5466C22.4994 13.4074 22.4607 13.271 22.3876 13.1526C22.3145 13.0342 22.2099 12.9384 22.0855 12.8761L2.58549 3.1261Z"
+                    fill="currentColor"
+                />
+            </g>
+            <defs>
+                <clipPath id="clip0">
+                    <rect
+                        width="24"
+                        height="24.5455"
+                        fill="currentColor"
+                        transform="translate(0 0.273438)"
+                    />
+                </clipPath>
+            </defs>
         </svg>
     )
 }
@@ -398,4 +419,42 @@ export const TranscationIcon = () => (
             stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
 
     </svg>
-) 
+)
+
+export const EmojiIcon = () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width="18" height="18">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"></path>
+    </svg>
+)
+
+export const TextFunctionallyIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 17.25V21H6.75L17.81 9.94L14.06 6.19L3 17.25Z" fill="currentColor" />
+        <path d="M20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C17.98 2.9 17.35 2.9 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04Z" fill="currentColor" />
+    </svg>
+)
+
+export const UpArrow = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path
+            d="M6 15L12 9L18 15"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    </svg>
+);
+
+export const DownArrow = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path
+            d="M6 9L12 15L18 9"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    </svg>
+);

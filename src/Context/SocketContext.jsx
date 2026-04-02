@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { initSocket, getSocket } from "../Socket.io/socket";
+import { initSocket, getSocket, disconnectSocket } from "../Socket.io/socket";
 import { useSelector } from "react-redux";
 
 const SocketContext = createContext(null);
@@ -18,7 +18,11 @@ export const SocketProvider = ({ children }) => {
     const finaltoken = token || signupToken || otpToken;
 
     useEffect(() => {
-        if (!finaltoken || !user?.id) return;
+        if (!finaltoken || !user?.id) {
+            disconnectSocket();
+            setSocket(null);
+            return;
+        }
 
         initSocket(finaltoken, user.id);
 
@@ -26,11 +30,21 @@ export const SocketProvider = ({ children }) => {
 
         if (!s) return;
 
-        s.on("connect", () => {
+        const handleConnect = () => {
             console.log("Socket connected (context)");
             setSocket(s);
-        });
+        };
 
+        s.on("connect", handleConnect);
+        if (s.connected) {
+            setSocket(s);
+        }
+
+        return () => {
+            s.off("connect", handleConnect);
+            disconnectSocket();
+            setSocket(null);
+        };
     }, [finaltoken, user?.id]);
 
     return (

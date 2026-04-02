@@ -39,17 +39,14 @@ export const SendMessage = createAsyncThunk(
 
             return { message: res.data.msg, tempId: tempId };
         } catch (error) {
-            if (error.response?.status === 403) {
-                toast.error('Daily message limit reached.')
-            } else if (error.response?.status === 400) {
-                toast.error('You are block in this chat');
-            } else if (error.response?.status === 401) {
-                toast.error("File sharing is available only for Premium user only.")
-            } else if (error.response?.status === 500) {
-                toast.error("File size too large pelese upload file less then 5MB.")
-            } else {
-                toast.error(error.message || "Failed to send message.");
-            }
+
+            const errMsg =
+                error?.response?.data?.message ||
+                error?.response?.data?.msg ||
+                error?.message ||
+                "Something went wrong";
+
+            toast.error(errMsg);
             return thunkAPI.rejectWithValue(
                 error.response?.data || error.message
             );
@@ -73,7 +70,16 @@ export const FetchMessages = createAsyncThunk(
             );
             return res.data;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
+            const errMsg =
+                error?.response?.data?.message ||
+                error?.response?.data?.msg ||
+                error?.message ||
+                "Something went wrong";
+
+            toast.error(errMsg);
+            return thunkAPI.rejectWithValue(
+                error.response?.data || error.message
+            );
         }
     }
 );
@@ -96,8 +102,17 @@ export const StarMsg = createAsyncThunk(
             );
 
             return msgId;
-        } catch (err) {
-            return thunkAPI.rejectWithValue(err.message);
+        } catch (error) {
+            const errMsg =
+                error?.response?.data?.message ||
+                error?.response?.data?.msg ||
+                error?.message ||
+                "Something went wrong";
+
+            toast.error(errMsg);
+            return thunkAPI.rejectWithValue(
+                error.response?.data || error.message
+            );
         }
     }
 );
@@ -122,7 +137,44 @@ export const PinMsg = createAsyncThunk(
             );
             return res.data;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
+            const errMsg =
+                error?.response?.data?.message ||
+                error?.response?.data?.msg ||
+                error?.message ||
+                "Something went wrong";
+
+            toast.error(errMsg);
+            return thunkAPI.rejectWithValue(
+                error.response?.data || error.message
+            );
+        }
+    }
+);
+
+export const FetchAllPinnedMsg = createAsyncThunk(
+    'message/FetchAllPinnedMsg',
+    async ({ chatId, limit = 20 }, thunkAPI) => {
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.get(`${BASE_API}/api/v1/message/get-pin-messages/${chatId}?limit=${limit}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            return res.data;
+        } catch (error) {
+            const errMsg =
+                error?.response?.data?.message ||
+                error?.response?.data?.msg ||
+                error?.message ||
+                "Something went wrong";
+
+            toast.error(errMsg);
+            return thunkAPI.rejectWithValue(
+                error.response?.data || error.message
+            );
         }
     }
 );
@@ -138,6 +190,7 @@ const MessageSlice = createSlice({
         page: 1,
         hasMore: true,
         canSendMessage: true,
+        pinnedMessages: []
     },
     reducers: {
         addLocalMessage: (state, action) => {
@@ -152,9 +205,23 @@ const MessageSlice = createSlice({
         Pinmsg: (state, action) => {
             const msgId = action.payload;
             const msg = state.messages.find(m => Number(m.id) === Number(msgId));
+
             if (msg) {
                 msg.is_pin = !msg.is_pin;
-
+                if (msg.is_pin) {
+                    const exists = state.pinnedMessages.find(pm => Number(pm.id) === Number(msgId));
+                    if (!exists) {
+                        state.pinnedMessages.push(msg);
+                    }
+                } else {
+                    state.pinnedMessages = state.pinnedMessages.filter(
+                        pm => Number(pm.id) !== Number(msgId)
+                    );
+                }
+            } else {
+                state.pinnedMessages = state.pinnedMessages.filter(
+                    pm => Number(pm.id) !== Number(msgId)
+                );
             }
         },
         deleteForEveryoneLocal: (state, action) => {
@@ -164,6 +231,7 @@ const MessageSlice = createSlice({
                 msg.text = "This message was deleted";
                 msg.image_url = null;
                 msg.is_deleted = true;
+                msg.delete_for_all = true;
             }
         },
         deleteForMeLocal: (state, action) => {
@@ -177,16 +245,63 @@ const MessageSlice = createSlice({
             state.hasMore = true;
         },
         updateMessageInstant: (state, action) => {
-            const { msgId, text } = action.payload;
+            const { msgId, text, is_deleted, delete_for_all, is_edited } = action.payload;
+
             const msg = state.messages.find(m => m.id === msgId);
+
             if (msg) {
-                msg.text = text;
+                if (text !== undefined) msg.text = text;
+                if (is_deleted !== undefined) msg.is_deleted = is_deleted;
+                if (delete_for_all !== undefined) msg.delete_for_all = delete_for_all;
+                if (is_edited !== undefined) msg.is_edited = is_edited;
             }
         },
         cansendMessage: (state, action) => {
             state.canSendMessage = action.payload;
-        }
+        },
+        updateMessageStatus: (state, action) => {
+            const { chatId, status } = action.payload;
+            state.messages = state.messages.map(m =>
+                Number(m.chatId) === Number(chatId)
+                    ? { ...m, status }
+                    : m
+            );
+        },
+        setReactionLocal: (state, action) => {
+            const { msgId, userId, emoji } = action.payload;
 
+            const message = state.messages.find(m => m.id === msgId);
+            if (!message) return;
+
+            if (!message.reactions) {
+                message.reactions = [];
+            }
+
+            const existingIndex = message.reactions.findIndex(
+                r => r.user_id === userId
+            );
+
+            //  REMOVE (same emoji click)
+            if (emoji === null) {
+                if (existingIndex !== -1) {
+                    message.reactions.splice(existingIndex, 1);
+                }
+                return;
+            }
+
+            //  UPDATE (same user different emoji)
+            if (existingIndex !== -1) {
+                message.reactions[existingIndex].emoji = emoji;
+            }
+
+            //  ADD (new user reaction)
+            else {
+                message.reactions.push({
+                    user_id: userId,
+                    emoji
+                });
+            }
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -195,9 +310,6 @@ const MessageSlice = createSlice({
             })
 
             .addCase(SendMessage.fulfilled, (state, action) => {
-                if (action.payload?.status === 403) {
-                    state.canSendMessage = false;
-                }
                 state.loading = false;
 
                 const { tempId, message } = action.payload;
@@ -212,16 +324,23 @@ const MessageSlice = createSlice({
                         message.createdAt ||
                         message.created_at ||
                         new Date().toISOString(),
-                    image_url:
-                        typeof message.image_url === "string"
-                            ? JSON.parse(message.image_url)
-                            : message.image_url,
+                    image_url: (() => {
+                        if (Array.isArray(message.image_url)) return message.image_url;
+                        if (typeof message.image_url === "string") {
+                            try {
+                                return JSON.parse(message.image_url);
+                            } catch {
+                                return [message.image_url];
+                            }
+                        }
+                        return message.image_url;
+                    })(),
                     replyTo:
                         message.reply_to
                             ? state.messages.find(m => m.id === message.reply_to) || null
                             : null,
                     pending: false,
-                    status: 'send',
+                    status: state.messages.find(m => m.id === tempId)?.status || message.status || 'sent',
                 };
 
                 if (index !== -1) {
@@ -239,6 +358,11 @@ const MessageSlice = createSlice({
                     msg.status = "error";
                 }
 
+                if (action.payload?.status === 403) {
+                    state.canSendMessage = false;
+                }
+
+                state.loading = false;
                 state.error = action.payload;
             })
 
@@ -249,6 +373,8 @@ const MessageSlice = createSlice({
             .addCase(FetchMessages.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
+                const requestPage = Number(action.meta.arg?.page || 1);
+                const requestLimit = Number(action.meta.arg?.limit || 20);
 
                 const rawMessages = action.payload.messages || action.payload;
 
@@ -287,10 +413,12 @@ const MessageSlice = createSlice({
 
                 state.messages = [...parsedNewMSg, ...state.messages];
 
-                if (rawMessages.length < 20) {
+                if (rawMessages.length < requestLimit) {
                     state.hasMore = false;
+                    state.page = requestPage;
                 } else {
-                    state.page += 1;
+                    state.hasMore = true;
+                    state.page = requestPage + 1;
                 }
 
                 console.log("Added", parsedNewMSg.length, "new messages. Total:", state.messages.length);
@@ -298,17 +426,50 @@ const MessageSlice = createSlice({
             })
 
             .addCase(FetchMessages.rejected, (state, action) => {
+                state.loading = false;
                 state.error = action.payload;
             })
             .addCase(PinMsg.fulfilled, (state, action) => {
-                const updatedMsg = action.payload.message || action.payload.msg;
-                state.messages = state.messages.map((msg) =>
-                    msg.id === updatedMsg.id ? updatedMsg : msg
-                );
+                const updatedMsg = action.payload.message || action.payload.msg || action.payload;
+
+                if (updatedMsg && updatedMsg.id) {
+                    state.messages = state.messages.map((msg) =>
+                        Number(msg.id) === Number(updatedMsg.id) ? { ...msg, ...updatedMsg } : msg
+                    );
+
+                    if (updatedMsg.is_pin) {
+                        const exists = state.pinnedMessages.find(pm => Number(pm.id) === Number(updatedMsg.id));
+                        if (!exists) {
+                            state.pinnedMessages.push(updatedMsg);
+                        } else {
+                            state.pinnedMessages = state.pinnedMessages.map(pm =>
+                                Number(pm.id) === Number(updatedMsg.id) ? updatedMsg : pm
+                            );
+                        }
+                    } else {
+                        state.pinnedMessages = state.pinnedMessages.filter(
+                            pm => Number(pm.id) !== Number(updatedMsg.id)
+                        );
+                    }
+                }
+            })
+            .addCase(PinMsg.rejected, (state, action) => {
+                state.error = action.payload;
+            })
+            .addCase(FetchAllPinnedMsg.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(FetchAllPinnedMsg.fulfilled, (state, action) => {
+                state.loading = false;
+                state.pinnedMessages = action.payload.data;
+            })
+            .addCase(FetchAllPinnedMsg.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             })
     },
 });
 
 
-export const { addLocalMessage, Starmsg, Pinmsg, deleteForEveryoneLocal, deleteForMeLocal, resetMessages, updateMessageInstant, cansendMessage } = MessageSlice.actions;
+export const { addLocalMessage, Starmsg, Pinmsg, deleteForEveryoneLocal, deleteForMeLocal, resetMessages, updateMessageInstant, cansendMessage, updateMessageStatus, setReactionLocal } = MessageSlice.actions;
 export default MessageSlice.reducer;

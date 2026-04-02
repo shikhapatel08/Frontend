@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux"
-import { GetLinks, GetLinksByChatId } from "../../Redux/Features/MediaSlice";
+import { GetLinks, GetLinksByChatId, resetMediaState } from "../../Redux/Features/MediaSlice";
 import { FaLink } from "react-icons/fa";
 import '../Media/Media.css'
-import { Link } from "react-router-dom";
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { LinksSkeleton } from "../../Components/Common Components/Loader/PageSkeletons";
+
 
 export default function LinkPage({ type, chatId }) {
     const dispatch = useDispatch();
@@ -21,12 +22,13 @@ export default function LinkPage({ type, chatId }) {
     };
 
     useEffect(() => {
+        dispatch(resetMediaState());
         if (type === "all") {
-            dispatch(GetLinks({ page: page }));
+            dispatch(GetLinks({ page: 1 }));
         } else {
-            dispatch(GetLinksByChatId({ chatId, page: page }));
+            dispatch(GetLinksByChatId({ chatId, page: 1 }));
         }
-    }, []);
+    }, [dispatch, type, chatId]);
 
     return (
         <div className="LinkPage">
@@ -38,10 +40,9 @@ export default function LinkPage({ type, chatId }) {
                 style={{ display: 'flex', flexDirection: 'column' }}
             >
                 {loading ? (
-                    <div className="loader-conatainer">
-                        <div className="loader"></div>
-                    </div>
+                    <LinksSkeleton count={6} />
                 ) : (
+
                     <>
                         {Links.length === 0 ? (
                             <p className="no-links">No links found</p>

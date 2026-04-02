@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useSocket } from "../../../Context/SocketContext";
@@ -16,9 +15,9 @@ export const useTypingIndicator = (selectedChat, setIsOtherTyping, currentChat) 
         const handleTypingListener = (data) => {
             if (currentChat?.is_block) return;
             console.log("TYPING EVENT RECEIVED:", data);
-            const socketData = JSON.parse(data);
+            const socketData = typeof data === "string" ? JSON.parse(data) : data;
             if (
-                Number(socketData.rid) === Number(selectedChat.id) &&
+                Number(socketData.cid) === Number(selectedChat.id) &&
                 Number(socketData.uid) !== Number(user.id)
             ) {
                 setIsOtherTyping(socketData.typing);
@@ -33,6 +32,6 @@ export const useTypingIndicator = (selectedChat, setIsOtherTyping, currentChat) 
             socket.off('typing', handleTypingListener);
             clearTimeout(typingTimeout.current);
         };
-    }, [selectedChat?.id, user?.id, setIsOtherTyping, socket]);
+    }, [currentChat?.is_block, selectedChat?.id, user?.id, setIsOtherTyping, socket]);
 
 }

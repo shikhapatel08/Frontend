@@ -8,11 +8,16 @@ import { AddUser } from "../../Redux/Features/SignUpSlice";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { SendOtp } from "../../Redux/Features/OtpSlice";
+import { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Signup = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const [showPassword, setShowPassword] = useState(false);
+
 
     const { loading } = useSelector(state => state.otp);
 
@@ -56,16 +61,16 @@ const Signup = () => {
 
             await dispatch(
                 SendOtp({
-                    phone: values.phone,
+                    email: values.email,
                     action: "signup"
                 })
             );
 
             navigate("/OtpPage", {
                 state: {
-                    phone: values.phone,
+                    email: values.email,
                     from: "signup",
-                    action: "signup" 
+                    action: "signup"
                 }
             });
 
@@ -73,24 +78,24 @@ const Signup = () => {
 
             console.log("SIGNUP ERROR", err);
 
-            const backendMessage = err?.response?.data;
+            // const backendMessage = err?.response?.data;
 
-            if (backendMessage?.errors?.length) {
-                backendMessage.errors.forEach(e => toast.error(e));
-            }
-            else if (err?.status === 500) {
-                toast.error("Email or Phone number already registered!");
-            }
-            else if (backendMessage?.message) {
-                toast.error(backendMessage.message);
-            }
-            else if (!err?.response) {
-                toast.error("Network error. Please check your connection");
-            }
-            else {
-                toast.error("Something went wrong");
-            }
-            console.log(err.response)
+            // if (backendMessage?.errors?.length) {
+            //     backendMessage.errors.forEach(e => toast.error(e));
+            // }
+            // else if (err?.status === 500) {
+            //     toast.error("Email or Phone number already registered!");
+            // }
+            // else if (backendMessage?.message) {
+            //     toast.error(backendMessage.message);
+            // }
+            // else if (!err?.response) {
+            //     toast.error("Network error. Please check your connection");
+            // }
+            // else {
+            //     toast.error("Something went wrong");
+            // }
+            toast.error(`${err?.message}`)
         }
     };
 
@@ -122,7 +127,7 @@ const Signup = () => {
                                 <ErrorMessage name="email" component="span" className="error" />
 
                                 <Field
-                                    type='number'
+                                    type='tel'
                                     name="phone"
                                     placeholder="phone Num"
                                 />
@@ -134,10 +139,16 @@ const Signup = () => {
 
                                 <div className="password-field">
                                     <Field
-                                        type={"password"}
+                                        type={showPassword ? "text" : "password"}
                                         name="password"
                                         placeholder="Password"
                                     />
+                                    <span
+                                        className="eye-icon"
+                                        onClick={() => setShowPassword(prev => !prev)}
+                                    >
+                                        {showPassword ? <FaEye /> : <FaEyeSlash />}
+                                    </span>
                                 </div>
                                 <ErrorMessage name="password" component="span" className="error" />
 

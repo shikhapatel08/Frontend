@@ -22,7 +22,10 @@ export const Searching = createAsyncThunk(
             );
             return res.data;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
+            return thunkAPI.rejectWithValue({
+                status: error.response?.status,
+                message: error.response?.data?.message,
+            });
         }
     }
 )
@@ -53,6 +56,7 @@ const SearchSlice = createSlice({
                 }
             })
             .addCase(Searching.rejected, (state, action) => {
+                state.loading = false;
                 state.error = action.payload;
             })
     }

@@ -4,6 +4,9 @@ import { GetDocs, GetDocsByChatId } from "../../Redux/Features/MediaSlice";
 import { FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileAlt, FaFileAudio } from "react-icons/fa";
 import '../Media/Media.css'
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { DocsSkeleton } from "../../Components/Common Components/Loader/PageSkeletons";
+
+
 
 
 const getFileIcon = (url) => {
@@ -48,10 +51,9 @@ export default function DocsPage({ type, chatId }) {
                             style={{ display: 'flex', flexDirection: 'column' }}
                         >
                             {loading ? (
-                                <div className="loader-conatainer">
-                                    <div className="loader"></div>
-                                </div>
+                                <DocsSkeleton count={6} />
                             ) : (
+
                                 <>
                                     {Docs.length === 0 ? (
                                         <p className="no-links">No Docs found</p>

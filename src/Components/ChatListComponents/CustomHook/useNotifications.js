@@ -1,11 +1,8 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { AddNotification } from "../../../Redux/Features/NotificationSlice";
 import { toast } from "react-toastify";
 import { useSocket } from "../../../Context/SocketContext";
 
-export const useNotifications = (chats, selectedChat, messages) => {
-    const dispatch = useDispatch();
+export const useNotifications = (chats, selectedChat) => {
     const socket = useSocket();
 
     useEffect(() => {
@@ -25,5 +22,5 @@ export const useNotifications = (chats, selectedChat, messages) => {
 
         socket.on("new_noti", handleNoti);
         return () => socket.off("new_noti", handleNoti);
-    }, [socket, messages]);
+    }, [chats, selectedChat?.id, socket]);
 };

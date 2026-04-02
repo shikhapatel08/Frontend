@@ -6,22 +6,27 @@ import '../ResetPassword/ResetPassword.css'
 import login from '../../assets/login.jpg'
 import { useDispatch } from "react-redux";
 import { ForgotPassword } from "../../Redux/Features/ForgotPassword";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function ResetPassword() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
 
-    const phone = location.state?.phone;
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+
+    const email = location.state?.email;
 
     /* ---------------- GUARD ---------------- */
 
     useEffect(() => {
-        if (!phone) {
+        if (!email) {
             navigate("/");
         }
-    }, [phone, navigate]);
+    }, [email, navigate]);
 
     /* ---------------- FORM ---------------- */
 
@@ -44,7 +49,7 @@ export default function ResetPassword() {
 
     const handleSubmit = (values) => {
         const payload = {
-            phone: phone,
+            email: email,
             newPass: values.password
         }
         dispatch(ForgotPassword(payload))
@@ -79,18 +84,30 @@ export default function ResetPassword() {
                             <Form>
                                 <div className="password-field">
                                     <Field
-                                        type={'password'}
+                                        type={showPassword ? "text" : "password"}
                                         name="password"
                                         placeholder="Password"
                                     />
+                                    <span
+                                        className="eye"
+                                        onClick={() => setShowPassword(prev => !prev)}
+                                    >
+                                        {showPassword ? <FaEye /> : <FaEyeSlash />}
+                                    </span>
                                 </div>
                                 <ErrorMessage name="password" component="span" className="error" />
                                 <div className="password-field">
                                     <Field
-                                        type="password"
+                                        type={showConfirmPassword ? "text" : "password"}
                                         name="confirmPassword"
                                         placeholder="Confirm Password"
                                     />
+                                    <span
+                                        className="eye"
+                                        onClick={() => setShowConfirmPassword(prev => !prev)}
+                                    >
+                                        {showConfirmPassword ? <FaEye /> : <FaEyeSlash />}
+                                    </span>
                                 </div>
                                 <ErrorMessage name="confirmPassword" component="span" className="error" />
                                 <Button type="submit" className='signin-btn'>Continue</Button>

@@ -7,12 +7,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { Fetchsubscriptiondata, subscribeToChat, subscriptionCheckout } from "../../Redux/Features/subscriptions";
 import { ThemeContext } from "../../Context/ThemeContext";
 import { toggleSidebar } from "../../Redux/Features/SideBarSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function SubscriptionPlans() {
 
     /* ---------------- HOOKS ---------------- */
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const { plans, Data, loading } = useSelector((state) => state.subscriptions);
 

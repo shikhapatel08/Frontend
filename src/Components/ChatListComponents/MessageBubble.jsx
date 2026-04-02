@@ -1,8 +1,8 @@
-/* eslint-disable react-hooks/immutability */
 import React, { useContext, useEffect, useState } from "react";
-import { StarIcon, SingleTicksIcon, DoubleTicksIcon, MsgErrorIcon, PinIcon, EditIcon, ReplyIcon, DeleteIcon } from "../Common Components/Icon/Icon";
+import { StarIcon, EditIcon, ReplyIcon, DeleteIcon, EmojiIcon, DownArrow, ProfileIcon, SingleTicksIcon, DoubleTicksIcon, MsgErrorIcon } from "../Common Components/Icon/Icon";
+
 import { useDispatch, useSelector } from "react-redux";
-import { deleteForEveryoneLocal, deleteForMeLocal, PinMsg, Pinmsg, StarMsg, Starmsg } from "../../Redux/Features/SendMessage";
+import { deleteForEveryoneLocal, deleteForMeLocal, PinMsg, Pinmsg, setReactionLocal, StarMsg, Starmsg } from "../../Redux/Features/SendMessage";
 import { useModal } from "../../Context/ModalContext";
 import GlobalModal from "../Global Modal/GlobalModal";
 import EditMsgModal from "../Modal/EditMsg";
@@ -15,6 +15,8 @@ import DeleteMsg from "../Modal/DeleteMsg";
 import { toast } from "react-toastify";
 import { ThemeContext } from "../../Context/ThemeContext";
 import { useSocket } from "../../Context/SocketContext";
+import { sendReaction } from "../../Redux/Features/EmojiSlice";
+import { formatChatTime } from "./DateFormat";
 
 
 export default function ChatBubble({
@@ -29,6 +31,7 @@ export default function ChatBubble({
     const dispatch = useDispatch();
     const { openModal, closeModal } = useModal();
     const [openMsgMenu, setOpenMsgMenu] = useState(null);
+    const [showReactions, setShowReactions] = useState(null);
 
     const Signup = useSelector(state => state.signup.SignupUser);
     const Signin = useSelector(state => state.signin.SigninUser);
@@ -39,15 +42,21 @@ export default function ChatBubble({
 
     const socket = useSocket();
 
-    const user = Object.keys(Signin).length > 0 ? Signin : Signup;
+    const hasReaction = msg.reactions && msg.reactions.length > 0;
 
+    const user = Object.keys(Signin).length > 0 ? Signin : Signup;
     const isOwn = msg.sender_id === JoinUser;
 
-    const toggleMenu = (id) => {
-        setOpenMsgMenu(prev => prev === id ? null : id);
-    };
 
-    const bubbleClass = `chat-bubble ${isOwn ? "right" : "left"} ${Number(msg.id) === Number(selectedMessageId) ? "highlight" : ""}`;
+    // const toggleMenu = (id) => {
+    //     setOpenMsgMenu(prev => prev === id ? null : id);
+    // };
+
+    const reactions = ["😊", "😂", "❤️", "👍", "🙏"];
+
+    const hasAttachment = msg.image_url && msg.image_url.length > 0;
+
+    const bubbleClass = `chat-bubble ${isOwn ? "right" : "left"} ${hasAttachment ? "has-attachment" : ""} ${String(msg.id) === String(selectedMessageId) ? "highlight" : ""} ${hasReaction ? "has-reaction" : ""} ${msg.is_pin ? "pinned-highlight" : ""}`;
 
     // ---------------- CLICK OUTSIDE MENU ----------------
 
@@ -78,8 +87,19 @@ export default function ChatBubble({
         });
         dispatch(deleteForEveryoneLocal(msg.id));
         dispatch(DeleteEveryone(msg.id));
+
+        dispatch(updateMessageInstant({
+            msgId: msg.id,
+            chatId: msg.chatId || msg.chat_id,
+            text: "This message was deleted",
+            is_deleted: true,
+            delete_for_all: true
+        }));
+
         closeModal();
     };
+
+
 
 
     const openDeleteModal = (msg) => {
@@ -112,25 +132,35 @@ export default function ChatBubble({
 
     // ---------------- PIN ----------------
 
-    const handelTogglepin = (e) => {
+    const handelTogglepin = async (e) => {
         e.stopPropagation();
 
         const pinnedMsgs = messages.filter(m => m.is_pin);
         const isPremium = type === 'Premium';
-
         const maxPins = isPremium ? 3 : 1;
 
         if (!msg.is_pin && pinnedMsgs.length >= maxPins) {
             toast.error(`You can only pin ${maxPins} message.`);
-            return; // Stop here, don't pin
+            return;
         }
 
+        // Optimistic UI update
         dispatch(Pinmsg(msg.id));
-        dispatch(PinMsg({ chatId: selectedChat?.id, msgId: msg.id }));
+
+        try {
+            await dispatch(
+                PinMsg({ chatId: selectedChat?.id, msgId: msg.id })
+            ).unwrap();
+
+        } catch (error) {
+            //  API fail → revert UI
+            dispatch(Pinmsg(msg.id));
+
+            toast.error("Pin failed, reverted");
+        }
 
         setOpenMsgMenu(null);
-    }
-
+    };
     // ---------------- REPLY ----------------
 
     const handleReply = (e) => {
@@ -140,14 +170,14 @@ export default function ChatBubble({
     }
 
     const scrollToReply = (msg) => {
-        if (!msg.replyTo) return;
+        if (!msg.replyMessage) return;
 
-        if (msg.replyTo) {
-            const el = chatRefs.current[msg.replyTo.id];
+        if (msg.replyMessage) {
+            const el = chatRefs.current[msg.replyMessage.id];
             el?.scrollIntoView({ behavior: "smooth", block: "center" });
         }
 
-        setReplyMsg(msg);
+        // setReplyMsg(msg);
     };
 
     // ---------------- EDIT ----------------
@@ -181,90 +211,215 @@ export default function ChatBubble({
         setOpenMsgMenu(null);
     }
 
-    return (
-        <div ref={el => {
-            if (el) chatRefs.current[msg.id] = el;
-            else delete chatRefs.current[msg.id];
-        }}
-            className={bubbleClass} onClick={() => toggleMenu(msg.id)}>
-            {/* Reply Box */}
-            {msg ? (
-                <>
-                    {msg.replyTo &&
-                        (
-                            <div className="reply-box"
-                                onClick={() => scrollToReply(msg)}>
-                                <span className="reply-user">
-                                    {msg.replyTo.sender_id === JoinUser ? "You" : selectedChat?.User?.name}
-                                </span>
-                                <span className="reply-msg">
-                                    {msg.replyTo.text || "Media"}
-                                </span>
-                            </div>
-                        )}
+    const handleReact = (emoji) => {
+        try {
+            const existing = msg.reactions?.find(r => r.user_id === user.id);
 
-                    {/* Text */}
-                    {msg.text && (msg.text.startsWith("http") ? (
-                        <a href={msg.text} target="_blank" rel="noreferrer" className="chat-link">
-                            🔗 {msg.text}
-                        </a>
-                    ) : (
-                        <span className="chat-text">{msg.text}</span>
-                    ))}
+            // SAME emoji → remove
+            if (existing && existing.emoji === emoji) {
+                dispatch(sendReaction({
+                    messageId: msg.id,
+                    emoji
+                }));
 
-                    <Attachments
-                        msg={msg}
-                    />
+                dispatch(setReactionLocal({
+                    msgId: msg.id,
+                    userId: user.id,
+                    emoji: null
+                }));
 
-                    <span className="chat-time">
-                        <span className="-row">
-                            {msg.is_star && <StarIcon size={10} />}
-                            {msg.is_pin && <span className="material-symbols-outlined" style={{ color: '#2e2e2e', fontSize: '15px' }}>keep</span>}
-                            <span className="time">{new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
-                            {!msg.is_receiver && isOwn && (
-                                <>
-                                    {msg.status === "sending" ? (
-                                        <div className="loader"></div>
-                                    ) : msg.status === "error" ? (
-                                        <span className="msg-error"><MsgErrorIcon size={12} /></span>
-                                    ) : (
-                                        msg.is_read ? <DoubleTicksIcon /> : <SingleTicksIcon />
-                                    )}
-                                </>
-                            )}
-                        </span>
-                    </span>
+                socket?.emit("remove_reaction", {
+                    msgId: msg.id
+                });
 
-                    {openMsgMenu === msg.id && (
-                        <div className="Dropdown" style={getThemeStyle(theme)}>
-                            <div className="Dropdown-Item" onMouseDown={handleTogglestar}>
-                                <StarIcon />{/*{msg.is_star ? 'Unstar' : 'Star'}*/}
-                            </div>
-                            <div className="Dropdown-Item" onMouseDown={handelTogglepin}>
-                                <span className="material-symbols-outlined" style={{ color: 'inherit' }}>
-                                    keep
-                                </span>
-                                {/*{msg.is_pin ? 'Unpin' : 'Pin'}*/}
-                            </div>
-                            {msg.text && isOwn &&
-                                <div className="Dropdown-Item" onMouseDown={handleEditMsg}>
-                                    <EditIcon />
-                                </div>
-                            }
-                            <div className="Dropdown-Item" onMouseDown={handleReply}>
-                                <ReplyIcon />
-                            </div>
-                            <div className="Dropdown-Item" style={{ color: 'red' }} onMouseDown={handleDelete}>
-                                <DeleteIcon />
-                            </div>
-                        </div>
-                    )}
-                </>
-            ) : (
-                <>
-                    <p>Start Convertion</p>
-                </>
-            )}
-        </div>
+            } else {
+                // add/update reaction
+                dispatch(sendReaction({
+                    messageId: msg.id,
+                    emoji
+                }));
+
+                dispatch(setReactionLocal({
+                    msgId: msg.id,
+                    userId: user.id,
+                    emoji
+                }));
+
+                socket?.emit("send_reaction", {
+                    msgId: msg.id,
+                    emoji
+                });
+            }
+
+            // Close UI menus
+            setShowReactions(null);
+            setOpenMsgMenu(null);
+
+        } catch (error) {
+            console.error("Failed to handle reaction:", error);
+            toast.error("Unable to add reaction. Try again.");
+        }
+    };
+
+    const groupedReactions = Object.values(
+        (msg.reactions || []).reduce((acc, r) => {
+            if (!acc[r.emoji]) {
+                acc[r.emoji] = { emoji: r.emoji, count: 0 };
+            }
+            acc[r.emoji].count++;
+            return acc;
+        }, {})
     );
-};
+
+    const truncateMessage = (message, limit = 90) => {
+        if (!message) return "";
+        const trimmed = message.trim();
+        return trimmed.length > limit
+            ? trimmed.slice(0, limit) + "..."
+            : trimmed;
+    };
+
+    return (
+        <div
+            ref={el => {
+                if (el) chatRefs.current[msg.id] = el;
+                // else delete chatRefs.current[msg.id];
+            }}
+            className={`chat-message-item ${isOwn ? "own" : "other"}`}
+        >
+
+            <div className="msg-time-header">
+                <span className="time">{formatChatTime(msg.createdAt, "list")}</span>
+                {msg.is_edited && <span className="edited"> • Edited</span>}
+                {msg.is_pin && (
+                    <div className="pinned-label">
+                        📌 Pinned
+                    </div>
+                )}
+                {msg.is_star && <StarIcon size={13} color={'#2153a3ff'} fill={'#2153a3ff'} />}
+                {isOwn && !msg.delete_for_all && (
+                    <div className="msg-status-icon">
+                        {msg.status === "error" ? (
+                            <MsgErrorIcon size={14} />
+                        ) : msg.status === "pending" ? (
+                            <span className="loader-small"></span>
+                        ) : msg.status === "seen" || (msg.seenBy && msg.seenBy.length > 0) ? (
+                            <DoubleTicksIcon />
+                        ) : (
+                            <SingleTicksIcon />
+                        )}
+                    </div>
+                )}
+            </div>
+
+
+
+            <div className={bubbleClass} >
+
+                <div
+                    className="msg-arrow"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenMsgMenu(prev => prev === msg.id ? null : msg.id);
+                    }}
+                >
+                    <DownArrow />
+                </div>
+
+                {msg.replyTo && (
+                    <div className="reply-box" onClick={() => scrollToReply(msg)}>
+                        <span className="reply-user">
+                            {msg.replyTo?.sender_id === JoinUser ? "You" : selectedChat?.User?.name}
+                        </span>
+                        <span className="reply-msg">
+                            {truncateMessage(msg.replyTo?.text
+                                ? msg.replyTo?.text
+                                : msg.replyTo?.image_url
+                                    ? "📷 Photo"
+                                    : "Attachment")}
+                        </span>
+                    </div>
+                )}
+
+                {/* Images */}
+                <Attachments msg={msg} />
+
+                {/* Caption (Text) */}
+                {msg.text && (
+                    <div className="media-caption">
+                        {msg.text}
+                    </div>
+                )}
+
+                {/* Dropdown Menu */}
+                {openMsgMenu === msg.id && !msg.delete_for_all && (
+                    <div className="Dropdown" style={getThemeStyle(theme)}>
+                        <div className="Dropdown-Item" onMouseDown={handleTogglestar}>
+                            <StarIcon
+                                size={16}
+                                color={msg.is_star ? "#FFD700" : "currentColor"}
+                                fill={msg.is_star ? "#FFD700" : "none"}
+                            />
+                        </div>
+                        <div className="Dropdown-Item" onMouseDown={handelTogglepin}>
+                            <span className="material-symbols-outlined" style={{ color: 'inherit', fontSize: '18px' }}>keep</span>
+
+                        </div>
+                        {msg.text && isOwn &&
+                            <div className="Dropdown-Item" onMouseDown={handleEditMsg}>
+                                <EditIcon />
+                            </div>
+                        }
+                        <div className="Dropdown-Item"
+                            onMouseDown={(e) => {
+                                e.stopPropagation();
+                                setShowReactions(prev => prev === msg.id ? null : msg.id);
+                            }}
+                        >
+                            <EmojiIcon />
+
+                            {showReactions === msg.id && (
+                                <div className="reaction-box">
+                                    {reactions.map((emoji, index) => (
+                                        <span
+                                            key={index}
+                                            onMouseDown={(e) => { e.stopPropagation(); handleReact(emoji) }}
+                                        >
+                                            {emoji}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <div className="Dropdown-Item" onMouseDown={handleReply}>
+                            <ReplyIcon />
+                        </div>
+                        <div className="Dropdown-Item delete-action" onMouseDown={handleDelete}>
+                            <DeleteIcon />
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            <div className="msg-footer">
+                {!msg.delete_for_all &&
+                    <>
+
+                        {
+                            groupedReactions.length > 0 && (
+                                <div className="reaction-badge">
+                                    <div className="reaction-items">
+                                        {groupedReactions.map((r, i) => (
+                                            <span key={i} className="emoji">{r.emoji}</span>
+                                        ))}
+                                    </div>
+                                    <span className="count">{msg.reactions.length}</span>
+                                </div>
+                            )
+                        }
+                    </>
+                }
+            </div>
+        </div >
+    );
+}

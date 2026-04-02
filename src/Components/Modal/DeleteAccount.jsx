@@ -2,7 +2,7 @@ import Button from "../Button/Button";
 
 //================================= Delete Chat Modal ================================= //
 
-export default function DeleteAccountModal({ onCancel, onConfirm, loading }) {
+export default function DeleteAccountModal({ onCancel, onConfirm }) {
 
     return (
         <div>
@@ -17,12 +17,13 @@ export default function DeleteAccountModal({ onCancel, onConfirm, loading }) {
             }}>
                 <strong>Are you sure you want to delete the Account?</strong>
                 <br></br>
+                <br></br>
+                <b>Warning:</b> Deleting your account immediately ends your subscription and premium access. Please back up your data now, as it will be permanently deleted in 30 days.
             </p>
 
             <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
                 <button onClick={onCancel}>Cancel</button>
-                <Button onClick={onConfirm} disabled={loading}
-                    style={{ cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}>Confirm</Button>
+                <Button onClick={onConfirm} >Confirm</Button>
             </div>
         </div>
     )

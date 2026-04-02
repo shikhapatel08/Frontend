@@ -1,41 +1,43 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMyChats, SelectedChat, UnreadCount, UpdateChat } from "../../Redux/Features/CreateChat";
-import { PinedUser } from "../../Redux/Features/Pinslice";
-import { MuteUser } from "../../Redux/Features/MuteSlice";
-import { Delete } from "../../Redux/Features/DeleteSlice";
+import { fetchMyChats, SelectedChat, UnreadCount } from "../../Redux/Features/CreateChat";
 import { toggleSidebar } from "../../Redux/Features/SideBarSlice";
 import profileImg from "../../assets/Profile/profile.svg";
 import '../../Pages/ChatList/ChatListPage.css'
-import { BlockIcon, DeleteIcon, EditProfileIcon, Icon, MenuDotsIcon, MenuIcon, MuteIcon, PinIcon } from "../Common Components/Icon/Icon";
+import { Icon, MenuIcon } from "../Common Components/Icon/Icon";
 import GlobalModal from "../Global Modal/GlobalModal";
 import ChatListDropdown from "./ChatListDropdown";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useUnreadCount } from "./CustomHook/useUnreadCount";
 import { useChatUpdate } from "./CustomHook/useChatUpdate";
-import { useNotifications } from "./CustomHook/useNotifications";
 import { useEditText } from "./CustomHook/useEditText";
 import { useModal } from "../../Context/ModalContext";
 import SendMsgModal from "../Modal/SendMessageModal";
 import Button from "../Button/Button";
+import { ChatListSkeleton } from "../Common Components/Loader/PageSkeletons";
 
-export default function ChatList() {
+
+export default function ChatList({ isOtherTyping }) {
     const dispatch = useDispatch();
-    const { chats, selectedChat, page, hasMore } = useSelector(state => state.createchat);
-    const { messages } = useSelector(state => state.message);
+    const { chats, selectedChat, page, hasMore, loading } = useSelector(state => state.createchat);
+
     const Signup = useSelector(state => state.signup.SignupUser);
     const Signin = useSelector(state => state.signin.SigninUser);
     const { openModal, closeModal } = useModal();
 
     const user = Object.keys(Signin).length > 0 ? Signin : Signup;
-    const JoinUser = user.id;
+    const JoinUser = user?.id;
 
-    const isMobile = window.innerWidth < 768
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
-    useUnreadCount(messages);
-    useNotifications(chats, selectedChat, messages);
-    useChatUpdate(messages, chats);
+    useEffect(() => {
+        const onResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener("resize", onResize);
+        return () => window.removeEventListener("resize", onResize);
+    }, []);
+
+    useUnreadCount();
+    useChatUpdate();
     useEditText();
 
     // ---------------- FETCH MORE ----------------
@@ -44,7 +46,7 @@ export default function ChatList() {
         if (!hasMore) return;
 
         if (hasMore) dispatch(fetchMyChats({ page }));
-    }, [hasMore, page]);
+    }, [dispatch, hasMore, page]);
 
     // ---------------- SORT CHATS ----------------
 
@@ -127,80 +129,88 @@ export default function ChatList() {
     }
 
     return (
-        <div className="Message-detail">
+        <div className="Message-detail" id="chatListScrollable">
             {/* {loading ? (
                 <div className="loader-conatainer">
                     <div className="loader"></div>
                 </div>
             ) : (<> */}
             <div className="Message">
-                <div className="title">
+                <div className="title" style={{ display: 'flex', alignItems: 'center' }}>
+                    <span onClick={handleHamburgerIcon} style={{ cursor: 'pointer', display: 'flex' }}>
+                        <MenuIcon />
+                    </span>
                     <span>
                         <h2 style={{
-                            margin: '-6px',
-                            marginLeft: '10px',
-                            color: 'inherit'
+                            margin: '0px',
+                            marginLeft: '15px',
+                            fontSize: '1.5rem' // જરૂર મુજબ સાઈઝ સેટ કરી શકાય
                         }}>
                             Message
                         </h2>
                     </span>
                 </div>
-                <span onClick={handleHamburgerIcon}><MenuIcon /></span>
                 {/* <input
                     placeholder="searching..."
                     className="Message-user-searching"
                 /> */}
             </div>
-            <InfiniteScroll
-                dataLength={chats.length}
-                next={fetchMore}
-                hasMore={hasMore}
-                scrollableTarget="scrollableDiv"
-                scrollThreshold={0.8}
-                style={{ height: '100vh', overflow: 'visible' }}
-            >
-                {sortedChats.length > 0 ?
-                    (sortedChats.map((chat) => {
-                        const otherUser = getChatUser(chat, JoinUser);
-                        const unreadCount = chat.unread_count || chat.ChatSettings[0].unread_count
-                        return (
-                            <div className={unreadCount > 0 && selectedChat?.id !== chat.id ? 'MessageUser' : "Message-User"} key={chat.id} onClick={() => handleChatList(chat, otherUser)} style={{ cursor: "pointer" }}>
-                                <>
-                                    <div className="Message-Profile-img">
-                                        <img src={otherUser?.photo ? otherUser?.photo : profileImg} alt='profile' />
-                                        {/* {chats.unread_count > 0 && <span className="online-dot"></span>} */}
-                                    </div>
-                                    <div className="Message-Username">
-                                        <h2 className="chat-name">{otherUser?.name}</h2>
-                                        <span className="chat-last-message" style={{ color: 'grey' }}>{truncateMessage(chat?.last_message)}</span>
-                                    </div>
-                                    <ChatListDropdown
-                                        chat={chat}
-                                        otherUser={otherUser}
-                                        unreadCount={unreadCount}
-                                    />
-                                </>
-                            </div>
-                        )
-                    })) : (
-                        <>
-                            <p style={{ color: 'grey' }}>Chat will appear here after you send or receive a message.</p>
+            {loading && chats.length === 0 ? (
+                <ChatListSkeleton count={8} />
+            ) : (
+                <InfiniteScroll
+                    dataLength={chats.length}
 
-                            {isMobile &&
-
-                                <div className="ConversationPanel-placeholder">
-                                    <span><Icon /></span>
-                                    <h2>Your messages</h2>
-                                    <p>Send a message to start a chat.</p>
-                                    <br></br>
-                                    <Button onClick={handleButton}>Send Message</Button>
+                    next={fetchMore}
+                    hasMore={hasMore}
+                    scrollableTarget="chatListScrollable"
+                    scrollThreshold={0.8}
+                    style={{ overflow: 'visible' }}
+                >
+                    {sortedChats.length > 0 ?
+                        (sortedChats.map((chat) => {
+                            const otherUser = getChatUser(chat, JoinUser);
+                            const unreadCount = chat.unread_count || chat.ChatSettings?.[0]?.unread_count || 0;
+                            return (
+                                <div className={unreadCount > 0 && selectedChat?.id !== chat.id ? 'MessageUser' : "Message-User"} key={chat.id} onClick={() => handleChatList(chat, otherUser)} style={{ cursor: "pointer" }}>
+                                    <>
+                                        <div className="Message-Profile-img">
+                                            <img src={otherUser?.photo ? otherUser?.photo : profileImg} alt='profile' />
+                                            {/* {chats.unread_count > 0 && <span className="online-dot"></span>} */}
+                                        </div>
+                                        <div className="Message-Username">
+                                            <h2 className="chat-name">{otherUser?.name}</h2>
+                                            {isOtherTyping ? <span style={{ color: 'green' }}>Typing...</span> : <span className="chat-last-message" style={{ color: 'grey' }}>{truncateMessage(chat?.last_message)}</span>}
+                                        </div>
+                                        <ChatListDropdown
+                                            chat={chat}
+                                            otherUser={otherUser}
+                                            unreadCount={unreadCount}
+                                        />
+                                    </>
                                 </div>
-                            }
-                        </>
-                    )
-                }
-            </InfiniteScroll>
+                            )
+                        })) : (
+                            <>
+                                <p style={{ color: 'grey' }}>Chat will appear here after you send or receive a message.</p>
+
+                                {isMobile &&
+
+                                    <div className="ConversationPanel-placeholder">
+                                        <span><Icon /></span>
+                                        <h2>Your messages</h2>
+                                        <p>Send a message to start a chat.</p>
+                                        <br></br>
+                                        <Button onClick={handleButton}>Send Message</Button>
+                                    </div>
+                                }
+                            </>
+                        )
+                    }
+                </InfiniteScroll>
+            )}
             {/* </>)} */}
+
         </div >
     )
 }

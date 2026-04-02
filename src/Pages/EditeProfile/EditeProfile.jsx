@@ -10,6 +10,8 @@ import { toast } from "react-toastify";
 import { BackbtnIcon } from "../../Components/Common Components/Icon/Icon";
 import { useLayoutStyle } from "../../Components/Common Components/Common/CommonComponents";
 import { ThemeContext } from "../../Context/ThemeContext";
+import { SettingsSkeleton } from "../../Components/Common Components/Loader/PageSkeletons";
+
 
 export default function ProfileSettings({ onBack, type }) {
   // ================================= Hook ================================= //
@@ -92,36 +94,41 @@ export default function ProfileSettings({ onBack, type }) {
       </div>
 
       <div className="settings-form">
-
-        <div className="form-right">
-
-          <form onSubmit={formik.handleSubmit}>
-            <div className="form-group">
-              <label>Name</label>
-              <input name="name" value={formik.values.name} onChange={formik.handleChange} />
-              {renderError("name")}
-            </div>
-
-            <div className="form-group">
-              <label>Email</label>
-              <input name="email" value={formik.values.email} disabled />
-              {renderError("email")}
-            </div>
-
-            <div className="form-group">
-              <label>Phone</label>
-              <input name="phone" value={formik.values.phone} disabled />
-              {renderError("phone")}
-            </div>
+        {loading ? (
+          <SettingsSkeleton count={4} />
+        ) : (
+          <div className="form-right">
 
 
-            <button type="submit" className="btn view-profile" disabled={loading}>
-              {loading ? "Saving..." : "Save Changes"}
-            </button>
-          </form>
+            <form onSubmit={formik.handleSubmit}>
+              <div className="form-group">
+                <label>Name</label>
+                <input name="name" value={formik.values.name} onChange={formik.handleChange} />
+                {renderError("name")}
+              </div>
 
-        </div>
+              <div className="form-group">
+                <label>Email</label>
+                <input name="email" value={formik.values.email} disabled />
+                {renderError("email")}
+              </div>
+
+              <div className="form-group">
+                <label>Phone</label>
+                <input name="phone" value={formik.values.phone} disabled />
+                {renderError("phone")}
+              </div>
+
+
+              <button type="submit" className="btn view-profile" disabled={loading}>
+                {loading ? "Saving..." : "Save Changes"}
+              </button>
+            </form>
+
+          </div>
+        )}
       </div>
     </div>
+
   );
 }

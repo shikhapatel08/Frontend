@@ -2,15 +2,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMyChats, SelectedChat } from "../../Redux/Features/CreateChat";
 import { useModal } from "../../Context/ModalContext";
-import { FetchMessages, PinMsg, Pinmsg, resetMessages, SendMessage, Starmsg, StarMsg } from "../../Redux/Features/SendMessage";
+import { FetchAllPinnedMsg, FetchMessages, PinMsg, Pinmsg, resetMessages, SendMessage, Starmsg, StarMsg } from "../../Redux/Features/SendMessage";
 import { DeleteMe } from "../../Redux/Features/DeleteMeSlice";
 import { DeleteEveryone } from "../../Redux/Features/DeleteEveryoneSlice";
 import { BlockedUser } from "../../Redux/Features/BlockedSlice";
 import { toast } from "react-toastify";
-import { SelectedMessage } from "../../Redux/Features/SearchMsgSlice";
-import Searching from "../Modal/Seraching";
+import { SearchMsg, SelectedMessage, UpdatecurrentIndex, UpdateSearchResult, UpdateTotalResults } from "../../Redux/Features/SearchMsgSlice";
 import { FaFileAlt, FaFileExcel, FaFilePdf, FaFileWord } from "react-icons/fa";
-import { AttachmentIcon, BackbtnIcon, DoubleTicksIcon, Icon, MenuIcon, SendMsgIcon, SerachIcon, SingleTicksIcon, StarIcon } from "../Common Components/Icon/Icon";
+import { AttachmentIcon, BackbtnIcon, DoubleTicksIcon, DownArrow, Icon, MenuIcon, SendMsgIcon, SerachIcon, SingleTicksIcon, StarIcon, UpArrow } from "../Common Components/Icon/Icon";
 import GlobalModal from "../Global Modal/GlobalModal";
 import ChatHeader from "./ChatHeader";
 import MessageList from './MessageList'
@@ -28,12 +27,14 @@ export default function ChatPanel() {
     const [openMenuId, setOpenMenuId] = useState(null);
     const chatRefs = useRef({});
     const fileInputRef = useRef(null);
-    const { messages } = useSelector(state => state.message);
+    const { messages, pinnedMessages } = useSelector(state => state.message);
     const [text, setText] = useState("");
     const [isOtherTyping, setIsOtherTyping] = useState(false);
     const [replyMsg, setReplyMsg] = useState(null);
     const [FilePreview, setFilePreview] = useState([]);
     const [File, setFile] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [searchText, setSearchText] = useState("");
     const { openModal, closeModal } = useModal();
     const { selectedMessageId } = useSelector(state => state.searchMsg);
     const [pinIndex, setPinIndex] = useState(0);
@@ -43,17 +44,31 @@ export default function ChatPanel() {
     const JoinUser = user?.id;
     const chatEndRef = useRef(null);
     const { loading } = useSelector(state => state.blocked);
+    const { searchResults, currentIndex, totalResults } = useSelector(state => state.searchMsg);
+    const searchTimeout = useRef(null);
 
-    const pinnedMessage = useMemo(() => {
-        return messages?.filter(
-            msg => msg.is_pin && Number(msg.chatId) === Number(selectedChat?.id)
-        );
-    }, [messages, selectedChat?.id]);
 
     const handleNextPin = () => {
-        if (!pinnedMessage.length) return;
+        if (!pinnedMessages.length) return;
 
-        setPinIndex(prev => (prev + 1) % pinnedMessage.length);
+        setPinIndex(prev => {
+            const nextIndex = (prev + 1) % pinnedMessages.length; // circular next index
+            const nextPinnedMsg = pinnedMessages[nextIndex];
+
+            const isMsgLoaded = messages.some(m => Number(m.id) === Number(nextPinnedMsg.id));
+
+            // Fetch messages for the pinned message's page
+            if (!isMsgLoaded) {
+                dispatch(FetchMessages({
+                    chatId: selectedChat.id,
+                    page: nextPinnedMsg.page
+                }));
+            }
+
+            dispatch(SelectedMessage(nextPinnedMsg.id));
+
+            return nextIndex;
+        });
     };
 
     const currentChat = useMemo(() =>
@@ -134,6 +149,9 @@ export default function ChatPanel() {
 
         dispatch(resetMessages());
         dispatch(FetchMessages({ chatId: selectedChat?.id, page: 1 }));
+        dispatch(FetchAllPinnedMsg({ chatId: selectedChat?.id }))
+
+        console.log("First Me")
 
     }, [selectedChat?.id]);
 
@@ -156,26 +174,25 @@ export default function ChatPanel() {
     useEffect(() => {
         if (!selectedMessageId) return;
 
-        const el = chatRefs.current[selectedMessageId];
+        const timer = setTimeout(() => {
+            const el = chatRefs.current[selectedMessageId];
+            if (el) {
+                el.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+            }
+        }, 500);
 
-        if (el) {
-            el.scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-            });
-
-            setTimeout(() => {
-                dispatch(SelectedMessage(null));
-            }, 2000);
-        }
+        return () => clearTimeout(timer);
     }, [selectedMessageId, messages]);
 
 
     useEffect(() => {
-        if (pinnedMessage) {
-            localStorage.setItem('PinnedMsg', pinnedMessage.text);
+        if (pinnedMessages?.length) {
+            localStorage.setItem('PinnedMsg', JSON.stringify(pinnedMessages));
         }
-    }, [pinnedMessage]);
+    }, [pinnedMessages]);
 
     const handleButton = () => {
         openModal(
@@ -185,11 +202,133 @@ export default function ChatPanel() {
                 />
             </GlobalModal>
         )
+
     }
 
     const handleHamburgerIcon = () => {
         dispatch(toggleSidebar());
     };
+
+    const handleSearch = (value) => {
+
+        setSearchText(value);
+
+        if (!value.trim()) {
+            dispatch(UpdateSearchResult([]));
+            return;
+        }
+
+        // old timeout clear karo
+        if (searchTimeout.current) {
+            clearTimeout(searchTimeout.current);
+        }
+
+        // new timeout
+        searchTimeout.current = setTimeout(async () => {
+
+            const res = await dispatch(SearchMsg({
+                chatId: selectedChat.id,
+                searchTerm: value, // value use karo (NOT searchText)
+                page: 1
+            }));
+
+            const results = res.payload?.msg;
+            const total = res.payload?.totalResults;
+
+            if (!results || results.length === 0) {
+                console.log("No results found");
+                return;
+            }
+
+            dispatch(UpdateSearchResult(results));
+            dispatch(UpdatecurrentIndex(0));
+            dispatch(UpdateTotalResults(total))
+
+            const first = results[0];
+
+            // dispatch(resetMessages());
+
+            await dispatch(FetchMessages({
+                chatId: selectedChat.id,
+                page: first.page
+            }));
+
+            setTimeout(() => {
+                dispatch(SelectedMessage(first.msgId));
+            }, 300);
+            closeModal();
+
+        }, 500);
+    };
+
+    const handleClose = () => {
+        setIsSearching(false);
+        setText("");
+        setSearchText("");
+
+        dispatch(UpdateSearchResult([]));
+        dispatch(UpdateTotalResults(0));
+        dispatch(UpdatecurrentIndex(0));
+        dispatch(SelectedMessage(null));
+
+        dispatch(resetMessages());
+
+        if (selectedChat?.id) {
+            dispatch(FetchMessages({
+                chatId: selectedChat.id,
+                page: 1
+            }));
+        }
+    };
+    const handleNext = () => {
+        if (currentIndex < searchResults.length - 1) {
+            const nextIndex = currentIndex + 1;
+            const item = searchResults[nextIndex];
+            dispatch(UpdatecurrentIndex(nextIndex));
+            // dispatch(resetMessages());
+
+            dispatch(FetchMessages({
+                chatId: selectedChat.id,
+                page: item.page
+            })).then(() => {
+                setTimeout(() => {
+                    dispatch(SelectedMessage(item.msgId));
+                }, 300);
+            });
+        }
+    };
+
+    const handlePrev = () => {
+        if (currentIndex > 0) {
+            const prevIndex = currentIndex - 1;
+            const item = searchResults[prevIndex];
+            dispatch(UpdatecurrentIndex(prevIndex));
+            // dispatch(resetMessages());
+
+            dispatch(FetchMessages({
+                chatId: selectedChat.id,
+                page: item.page
+            })).then(() => {
+                setTimeout(() => {
+                    dispatch(SelectedMessage(item.msgId));
+                }, 300);
+            });
+        }
+    };
+
+    useEffect(() => {
+        return () => {
+            if (searchTimeout.current) {
+                clearTimeout(searchTimeout.current);
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        setSearchText('');
+        setIsSearching(false);
+    }, [selectedChat?.id])
+
     return (
         // ================================= Chat Window ================================= //
         <div className="ConversationPanel-User">
@@ -201,34 +340,55 @@ export default function ChatPanel() {
                         selectedChat={selectedChat}
                         JoinUser={JoinUser}
                         currentChat={currentChat}
+                        setIsSearching={setIsSearching}
                     />
 
                     {/* Pinned Message */}
-                    {pinnedMessage.length > 0 && (
-                        <div className="pinned-msg" onClick={handleNextPin}>
+                    {isSearching ?
+                        <div className="search-bar">
+                            <div></div>
+                            <input
+                                type="text"
+                                placeholder="Search messages..."
+                                value={searchText}
+                                onChange={(e) => handleSearch(e.target.value)}
+                                autoFocus
+                                className="search-input"
+                            />
 
-                            <div className="pin-indicator">
-                                {pinnedMessage.map((_, i) => (
-                                    <div
-                                        key={i}
-                                        className={`pin-dot ${i === pinIndex ? "active" : ""}`}
-                                    />
-                                ))}
+                            <div className="search-count">
+                                <span>{totalResults > 0 ? currentIndex + 1 : 0}</span>
+                                <span>/</span>
+                                <span>{totalResults > 0 ? totalResults : 0}</span>
                             </div>
-                            <span className="material-symbols-outlined" style={{ color: 'grey' }}>keep</span>
+                            <span className="search-arrow" onClick={handleNext}>
+                                <UpArrow />
+                            </span>
+                            <span className="search-arrow" onClick={handlePrev}  >
+                                <DownArrow />
+                            </span>
 
-                            <p className="pin-text">
-                                {pinnedMessage[pinIndex]?.text}
-                            </p>
+                            <span className="" onClick={handleClose}>Cancel</span>
+                        </div>
+                        : pinnedMessages.length > 0 && (
+                            <div className="pinned-msg" onClick={handleNextPin}>
 
-                        </div>
-                    )}
-                    {/* Chat Messages */}
-                    {/* {loading ? (
-                        <div className="loader-conatainer">
-                            <div className="loader"></div>
-                        </div>
-                    ) : (<> */}
+                                <div className="pin-indicator">
+                                    {pinnedMessages.map((_, i) => (
+                                        <div
+                                            key={i}
+                                            className={`pin-dot ${i === pinIndex ? "active" : ""}`}
+                                        />
+                                    ))}
+                                </div>
+                                <span className="material-symbols-outlined" style={{ color: 'grey' }}>keep</span>
+
+                                <p className="pin-text">
+                                    {pinnedMessages[pinIndex]?.text}
+                                </p>
+
+                            </div>
+                        )}
                     <MessageList
                         messages={filteredMessages}
                         selectedMessageId={selectedMessageId}
@@ -241,6 +401,7 @@ export default function ChatPanel() {
                         currentChat={currentChat}
                         setIsOtherTyping={setIsOtherTyping}
                         chats={chats}
+                        setText={setText}
                     />
                     {/* </>
                     )} */}
@@ -252,19 +413,6 @@ export default function ChatPanel() {
                             <Button onClick={() => handleBlocked(currentChat)}>
                                 Unblock
                             </Button>
-                        </div>
-                    )}
-
-                    {replyMsg && (
-                        <div className="reply-preview">
-                            <div className="reply-content">
-                                <span className="reply-name">
-                                    {replyMsg.sender_id === JoinUser ? "You" : selectedChat?.User?.name}
-                                </span> <span className="reply-text">
-                                    {replyMsg.text || "📷 Image"} </span>
-                            </div>
-                            <span className="reply-close"
-                                onClick={() => setReplyMsg(null)}>✕</span>
                         </div>
                     )}
 
@@ -291,6 +439,7 @@ export default function ChatPanel() {
                                     setIsOtherTyping={setIsOtherTyping}
                                     File={File}
                                     currentChat={currentChat}
+                                    JoinUser={JoinUser}
                                 />
                             </>
                         }

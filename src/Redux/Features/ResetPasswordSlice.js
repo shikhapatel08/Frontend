@@ -20,7 +20,10 @@ export const ResetPassword = createAsyncThunk(
             );
             return res.data;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
+            return thunkAPI.rejectWithValue({
+                status: error.response?.status,
+                message: error.response?.data?.message,
+            });
         }
     }
 )
@@ -43,6 +46,7 @@ const ResetPasswordSlice = createSlice({
                 state.error = null;
             })
             .addCase(ResetPassword.rejected, (state, action) => {
+                state.loading = false;
                 state.error = action.payload;
             })
     },

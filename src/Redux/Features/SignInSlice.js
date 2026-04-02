@@ -24,7 +24,7 @@ export const FetchUser = createAsyncThunk(
         } catch (err) {
             return thunkAPI.rejectWithValue({
                 status: err.response?.status,
-                message: err.message,
+                message: err.response?.data?.message,
             });
         }
     }
@@ -34,7 +34,7 @@ const SignInSlice = createSlice({
     initialState: {
         error: null,
         loading: false,
-        token: null,
+        token: localStorage.getItem('token') || null,
         SigninUser: localStorage.getItem('SigninUser') ? JSON.parse(localStorage.getItem('SigninUser')) : {},
     },
     reducers: {},

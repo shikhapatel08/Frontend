@@ -10,6 +10,8 @@ import { MenuIcon } from "../../Components/Common Components/Icon/Icon";
 import '../Search/Search.css'
 import { FetchAllUser } from "../../Redux/Features/AllUserSlice";
 import { ThemeContext } from "../../Context/ThemeContext";
+import { SearchSkeleton } from "../../Components/Common Components/Loader/PageSkeletons";
+
 
 
 export default function SearchPage() {
@@ -68,15 +70,22 @@ export default function SearchPage() {
 
     return (
         <div className="search-container"
-            style={{...style,...getThemeStyle(theme)}}>
+            style={{ ...style, ...getThemeStyle(theme) }}>
             {/* HEADER */}
-            <div className="title">
-                <span><h2 style={{
-                    margin: '0px',
-                    marginLeft: '15px'
-                }}>Serach User</h2></span>
+            <div className="title" style={{ display: 'flex', alignItems: 'center' }}>
+                <span onClick={handleSidebar} style={{ cursor: 'pointer', display: 'flex' }}>
+                    <MenuIcon />
+                </span>
+                <span>
+                    <h2 style={{
+                        margin: '0px',
+                        marginLeft: '15px',
+                        fontSize: '1.5rem'
+                    }}>
+                        Search User
+                    </h2>
+                </span>
             </div>
-            <span onClick={handleSidebar}><MenuIcon /></span>
 
             {/* SEARCH INPUT */}
             <div className="Search">
@@ -92,8 +101,9 @@ export default function SearchPage() {
             {/* RESULTS */}
             <div className="search-results" style={getThemeStyle(theme)}>
                 {loading ? (
-                    <p className="loading">Loading users...</p>
+                    <SearchSkeleton count={5} />
                 ) : usersToShow.length === 0 ? (
+
                     <p className="no-users">No Users Found</p>
                 ) : (
                     usersToShow.map((user) => (

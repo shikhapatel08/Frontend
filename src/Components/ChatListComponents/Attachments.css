@@ -1,0 +1,75 @@
+.attachments-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+/* Single Image Attachment */
+.single-image-wrapper {
+  max-width: 350px;
+  width: fit-content;
+}
+
+/* Multiple Image Attachment (Grid Style) */
+.multiple-images-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  max-width: 400px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Three images: top one is full width, bottom two are side-by-side */
+.multiple-images-grid[data-count="3"] .attachment-item:first-child {
+  grid-column: span 2;
+}
+
+/* Internal item sizing */
+.multiple-images-grid .attachment-item {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 16 / 9; /* Default aspect ratio for grid items */
+}
+
+/* Use 1:1 aspect ratio for 4 or more images */
+.multiple-images-grid[data-count="4"] .attachment-item,
+.multiple-images-grid[data-count="5"] .attachment-item,
+.multiple-images-grid[data-count="6"] .attachment-item {
+  aspect-ratio: 1 / 1;
+}
+
+.multiple-images-grid .image-message-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 0; /* Let grid container handle external corners */
+  box-shadow: none; /* No individual shadows in grid */
+}
+
+.multiple-images-grid .image-message-content {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Fill the grid cell */
+}
+
+/* Non-image attachments (files/docs) */
+.non-image-attachments {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* Tight list like Google Chat */
+}
+
+.non-image-attachments .attachment-item {
+  padding: 8px;
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0.03); /* Subtle background for file list items */
+  transition: background-color 0.2s;
+}
+
+.non-image-attachments .attachment-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}

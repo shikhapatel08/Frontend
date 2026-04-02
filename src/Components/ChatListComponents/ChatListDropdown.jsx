@@ -62,9 +62,10 @@ export default function ChatListDropdown({
 
             })
             .catch((err) => {
-                if (err) {
-                    toast.error(`You can pin only ${limit} chats`);
-                }
+                toast.error(`${err.message}`)
+                // if (err) {
+                //     toast.error(`You can pin only ${limit} chats`);
+                // }
             });
     };
 
@@ -97,7 +98,7 @@ export default function ChatListDropdown({
             <GlobalModal onClose={closeModal}>
                 <BlockedChatModal
                     onCancel={closeModal}
-                    isBlocked={selectedChat?.is_block}
+                    isBlocked={chat?.is_block}
                     onConfirm={() => blocked(chat)}
                     loading={loading}
                 />

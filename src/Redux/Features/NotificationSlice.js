@@ -15,7 +15,10 @@ export const FetchNotifications = createAsyncThunk(
             });
             return res.data.data;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
+            return thunkAPI.rejectWithValue({
+                status: error.response?.status,
+                message: error.response?.data?.message,
+            });
         }
     }
 );
@@ -63,6 +66,12 @@ const NotificationSlice = createSlice({
         hasMore: true,
     },
     reducers: {
+        resetNotifications: (state) => {
+            state.notifications = [];
+            state.page = 1;
+            state.hasMore = true;
+            state.error = null;
+        },
         DeleteNoti: (state, action) => {
             const deletedId = action.payload;
             state.notifications = state.notifications.filter(notification => notification.id !== deletedId);
@@ -79,19 +88,27 @@ const NotificationSlice = createSlice({
             .addCase(FetchNotifications.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
+                const requestPage = Number(action.meta.arg?.page || 1);
+                const requestLimit = Number(action.meta.arg?.limit || 10);
+
                 const newNotifications = action.payload || [];
-                if (state.page === 1) {
-                    state.notifications = newNotifications;
-                } else {
-                    state.notifications = [...state.notifications, ...newNotifications];
-                }
-                if (state.notifications.length < 10) {
-                    state.hasMore = false;
-                } else {
-                    state.page += 1;
-                }
+
+                // Merge and deduplicate
+                const allNotifications = requestPage === 1
+                    ? newNotifications
+                    : [...state.notifications, ...newNotifications];
+
+                const dedupedNotifications = Array.from(
+                    new Map(allNotifications.map(n => [n.id, n])).values()
+                );
+
+                state.notifications = dedupedNotifications;
+
+                state.hasMore = newNotifications.length >= requestLimit;
+                state.page = requestPage + 1;
             })
             .addCase(FetchNotifications.rejected, (state, action) => {
+                state.loading = false;
                 state.error = action.payload;
             })
 
@@ -103,6 +120,7 @@ const NotificationSlice = createSlice({
                 state.error = null;
             })
             .addCase(SeenNotification.rejected, (state, action) => {
+                state.loading = false;
                 state.error = action.payload;
             })
 
@@ -116,11 +134,12 @@ const NotificationSlice = createSlice({
                 state.notifications = state.notifications.filter(notification => notification.id !== deletedId);
             })
             .addCase(DeleteNotification.rejected, (state, action) => {
+                state.loading = false;
                 state.error = action.payload;
             })
     }
 });
 
-export const { DeleteNoti, AddNotification } = NotificationSlice.actions;
+export const { resetNotifications, DeleteNoti, AddNotification } = NotificationSlice.actions;
 
 export default NotificationSlice.reducer;

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "../settings/Settings.css";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSidebar } from "../../Redux/Features/SideBarSlice";
@@ -6,7 +6,7 @@ import { DeleteProfile } from "../../Redux/Features/DeleteProfileSlice";
 import { BillingPortal, SubscriptionUserData, } from "../../Redux/Features/subscriptions";
 import { useNavigate } from "react-router-dom";
 import { useModal } from "../../Context/ModalContext";
-import { BackbtnIcon, BillingIcon, BlockedUserIcon, ChangePasswordIcon, DeleteIcon, EditProfileIcon, MenuIcon, TranscationIcon, } from "../../Components/Common Components/Icon/Icon";
+import { BillingIcon, BlockedUserIcon, ChangePasswordIcon, DeleteIcon, EditProfileIcon, MenuIcon, TranscationIcon, } from "../../Components/Common Components/Icon/Icon";
 import { useLayoutStyle } from "../../Components/Common Components/Common/CommonComponents";
 import GlobalModal from "../../Components/Global Modal/GlobalModal";
 import DeleteAccountModal from "../../Components/Modal/DeleteAccount";
@@ -31,15 +31,27 @@ export default function Settings() {
     const Signup = useSelector((state) => state.signup.SignupUser);
     const Signin = useSelector((state) => state.signin.SigninUser);
     const { loading } = useSelector(state => state.subscriptions);
-    const DeleteAccountLoading = useSelector(state => state.deleteprofile.loading);
 
     const { openModal, closeModal } = useModal();
 
-    const isMobile = window.innerWidth < 768;
+    const user = Object.keys(Signin).length > 0 ? Signin : Signup;
+
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    useEffect(() => {
+        const onResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener("resize", onResize);
+        return () => window.removeEventListener("resize", onResize);
+    }, []);
 
     const [activePage, setActivePage] = useState(
         isMobile ? null : "editProfile"
     );
+
+    useEffect(() => {
+        if (isMobile) return;
+        if (!activePage) setActivePage("editProfile");
+    }, [activePage, isMobile]);
 
     const { getThemeStyle, theme } = useContext(ThemeContext);
 
@@ -94,10 +106,6 @@ export default function Settings() {
 
     /* ---------------- BACK BUTTON ---------------- */
 
-    const handleBack = () => {
-        navigate(-1);
-    };
-
     const handleBackToMenu = () => {
         setActivePage(null);
     };
@@ -105,9 +113,30 @@ export default function Settings() {
     /* ---------------- DELETE ACCOUNT ---------------- */
 
     const deleteProfile = () => {
-        dispatch(DeleteProfile(user));
-        localStorage.clear();
-        navigate("/");
+        if (!user) return toast.error("User not found");
+
+        dispatch(DeleteProfile(user)) // ya je backend ma joiye
+            .unwrap()
+            .then(() => {
+                [
+                    "token",
+                    "selectedChat",
+                    "SigninUser",
+                    "SignupUser",
+                    "User",
+                    "AllUser",
+                    "customerId",
+                    "subscriptionType",
+                    "otpVerified",
+                    "PinnedMsg",
+                ].forEach((key) => localStorage.removeItem(key));
+                navigate("/");
+                toast.success("Account deleted successfully");
+            })
+            .catch((err) => {
+                console.error(err);
+                toast.error(err?.message || "Failed to delete account");
+            });
     };
 
     const handleDeleteAccount = () => {
@@ -120,7 +149,7 @@ export default function Settings() {
                         deleteProfile();
                         closeModal();
                     }}
-                    loading={DeleteAccountLoading}
+                // loading={DeleteAccountLoading}
                 />
             </GlobalModal>
         );
@@ -205,10 +234,19 @@ export default function Settings() {
                         }`}
                 >
 
-                    <div className="title">
-                        <h2 style={{ marginTop: 13, marginLeft: 24 }}>
-                            Settings
-                        </h2>
+                    <div className="title" style={{ display: 'flex', alignItems: 'center' }}>
+                        <span onClick={handleSidebar} style={{ cursor: 'pointer', display: 'flex' }}>
+                            <MenuIcon />
+                        </span>
+                        <span>
+                            <h2 style={{
+                                margin: '0px',
+                                marginLeft: '15px',
+                                fontSize: '1.5rem'
+                            }}>
+                                Settings
+                            </h2>
+                        </span>
                     </div>
 
                     {/* <span
@@ -217,10 +255,6 @@ export default function Settings() {
                     >
                         <BackbtnIcon />
                     </span> */}
-
-                    <span onClick={handleSidebar}>
-                        <MenuIcon />
-                    </span>
 
                     <div className="settings-menu">
 

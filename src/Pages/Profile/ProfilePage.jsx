@@ -1,12 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./ProfilePage.css";
 import profile from '../../assets/Profile/profile.svg'
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { DeleteProfile } from "../../Redux/Features/DeleteProfileSlice";
 import { useModal } from "../../Context/ModalContext";
-import GlobalModal from "../../Components/Global Modal/GlobalModal";
-import ProfilePicUpdate from "../../Components/Modal/ProfilePicUpdate";
 import { UploadImg } from "../../Redux/Features/UploadImgSlice";
 import { toast } from "react-toastify";
 import { toggleSidebar } from "../../Redux/Features/SideBarSlice";
@@ -15,21 +12,32 @@ import StarredMsg from "../Starred Msg/StarredMsg";
 import DocsPage from "../Media/DocPage";
 import LinkPage from "../Media/LinkPage";
 import { AnotherUserProfile, ProfileUser } from "../../Redux/Features/ProfileSlice";
-import { BackbtnIcon, MenuIcon } from "../../Components/Common Components/Icon/Icon";
-import { useLayoutStyle } from "../../Components/Common Components/Common/CommonComponents";
-import { SelectedChat } from "../../Redux/Features/CreateChat";
+import {
+  BackbtnIcon,
+  MenuIcon,
+  MessageIcon,
+  NotificationIcon,
+  EditIcon,
+  SubscriptionIcon,
+  TranscationIcon,
+  SettingIcon
+} from "../../Components/Common Components/Icon/Icon";
 import { ThemeContext } from "../../Context/ThemeContext";
+import { ProfileSkeleton } from "../../Components/Common Components/Loader/PageSkeletons";
+import { useLayoutStyle } from "../../Components/Common Components/Common/CommonComponents";
+
+
 
 export default function ProfilePage({ onBack, type }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { id } = useParams();
   const style = useLayoutStyle();
   const { closeModal } = useModal();
 
-  const { loading } = useSelector(state => state.uploading);
-  const { User, AnotherUser } = useSelector(state => state.profileuser);
-  const { selectedChat, chats } = useSelector(state => state.createchat);
+  const { loading: uploadLoading } = useSelector(state => state.uploading);
+  const { User, AnotherUser, loading: profileLoading } = useSelector(state => state.profileuser);
+
+  const { selectedChat } = useSelector(state => state.createchat);
 
   const Signup = useSelector(state => state.signup.SignupUser);
   const Signin = useSelector(state => state.signin.SigninUser);
@@ -37,6 +45,7 @@ export default function ProfilePage({ onBack, type }) {
   const [avatarPreview, setAvatarPreview] = useState(User?.photo || profile);
   const [avatarFile, setAvatarFile] = useState(null);
   const [activeTab, setActiveTab] = useState('media');
+  const [isTablet, setIsTablet] = useState(window.innerWidth <= 1024);
   const { theme, getThemeStyle } = useContext(ThemeContext);
 
   const user = Object.keys(Signin).length > 0 ? Signin : Signup;
@@ -60,10 +69,15 @@ export default function ProfilePage({ onBack, type }) {
 
   useEffect(() => {
     if (User?.photo) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setAvatarPreview(User.photo);
     }
   }, [User]);
+
+  useEffect(() => {
+    const onResize = () => setIsTablet(window.innerWidth <= 1024);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   /* ---------------- FILE SELECT ---------------- */
 
@@ -87,6 +101,7 @@ export default function ProfilePage({ onBack, type }) {
     try {
       await dispatch(UploadImg(formData)).unwrap();
       toast.success("Profile Photo updated successfully");
+      setAvatarFile(null);
       closeModal();
     } catch {
       toast.error("Failed to upload photo");
@@ -122,46 +137,45 @@ export default function ProfilePage({ onBack, type }) {
 
   return (
     <div className="profile-container" style={{ ...(type === 'setting' ? {} : style), ...getThemeStyle(theme) }}>
-      {Data.length === 0 ? (
-        <div className='loader-conatainer'>
-          <div className="loader"></div>
-        </div>
+      {profileLoading && Object.keys(Data).length === 0 ? (
+        <ProfileSkeleton />
       ) : (
+
+
         <>
           <span className="back-btn" onClick={onBack}><BackbtnIcon /></span>
           <div className="profile-header">
             <div className="cover">
-              {type === 'setting' && window.innerWidth <= 1024 ? (
-                <span onClick={onBack} style={{ marginRight: '600px' }}><BackbtnIcon /></span>
+              {type === 'setting' && isTablet ? (
+                <span className="back-btn" onClick={onBack}><BackbtnIcon /></span>
               ) : (
-                <span onClick={handleHamburgerIcon}><MenuIcon /></span>
+                <span className="hamburger-icon" onClick={handleHamburgerIcon}><MenuIcon /></span>
               )}
-            </div>
 
-
-            <div className="profile-image-wrapper">
-              {/* ================================= Click on image to open file selector ================================= */}
-              <img
-                src={
-                  isOwnProfile && avatarPreview
-                    ? avatarPreview
-                    : Data?.photo || profile
-                }
-                alt="profile"
-                className="profile-image"
-                onClick={openFilePicker}
-              />
-              <input
-                type="file"
-                id="fileInput"
-                hidden
-                accept="image/*"
-                onChange={handleAvatarChange}
-              />
+              <div className="profile-image-wrapper">
+                <img
+                  src={
+                    isOwnProfile && avatarPreview
+                      ? avatarPreview
+                      : Data?.photo || profile
+                  }
+                  alt="profile"
+                  className="profile-image"
+                  onClick={openFilePicker}
+                />
+                <input
+                  type="file"
+                  id="fileInput"
+                  hidden
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                />
+              </div>
             </div>
           </div>
 
-          <div className="profile-info">
+
+          <div className="profileInfo">
             <h2>{Data?.name}</h2>
             <p>{Data?.email}</p>
           </div>
@@ -172,42 +186,74 @@ export default function ProfilePage({ onBack, type }) {
                 {/* <button className="btn edit" onClick={handleEditProfile}>Edit Profile</button>
           <button className="btn del" onClick={handelDeleteProfile}>Delete Profile</button> */}
                 {avatarFile && (
-                  <button className="btn upload" onClick={handleUpload} disabled={loading}>
-                    {loading ? "Uploading..." : "Upload Photo"}
+                  <button className="btn upload" onClick={handleUpload} disabled={uploadLoading}>
+                    {uploadLoading ? "Uploading..." : "Upload Photo"}
                   </button>
                 )}
+
               </div>
-              <div className="bottom-section" style={getThemeStyle(theme)}>
-                <div className="box" onClick={() => navigateTo('/MessagePage')}>
-                  <h3>Chat</h3>
-                  <p>Connect with your friends instantly.</p>
+              <div className="bottom-section">
+                <div className="feature-card" onClick={() => navigateTo('/MessagePage')}>
+                  <div className="card-icon-wrapper">
+                    <MessageIcon />
+                  </div>
+                  <div className="card-content">
+                    <h3>Chat</h3>
+                    <p>Connect with your friends instantly.</p>
+                  </div>
                 </div>
 
-                <div className="box" onClick={() => navigateTo("/notification")}>
-                  <h3>Notifications</h3>
-                  <p>Get real time alerts and updates.</p>
+                <div className="feature-card" onClick={() => navigateTo("/notification")}>
+                  <div className="card-icon-wrapper">
+                    <NotificationIcon />
+                  </div>
+                  <div className="card-content">
+                    <h3>Notifications</h3>
+                    <p>Get real time alerts and updates.</p>
+                  </div>
                 </div>
 
-                <div className="box" onClick={() => navigateTo("/editeprofile")}>
-                  <h3>Edit Profile</h3>
-                  <p>Manage your profile information.</p>
+                <div className="feature-card" onClick={() => navigateTo("/editeprofile")}>
+                  <div className="card-icon-wrapper">
+                    <EditIcon />
+                  </div>
+                  <div className="card-content">
+                    <h3>Edit Profile</h3>
+                    <p>Manage your profile information.</p>
+                  </div>
                 </div>
 
-                <div className="box" onClick={() => navigateTo("/subscriptions")}>
-                  <h3>Subscription</h3>
-                  <p>Manage your subscription plan and features.</p>
+                <div className="feature-card" onClick={() => navigateTo("/subscriptions")}>
+                  <div className="card-icon-wrapper">
+                    <SubscriptionIcon />
+                  </div>
+                  <div className="card-content">
+                    <h3>Subscription</h3>
+                    <p>Manage your plan and features.</p>
+                  </div>
                 </div>
 
-                <div className="box" onClick={() => navigateTo("/transaction")}>
-                  <h3>Transaction</h3>
-                  <p>See your Transactions.</p>
+                <div className="feature-card" onClick={() => navigateTo("/transaction")}>
+                  <div className="card-icon-wrapper">
+                    <TranscationIcon />
+                  </div>
+                  <div className="card-content">
+                    <h3>Transaction</h3>
+                    <p>See your payment history.</p>
+                  </div>
                 </div>
 
-                <div className="box">
-                  <h3>Security</h3>
-                  <p>Your data is protected with encryption.</p>
+                <div className="feature-card">
+                  <div className="card-icon-wrapper">
+                    <SettingIcon />
+                  </div>
+                  <div className="card-content">
+                    <h3>Security</h3>
+                    <p>Your data is protected with encryption.</p>
+                  </div>
                 </div>
               </div>
+
             </>
           )}
 

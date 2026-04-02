@@ -15,7 +15,10 @@ export const GetStarredMsg = createAsyncThunk(
             });
             return res.data.data;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
+            return thunkAPI.rejectWithValue({
+                status: error.response?.status,
+                message: error.response?.data?.message,
+            });
         }
     }
 );
@@ -32,7 +35,10 @@ export const StarredMsgChat = createAsyncThunk(
             });
             return res.data.data;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
+            return thunkAPI.rejectWithValue({
+                status: error.response?.status,
+                message: error.response?.data?.message,
+            });
         }
     }
 );
@@ -46,7 +52,15 @@ const StarredMsgSlice = createSlice({
         page: 1,
         hasMore: true,
     },
-    reducers: {},
+    reducers: {
+        resetStarredState: (state) => {
+            state.error = null;
+            state.loading = false;
+            state.starredMessages = [];
+            state.page = 1;
+            state.hasMore = true;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(GetStarredMsg.pending, (state) => {
@@ -55,17 +69,22 @@ const StarredMsgSlice = createSlice({
             .addCase(GetStarredMsg.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
+                const requestPage = Number(action.meta.arg?.page || 1);
+                const requestLimit = Number(action.meta.arg?.limit || 10);
                 const starredMsg = action.payload || [];
 
-                if (state.page === 1) {
+                if (requestPage === 1) {
                     state.starredMessages = starredMsg;
                 } else {
                     state.starredMessages = [...state.starredMessages, ...starredMsg]
                 }
-                if (state.starredMessages.length < 10) {
+
+                if (starredMsg.length < requestLimit) {
                     state.hasMore = false;
+                    state.page = requestPage;
                 } else {
-                    state.page += 1;
+                    state.hasMore = true;
+                    state.page = requestPage + 1;
                 }
             })
             .addCase(GetStarredMsg.rejected, (state, action) => {
@@ -78,17 +97,22 @@ const StarredMsgSlice = createSlice({
             .addCase(StarredMsgChat.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
+                const requestPage = Number(action.meta.arg?.page || 1);
+                const requestLimit = Number(action.meta.arg?.limit || 10);
                 const starredMsg = action.payload || [];
 
-                if (state.page === 1) {
+                if (requestPage === 1) {
                     state.starredMessages = starredMsg;
                 } else {
                     state.starredMessages = [...state.starredMessages, ...starredMsg]
                 }
-                if (state.starredMessages.length < 10) {
+
+                if (starredMsg.length < requestLimit) {
                     state.hasMore = false;
+                    state.page = requestPage;
                 } else {
-                    state.page += 1;
+                    state.hasMore = true;
+                    state.page = requestPage + 1;
                 }
             })
             .addCase(StarredMsgChat.rejected, (state, action) => {
@@ -98,4 +122,5 @@ const StarredMsgSlice = createSlice({
     }
 });
 
+export const { resetStarredState } = StarredMsgSlice.actions;
 export default StarredMsgSlice.reducer;

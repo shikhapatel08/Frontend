@@ -21,7 +21,10 @@ export const MuteUser = createAsyncThunk(
             );
             return res.data;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
+            return thunkAPI.rejectWithValue({
+                status: error.response?.status,
+                message: error.response?.data?.message,
+            });
         }
     }
 )

@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { UpdateChat } from "../../../Redux/Features/CreateChat";
 import { useSocket } from "../../../Context/SocketContext";
 
-export const useChatUpdate = (messages, chats) => {
+export const useChatUpdate = () => {
     const dispatch = useDispatch();
     const socket = useSocket();
 
@@ -11,7 +11,6 @@ export const useChatUpdate = (messages, chats) => {
         if (!socket) return;
 
         const handleChatUpdate = (msg) => {
-            console.log("chat_update received:", msg);
 
             // Dispatch to update chat in Redux
             dispatch(UpdateChat(msg));
@@ -22,5 +21,5 @@ export const useChatUpdate = (messages, chats) => {
         return () => {
             socket.off("chat_update", handleChatUpdate);
         };
-    }, [messages, chats , socket]);
+    }, [dispatch, socket]);
 }

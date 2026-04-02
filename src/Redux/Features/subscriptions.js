@@ -6,7 +6,7 @@ const BASE_API = import.meta.env.VITE_API_URL;
 
 export const subscribeToChat = createAsyncThunk(
     "subscriptions/subscribeToChat",
-    async (thunkAPI) => {
+    async (_, thunkAPI) => {
         try {
             const token = localStorage.getItem("token");
             const res = await axios.get(`${BASE_API}/api/v3/plan/getall`,
@@ -18,7 +18,10 @@ export const subscribeToChat = createAsyncThunk(
             );
             return res.data;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
+            return thunkAPI.rejectWithValue({
+                status: error.response?.status,
+                message: error.response?.data?.message,
+            });
         }
     }
 );
@@ -45,7 +48,7 @@ export const subscriptionCheckout = createAsyncThunk(
 
 export const Fetchsubscriptiondata = createAsyncThunk(
     "subscriptions/Fetchsubscriptiondata",
-    async (thunkAPI) => {
+    async (_, thunkAPI) => {
         try {
             const token = localStorage.getItem("token");
             const res = await axios.get(`${BASE_API}/api/v3/subscription/get-subscription`,
@@ -64,7 +67,7 @@ export const Fetchsubscriptiondata = createAsyncThunk(
 
 export const SubscriptionUserData = createAsyncThunk(
     "subscriptions/SubscriptionUserData",
-    async (thunkAPI) => {
+    async (_, thunkAPI) => {
         try {
             const token = localStorage.getItem("token");
             const res = await axios.get(`${BASE_API}/api/v1/users/get-stripe-id`,
@@ -106,7 +109,7 @@ export const BillingPortal = createAsyncThunk(
 );
 export const TransactionHistory = createAsyncThunk(
     "subscriptions/TransactionHistory",
-    async (thunkAPI) => {
+    async (_, thunkAPI) => {
         try {
             const token = localStorage.getItem("token");
             const res = await axios.get(`${BASE_API}/api/v3/transactions/getall`,
@@ -176,7 +179,11 @@ const subscriptionsSlice = createSlice({
                 state.Data = action.payload.data;
                 const type = action.payload.data.Plan?.type;
                 state.type = type;
-                localStorage.setItem('subscriptionType', action.payload.data.Plan?.type)
+                if (type) {
+                    localStorage.setItem('subscriptionType', type);
+                } else {
+                    localStorage.removeItem('subscriptionType');
+                }
 
             })
             .addCase(Fetchsubscriptiondata.rejected, (state, action) => {

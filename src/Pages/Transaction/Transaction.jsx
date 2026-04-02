@@ -17,7 +17,7 @@ export default function Transaction({ type }) {
 
     useEffect(() => {
         dispatch(TransactionHistory());
-    }, []);
+    }, [dispatch]);
 
 
     const handleBackbtn = () => {

@@ -3,6 +3,11 @@ import { io } from "socket.io-client";
 let socket = null;
 
 export const initSocket = (token, userId) => {
+  if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
+
   socket = io(import.meta.env.VITE_API_URL, {
     auth: {
       token,
@@ -23,7 +28,7 @@ export const initSocket = (token, userId) => {
   socket.on("disconnect", () => {
     console.log("SOCKET DISCONNECTED");
   });
-
+  return socket;
 };
 
 export const getSocket = () => socket;

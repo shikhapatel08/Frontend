@@ -5,7 +5,7 @@ import axios from "axios";
 
 export const SearchMsg = createAsyncThunk(
     'searchMsg/SearchMsg',
-    async ({ chatId, searchTerm, page, limit = 10 }, thunkAPI) => {
+    async ({ chatId, searchTerm, page, limit = 20 }, thunkAPI) => {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/message/search/msg?chatId=${chatId}&text=${searchTerm}&page=${page}&limit=${limit}`,
@@ -18,7 +18,10 @@ export const SearchMsg = createAsyncThunk(
             );
             return res.data;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
+            return thunkAPI.rejectWithValue({
+                status: error.response?.status,
+                message: error.response?.data?.message,
+            });
         }
     }
 );
@@ -29,6 +32,8 @@ const SearchMsgSlice = createSlice({
         error: null,
         loading: false,
         searchResults: [],
+        currentIndex: 0,
+        totalResults: 0,
         scrollToMsgId: null,
         selectedMessageId: null,
         page: 1,
@@ -37,6 +42,9 @@ const SearchMsgSlice = createSlice({
     reducers: {
         ClearSearchResults: (state) => {
             state.searchResults = [];
+            state.page = 1;
+            state.hasMore = true;
+            state.error = null;
         },
         ScrollToMsg: (state, action) => {
             state.scrollToMsgId = action.payload;
@@ -45,7 +53,16 @@ const SearchMsgSlice = createSlice({
             state.scrollToMsgId = null;
         },
         SelectedMessage: (state, action) => {
-            state.selectedMessageId = action.payload;   
+            state.selectedMessageId = action.payload;
+        },
+        UpdateSearchResult: (state, action) => {
+            state.searchResults = action.payload;
+        },
+        UpdatecurrentIndex: (state, action) => {
+            state.currentIndex = action.payload;
+        },
+        UpdateTotalResults: (state, action) => {
+            state.totalResults = action.payload;
         }
     },
     extraReducers: (builder) => {
@@ -56,25 +73,30 @@ const SearchMsgSlice = createSlice({
             .addCase(SearchMsg.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
-                const searchResults = action.payload?.msg;
+                const requestPage = Number(action.meta.arg?.page || 1);
+                const requestLimit = Number(action.meta.arg?.limit || 20);
+                const searchResults = action.payload?.msg || [];
 
-                if (state.page === 1) {
+                if (requestPage === 1) {
                     state.searchResults = searchResults;
                 } else {
                     state.searchResults = [...state.searchResults, ...searchResults]
                 }
 
-                if (searchResults.length < 10) {
+                if (searchResults.length < requestLimit) {
                     state.hasMore = false;
+                    state.page = requestPage;
                 } else {
-                    state.page += 1;
+                    state.hasMore = true;
+                    state.page = requestPage + 1;
                 }
             })
             .addCase(SearchMsg.rejected, (state, action) => {
+                state.loading = false;
                 state.error = action.payload;
             })
     },
 });
 
-export const { ClearSearchResults, ScrollToMsg, clearScrollToMsg, SelectedMessage } = SearchMsgSlice.actions;
+export const { ClearSearchResults, ScrollToMsg, clearScrollToMsg, SelectedMessage, UpdateSearchResult, UpdatecurrentIndex, UpdateTotalResults } = SearchMsgSlice.actions;
 export default SearchMsgSlice.reducer;

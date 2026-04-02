@@ -8,10 +8,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { FetchUser } from "../../Redux/Features/SignInSlice";
 import { toast } from "react-toastify";
 import { SendOtp } from "../../Redux/Features/OtpSlice";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useState } from "react";
 
 const Signin = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const [showPassword, setShowPassword] = useState(false);
 
     const { loading } = useSelector(state => state.signin);
 
@@ -19,17 +23,17 @@ const Signin = () => {
     // ---------------- INITIAL VALUES ----------------
 
     const initialValues = {
-        phone: "",
+        email: "",
         password: "",
     };
 
     // ---------------- VALIDATION ----------------
 
     const validationSchema = Yup.object({
-        phone: Yup.string()
-            .matches(/^[0-9]{10}$/, "Phone must be 10 digits")
-            // .email("Invalid email format")
-            .required("Phone is required"),
+        email: Yup.string()
+            // .matches(/^[0-9]{10}$/, "Phone must be 10 digits")
+            .email("Invalid email format")
+            .required("Email is required"),
         password: Yup.string()
             .min(6, "Password must be at least 6 characters")
             .matches(/[a-z]/, "Must contain at least one lowercase letter")
@@ -53,24 +57,9 @@ const Signin = () => {
 
             console.log("LOGIN ERROR", err);
 
-            if (err?.status === 404) {
-                toast.error("User doesn't exist");
-            }
-            else if (
-                err?.status === 400 ||
-                err?.message?.includes("Invalid")
-            ) {
-                toast.error("Please verify your Phone or Password!");
-            }
-            else if (
-                err?.message === "Network Error" ||
-                err?.status >= 500
-            ) {
-                toast.error("Server error. Please try again later");
-            }
-            else {
-                toast.error("Something went wrong");
-            }
+            toast.error(`${err?.message || "Login failed"}`)
+            console.log(err?.response?.data?.message)
+
         }
     };
 
@@ -78,13 +67,13 @@ const Signin = () => {
 
     const handleForgotPassword = async (values) => {
         try {
-            if (!values.phone) {
-                toast.error("Enter Phone num first");
+            if (!values.email) {
+                toast.error("Enter Email first");
                 return;
             }
 
             const res = await dispatch(SendOtp({
-                phone: values.phone,
+                email: values.email,
                 action: "forgot_password"
             }));
 
@@ -92,7 +81,7 @@ const Signin = () => {
             if (res?.payload?.success) {
                 navigate("/OtpPage", {
                     state: {
-                        phone: values.phone,
+                        email: values.email,
                         from: "forgot_password",
                         action: "forgot_password"
                     }
@@ -127,15 +116,21 @@ const Signin = () => {
                         >
                             {({ values }) => (
                                 <Form>
-                                    <Field type="number" name="phone" placeholder="Phone Num" />
-                                    <ErrorMessage name="phone" component="span" className="error" />
+                                    <Field type="email" name="email" placeholder="Email" />
+                                    <ErrorMessage name="email" component="span" className="error" />
 
                                     <div className="password-field">
                                         <Field
-                                            type={'password'}
+                                            type={showPassword ? "text" : "password"}
                                             name="password"
                                             placeholder="Password"
                                         />
+                                        <span
+                                            className="eye-icon"
+                                            onClick={() => setShowPassword(prev => !prev)}
+                                        >
+                                            {showPassword ? <FaEye /> : <FaEyeSlash />}
+                                        </span>
                                     </div>
                                     <ErrorMessage name="password" component="span" className="error" />
                                     <span

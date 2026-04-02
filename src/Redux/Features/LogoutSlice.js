@@ -21,7 +21,10 @@ export const LogoutUser = createAsyncThunk(
             );
             return res.data;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
+            return thunkAPI.rejectWithValue({
+                status: error.response?.status,
+                message: error.response?.data?.message,
+            });
         }
     }
 )
@@ -44,6 +47,7 @@ const LogoutSlice = createSlice({
                 state.error = null;
             })
             .addCase(LogoutUser.rejected, (state, action) => {
+                state.loading = false;
                 state.error = action.payload;
             })
     },

@@ -1,7 +1,6 @@
-/* eslint-disable no-unused-vars */
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Suspense } from "react";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Sidebar from '../Components/Common Components/Common/SideBar/SideBar'
-import AuthRoutes from "./RouteGuard";
 import { appRoutes } from "./routesConfig";
 import RouteGuard from "./RouteGuard";
 
@@ -9,7 +8,7 @@ import RouteGuard from "./RouteGuard";
 export default function AppRoutes() {
     // ================================= Hook ================================= //
     const location = useLocation();
-    const hideNavbarOn = ["/", "/signup", '/OtpPage', '/success', '/cancel', '/ResetPassword'];
+    const hideNavbarOn = ["/", "/Signup", "/signup", '/OtpPage', '/success', '/cancel', '/ResetPassword'];
 
     return (
         <>
@@ -21,19 +20,22 @@ export default function AppRoutes() {
             )}
 
             {/* ================================= Routes ================================= */}
-            <Routes>
-                {appRoutes.map(({ path, element: Component, isPrivate }) => (
-                    <Route
-                        key={path}
-                        path={path}
-                        element={
-                            <RouteGuard isPrivate={isPrivate}>
-                                <Component />
-                            </RouteGuard>
-                        }
-                    />
-                ))}
-            </Routes>
+            <Suspense fallback={<div style={{ padding: "20px" }}>Loading...</div>}>
+                <Routes>
+                    {appRoutes.map(({ path, element: Component, isPrivate }) => (
+                        <Route
+                            key={path}
+                            path={path}
+                            element={
+                                <RouteGuard isPrivate={isPrivate}>
+                                    <Component />
+                                </RouteGuard>
+                            }
+                        />
+                    ))}
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+            </Suspense>
 
         </>
     )

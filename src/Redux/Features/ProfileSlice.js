@@ -8,7 +8,7 @@ const BASE_API = import.meta.env.VITE_API_URL;
 
 export const ProfileUser = createAsyncThunk(
     'profileuser/ProfileUser',
-    async (thunkAPI) => {
+    async (_, thunkAPI) => {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.get(`${BASE_API}/api/v1/users/profile`,
@@ -20,7 +20,10 @@ export const ProfileUser = createAsyncThunk(
             );
             return res.data;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
+            return thunkAPI.rejectWithValue({
+                status: error.response?.status,
+                message: error.response?.data?.message,
+            });
         }
     }
 );
@@ -39,8 +42,11 @@ export const AnotherUserProfile = createAsyncThunk(
                     }
                 });
             return res.data;
-        } catch {
-            return thunkAPI.rejectWithValue(error.message);
+        } catch (error) {
+            return thunkAPI.rejectWithValue({
+                status: error.response?.status,
+                message: error.response?.data?.message,
+            });
         }
     }
 )

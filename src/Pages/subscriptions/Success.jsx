@@ -10,10 +10,6 @@ const Success = () => {
   const dispatch = useDispatch();
   const { theme, getThemeStyle } = useContext(ThemeContext); //theme toggle/ style apply
 
-  useEffect(() => {
-    dispatch(Fetchsubscriptiondata());
-  }, []);
-
   return (
     <div className="success-container" style={getThemeStyle(theme)}>
       <div className="success-card">

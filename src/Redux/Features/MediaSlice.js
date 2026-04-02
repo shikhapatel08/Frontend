@@ -16,7 +16,10 @@ export const GetMedia = createAsyncThunk(
             });
             return res.data.data;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
+            return thunkAPI.rejectWithValue({
+                status: error.response?.status,
+                message: error.response?.data?.message,
+            });
         }
     }
 );
@@ -119,7 +122,17 @@ const MediaSlice = createSlice({
         page: 1,
         hasMore: true,
     },
-    reducers: {},
+    reducers: {
+        resetMediaState: (state) => {
+            state.error = null;
+            state.loading = false;
+            state.Media = [];
+            state.Docs = [];
+            state.Links = [];
+            state.page = 1;
+            state.hasMore = true;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(GetMedia.pending, (state) => {
@@ -128,18 +141,22 @@ const MediaSlice = createSlice({
             .addCase(GetMedia.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
+                const requestPage = Number(action.meta.arg?.page || 1);
+                const requestLimit = Number(action.meta.arg?.limit || 10);
                 const Media = action.payload || [];
-                if (state.page === 1) {
+                if (requestPage === 1) {
                     state.Media = Media;
                 } else {
                     state.Media = [...state.Media, ...Media];
                 }
 
 
-                if (Media.length < 10) {
+                if (Media.length < requestLimit) {
                     state.hasMore = false;
+                    state.page = requestPage;
                 } else {
-                    state.page += 1;
+                    state.hasMore = true;
+                    state.page = requestPage + 1;
                 }
             })
 
@@ -152,18 +169,22 @@ const MediaSlice = createSlice({
             .addCase(GetMediaByChatId.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
+                const requestPage = Number(action.meta.arg?.page || 1);
+                const requestLimit = Number(action.meta.arg?.limit || 10);
                 const Media = action.payload || [];
-                if (state.page === 1) {
+                if (requestPage === 1) {
                     state.Media = Media;
                 } else {
                     state.Media = [...state.Media, ...Media];
                 }
 
 
-                if (Media.length < 10) {
+                if (Media.length < requestLimit) {
                     state.hasMore = false;
+                    state.page = requestPage;
                 } else {
-                    state.page += 1;
+                    state.hasMore = true;
+                    state.page = requestPage + 1;
                 }
             })
             .addCase(GetMediaByChatId.rejected, (state, action) => {
@@ -175,18 +196,22 @@ const MediaSlice = createSlice({
             .addCase(GetDocs.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
+                const requestPage = Number(action.meta.arg?.page || 1);
+                const requestLimit = Number(action.meta.arg?.limit || 10);
                 const Docs = action.payload || [];
 
-                if (state.page === 1) {
+                if (requestPage === 1) {
                     state.Docs = Docs;
                 } else {
                     state.Docs = [...state.Docs, ...Docs];
                 }
 
-                if (Docs.length < 10) {
+                if (Docs.length < requestLimit) {
                     state.hasMore = false
+                    state.page = requestPage;
                 } else {
-                    state.page += 1;
+                    state.hasMore = true;
+                    state.page = requestPage + 1;
                 }
             })
             .addCase(GetDocs.rejected, (state, action) => {
@@ -198,18 +223,22 @@ const MediaSlice = createSlice({
             .addCase(GetDocsByChatId.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
+                const requestPage = Number(action.meta.arg?.page || 1);
+                const requestLimit = Number(action.meta.arg?.limit || 10);
                 const Docs = action.payload || [];
 
-                if (state.page === 1) {
+                if (requestPage === 1) {
                     state.Docs = Docs;
                 } else {
                     state.Docs = [...state.Docs, ...Docs];
                 }
 
-                if (Docs.length < 10) {
+                if (Docs.length < requestLimit) {
                     state.hasMore = false
+                    state.page = requestPage;
                 } else {
-                    state.page += 1;
+                    state.hasMore = true;
+                    state.page = requestPage + 1;
                 }
             })
             .addCase(GetDocsByChatId.rejected, (state, action) => {
@@ -221,18 +250,22 @@ const MediaSlice = createSlice({
             .addCase(GetLinks.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
+                const requestPage = Number(action.meta.arg?.page || 1);
+                const requestLimit = Number(action.meta.arg?.limit || 10);
                 const Links = action.payload || [];
 
-                if (state.page === 1) {
+                if (requestPage === 1) {
                     state.Links = Links;
                 } else {
                     state.Links = [...state.Links, ...Links]
                 }
 
-                if (Links.length < 10) {
+                if (Links.length < requestLimit) {
                     state.hasMore = false
+                    state.page = requestPage;
                 } else {
-                    state.page += 1;
+                    state.hasMore = true;
+                    state.page = requestPage + 1;
                 }
             })
             .addCase(GetLinks.rejected, (state, action) => {
@@ -244,18 +277,22 @@ const MediaSlice = createSlice({
             .addCase(GetLinksByChatId.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
+                const requestPage = Number(action.meta.arg?.page || 1);
+                const requestLimit = Number(action.meta.arg?.limit || 10);
                 const Links = action.payload || [];
 
-                if (state.page === 1) {
+                if (requestPage === 1) {
                     state.Links = Links;
                 } else {
                     state.Links = [...state.Links, ...Links]
                 }
 
-                if (Links.length < 10) {
+                if (Links.length < requestLimit) {
                     state.hasMore = false
+                    state.page = requestPage;
                 } else {
-                    state.page += 1;
+                    state.hasMore = true;
+                    state.page = requestPage + 1;
                 }
             })
             .addCase(GetLinksByChatId.rejected, (state, action) => {
@@ -264,4 +301,5 @@ const MediaSlice = createSlice({
     },
 });
 
+export const { resetMediaState } = MediaSlice.actions;
 export default MediaSlice.reducer;

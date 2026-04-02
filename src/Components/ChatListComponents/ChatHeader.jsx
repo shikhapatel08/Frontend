@@ -2,17 +2,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { BackbtnIcon, SerachIcon } from "../Common Components/Icon/Icon";
 import { SelectedChat } from "../../Redux/Features/CreateChat";
 import { useNavigate } from "react-router-dom";
-import { useModal } from "../../Context/ModalContext";
 import { useContext, useMemo } from "react";
-import Searching from "../Modal/Seraching";
 import profileImg from "../../assets/Profile/profile.svg";
 import { ThemeContext } from "../../Context/ThemeContext";
 
 
-export default function ChatHeader({ selectedChat, JoinUser, currentChat }) {
+export default function ChatHeader({ JoinUser, currentChat, setIsSearching }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { openModal, closeModal } = useModal();
+  // const { openModal, closeModal } = useModal();
   const { chats } = useSelector(state => state.createchat);
   const { getThemeStyle, theme } = useContext(ThemeContext);
 
@@ -25,9 +23,10 @@ export default function ChatHeader({ selectedChat, JoinUser, currentChat }) {
   };
 
   const handleSearching = () => {
-    openModal(
-      <Searching oncancel={closeModal} />
-    )
+    setIsSearching(true);
+    // openModal(
+    //   <Searching oncancel={closeModal} />
+    // )
   };
 
   const getChatUser = (chat, joinUserId) => {
@@ -49,7 +48,7 @@ export default function ChatHeader({ selectedChat, JoinUser, currentChat }) {
           <img src={liveUser?.photo ? liveUser?.photo : profileImg} alt='profile' />
         </div>
         <div className="Message-Username">
-          <h2>{liveUser?.name}</h2>
+          <h2>{liveUser?.name || "deleted_user"}</h2>
           <p>{liveUser?.is_online ? 'online' : <span style={{ color: 'red' }}>offline</span>}</p>
         </div>
       </div>

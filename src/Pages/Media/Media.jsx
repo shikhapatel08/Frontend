@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import '../Media/Media.css'
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { toggleSidebar } from "../../Redux/Features/SideBarSlice";
 import { useContext, useState } from "react";
 import MediaPage from "./MediaPage";
@@ -16,7 +16,6 @@ export default function Media() {
     const [activeTab, setActiveTab] = useState('media');
     const style = useLayoutStyle();
     const { theme, getThemeStyle } = useContext(ThemeContext);
-    const { chats } = useSelector(state => state.createchat);
 
     const tabs = [
         { key: "media", label: "Media" },
@@ -34,12 +33,22 @@ export default function Media() {
 
     return (
         <div className="Media" style={{ ...style, ...getThemeStyle(theme) }}>
-            <div className="title">
-                <span><h2 style={{ marginLeft: '30px' }}>Media</h2></span>
+            <div className="title" style={{ display: 'flex', alignItems: 'center' }}>
+                <span onClick={handleHamburgerIcon} style={{ cursor: 'pointer', display: 'flex' }}>
+                    <MenuIcon />
+                </span>
+                <span>
+                    <h2 style={{
+                        margin: '0px',
+                        marginLeft: '15px',
+                        fontSize: '1.5rem' // જરૂર મુજબ સાઈઝ સેટ કરી શકાય
+                    }}>
+                        Media
+                    </h2>
+                </span>
             </div>
 
             <span onClick={handleBackbtn} className="back-btn"><BackbtnIcon /></span>
-            <span onClick={handleHamburgerIcon}><MenuIcon /></span>
 
             <div className="tabs">
                 {tabs.map((tab) => (
@@ -54,9 +63,9 @@ export default function Media() {
             </div>
 
             <div className="tab-content">
-                {activeTab === "media" && <MediaPage type="all" chatId={chats?.id} />}
-                {activeTab === "docs" && <DocsPage type='all' chatId={chats?.id}/>}
-                {activeTab === "links" && <LinkPage type='all' chatId={chats?.id} />}
+                {activeTab === "media" && <MediaPage type="all" />}
+                {activeTab === "docs" && <DocsPage type='all' />}
+                {activeTab === "links" && <LinkPage type='all' />}
             </div>
 
         </div>

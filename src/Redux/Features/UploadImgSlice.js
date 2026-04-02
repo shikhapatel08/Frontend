@@ -20,7 +20,10 @@ export const UploadImg = createAsyncThunk(
             );
             return res.data;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
+            return thunkAPI.rejectWithValue({
+                status: error.response?.status,
+                message: error.response?.data?.message,
+            });
         }
     }
 )
@@ -30,7 +33,7 @@ const UploadImgSlice = createSlice({
     initialState: {
         error: null,
         loading: false,
-        data:[],
+        data: [],
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -38,7 +41,7 @@ const UploadImgSlice = createSlice({
             .addCase(UploadImg.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(UploadImg.fulfilled, (state,action) => {
+            .addCase(UploadImg.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
                 state.data = action.payload;

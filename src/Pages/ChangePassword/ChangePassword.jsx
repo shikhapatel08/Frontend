@@ -6,12 +6,18 @@ import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import '../ChangePassword/ChangePassword.css'
 import { BackbtnIcon } from "../../Components/Common Components/Icon/Icon";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { ThemeContext } from "../../Context/ThemeContext";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function ChangePassword({ onBack }) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const [showoldPassword, setShowoldPassword] = useState(false);
+    const [shownewPassword, setShownewPassword] = useState(false);
+    const [showconfirmPassword, setShowconfirmPassword] = useState(false);
+
 
     const loading = useSelector((state) => state.updateprofile?.loading);
     const { getThemeStyle, theme } = useContext(ThemeContext);
@@ -50,13 +56,14 @@ export default function ChangePassword({ onBack }) {
                 })
                 .catch((err) => {
                     console.log(err)
+                    toast.error(`${err?.message}`)
                     // toast.error(`${err}`)
-                    toast.error("Old Password doesn't match!")
-                    if (err?.status === 400 || err?.code === 400 || err?.response?.status === 400) {
-                        toast.error("Old Password doesn't match!");
-                    } else {
-                        toast.error(err.message)
-                    }
+                    // toast.error("Old Password doesn't match!")
+                    // if (err?.status === 400 || err?.code === 400 || err?.response?.status === 400) {
+                    //     toast.error("Old Password doesn't match!");
+                    // } else {
+                    //     toast.error(err.message)
+                    // }
                 })
         },
     });
@@ -69,14 +76,21 @@ export default function ChangePassword({ onBack }) {
     return (
         <div className="changepassword-container" style={getThemeStyle(theme)}>
             <form onSubmit={formik.handleSubmit} style={{ marginTop: "40px", color: 'black' }}>
-                <span onClick={onBack} className="back-btn" style={{color : 'white'}}><BackbtnIcon /></span>
+                <span onClick={onBack} className="back-btn" style={{ color: 'white' }}><BackbtnIcon /></span>
                 <span><h3>Change Password</h3></span>
 
                 {/* Old Password */}
 
                 <div className="form-group">
                     <label>Old Password</label>
-                    <input type="password" name="oldPassword" onChange={formik.handleChange} value={formik.values.oldPassword} placeholder="Old Password"/>
+                    <span
+                        className="eye"
+                        onClick={() => setShowoldPassword(prev => !prev)}
+                    >
+                        {showoldPassword ? <FaEye /> : <FaEyeSlash />}
+                    </span>
+                    <input type={showoldPassword ? "text" : "password"} name="oldPassword" onChange={formik.handleChange} value={formik.values.oldPassword} placeholder="Old Password" />
+
                     {renderError("oldPassword")}
                 </div>
 
@@ -84,7 +98,13 @@ export default function ChangePassword({ onBack }) {
 
                 <div className="form-group">
                     <label>New Password</label>
-                    <input type="password" name="newPassword" onChange={formik.handleChange} value={formik.values.newPassword} placeholder="New Password"/>
+                    <span
+                        className="eye"
+                        onClick={() => setShownewPassword(prev => !prev)}
+                    >
+                        {shownewPassword ? <FaEye /> : <FaEyeSlash />}
+                    </span>
+                    <input type={shownewPassword ? "text" : "password"} name="newPassword" onChange={formik.handleChange} value={formik.values.newPassword} placeholder="New Password" />
                     {renderError("newPassword")}
                 </div>
 
@@ -92,7 +112,13 @@ export default function ChangePassword({ onBack }) {
 
                 <div className="form-group">
                     <label>Confirm Password</label>
-                    <input type="password" name="confirmPassword" onChange={formik.handleChange} value={formik.values.confirmPassword} placeholder="Confirm Password"/>
+                    <span
+                        className="eye"
+                        onClick={() => setShowconfirmPassword(prev => !prev)}
+                    >
+                        {showconfirmPassword ? <FaEye /> : <FaEyeSlash />}
+                    </span>
+                    <input type={showconfirmPassword ? "text" : "password"} name="confirmPassword" onChange={formik.handleChange} value={formik.values.confirmPassword} placeholder="Confirm Password" />
                     {renderError("confirmPassword")}
                 </div>
 

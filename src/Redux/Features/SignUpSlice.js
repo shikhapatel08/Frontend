@@ -41,6 +41,7 @@ const SignUpSlice = createSlice({
                 state.SignupUser = action.payload.data;
                 localStorage.setItem('SignupUser', JSON.stringify(action.payload.data));
                 if (action.payload?.token) {
+                    state.token = action.payload.token;
                     localStorage.setItem("token", action.payload.token);
                 }
             })

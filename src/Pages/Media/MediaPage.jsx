@@ -1,8 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
-import { GetMedia, GetMediaByChatId } from "../../Redux/Features/MediaSlice";
+import { GetMedia, GetMediaByChatId, resetMediaState } from "../../Redux/Features/MediaSlice";
 import "../Media/Media.css";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useEffect } from "react";
+import ImageMessage from "../../Components/ChatListComponents/ImageMessage";
+import { MediaSkeleton } from "../../Components/Common Components/Loader/PageSkeletons";
+
 
 const isVideo = (url) => {
   return url.match(/\.(mp4|webm|ogg|mov)$/i);
@@ -14,7 +17,7 @@ const isAudio = (url) => {
 
 export default function MediaPage({ type, chatId }) {
   const dispatch = useDispatch();
-  const { Media, loading, page, hasMore } = useSelector((state) => state.media);
+    const { Media, loading, page, hasMore } = useSelector((state) => state.media);
 
   const fetchMedia = () => {
     if (!hasMore) return;
@@ -26,12 +29,13 @@ export default function MediaPage({ type, chatId }) {
   };
 
   useEffect(() => {
+    dispatch(resetMediaState());
     if (type === "all") {
       dispatch(GetMedia({ page: 1 }));
     } else {
       dispatch(GetMediaByChatId({ chatId, page: 1 }));
     }
-  }, []);
+  }, [dispatch, type, chatId]);
 
 
   return (
@@ -44,10 +48,9 @@ export default function MediaPage({ type, chatId }) {
         style={{ display: 'flex', flexDirection: 'column' }}
       >
         {loading ? (
-          <div className="loader-conatainer">
-            <div className="loader"></div>
-          </div>
+           <MediaSkeleton count={12} />
         ) : (
+
           <>
             {Media.length === 0 ? (
               <p className="no-link">No Media found</p>
@@ -55,14 +58,23 @@ export default function MediaPage({ type, chatId }) {
               <div className="media-grid">
 
                 {Media.map((msg) => {
-                  const files = msg.image_url ? JSON.parse(msg.image_url) : [];
+                  let files = [];
+                  if (Array.isArray(msg.image_url)) {
+                    files = msg.image_url;
+                  } else if (typeof msg.image_url === "string") {
+                    try {
+                      files = JSON.parse(msg.image_url);
+                    } catch {
+                      files = [msg.image_url];
+                    }
+                  }
 
                   return files.map((file, i) => (
                     <div key={msg.id + "-" + i} className="media-item">
 
                       {/* IMAGE */}
                       {!isVideo(file) && !isAudio(file) && (
-                        <img src={file} alt="media" />
+                        <ImageMessage src={file} />
                       )}
 
                       {/* VIDEO */}

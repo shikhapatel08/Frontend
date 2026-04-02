@@ -1,5 +1,5 @@
 import './SideBar.css'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 import { LogoutUser } from '../../../../Redux/Features/LogoutSlice';
 import { useModal } from '../../../../Context/ModalContext';
@@ -8,15 +8,18 @@ import LogoutModal from '../../../Modal/LogoutModal';
 import { disconnectSocket } from '../../../../Socket.io/socket';
 import { closeSidebar, openSidebar } from '../../../../Redux/Features/SideBarSlice';
 import { Logo, LogoutIcon, MediaIcon, MessageIcon, NotificationIcon, ProfileIcon, SerachIcon, SettingIcon, SideBarClose, SideBarOpen, StarIcon, SubscriptionIcon } from '../../Icon/Icon';
-import { useContext, useEffect } from 'react';
-import { BillingPortal } from '../../../../Redux/Features/subscriptions';
+import { useContext, useEffect, useState } from 'react';
 import { ThemeContext } from '../../../../Context/ThemeContext';
+import { SelectedChat } from '../../../../Redux/Features/CreateChat';
 
 export default function Sidebar() {
     // ================================= Hook ================================= //
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
     const isOpen = useSelector((state) => state.sidebar.isOpen);
+
+    const isActive = (path) => location.pathname === path;
     const { openModal, closeModal } = useModal();
 
     const Signup = useSelector(state => state.signup.SignupUser);
@@ -27,22 +30,39 @@ export default function Sidebar() {
 
     const { type } = useSelector(state => state.subscriptions);
     const { getThemeStyle, theme, toggleTheme } = useContext(ThemeContext);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
 
 
     // ================================= Function ================================= //
 
     const handleNavigate = (path, options) => {
         navigate(path, options);
-        if (window.innerWidth <= 1024) {
+        if (isMobile) {
             dispatch(closeSidebar());
         }
+    };
+
+    const clearSessionData = () => {
+        [
+            "token",
+            "selectedChat",
+            "SigninUser",
+            "SignupUser",
+            "User",
+            "AllUser",
+            "customerId",
+            "subscriptionType",
+            "otpVerified",
+            "PinnedMsg",
+        ].forEach((key) => localStorage.removeItem(key));
     };
 
     const Logout = () => {
         dispatch(LogoutUser()).unwrap();
         disconnectSocket();
-        localStorage.clear();
+        clearSessionData();
         handleNavigate('/');
+        dispatch(SelectedChat(null));
     }
 
     const handleLogout = () => {
@@ -64,11 +84,12 @@ export default function Sidebar() {
     };
 
     const handleResize = () => {
-        if (window.innerWidth <= 1024) {
-            // small screens → close sidebar
+        const nextIsMobile = window.innerWidth <= 1024;
+        setIsMobile(nextIsMobile);
+
+        if (nextIsMobile) {
             dispatch(closeSidebar());
         } else {
-            // larger screens → keep sidebar open
             dispatch(openSidebar());
         }
     };
@@ -110,6 +131,10 @@ export default function Sidebar() {
         handleNavigate('/Media');
     }
 
+    const handleSubscription = () => {
+        handleNavigate('/subscriptions');
+    }
+
     const handleOverLay = () => {
         dispatch(closeSidebar());
     }
@@ -131,36 +156,33 @@ export default function Sidebar() {
                 <div className="Sidebar-menu">
                     <div className="Sidebar-sections">
                         <ul className="Sidebar-top-menu">
-                            <li className="Sidebar-menu-1" onClick={handleMessage}>
-
+                            <li className={isActive('/MessagePage') ? 'active' : ''} onClick={handleMessage}>
                                 <MessageIcon />
-
-                                <span>Message</span>
+                                <span>Messages</span>
                             </li>
-                            <li className="Sidebar-menu-2" onClick={handleSearch}>
-
+                            <li className={isActive('/Search') ? 'active' : ''} onClick={handleSearch}>
                                 <SerachIcon />
                                 <span>Search</span>
                             </li>
-                            <li className="Sidebar-menu-2" onClick={handleSetting}>
-
+                            <li className={isActive('/Settings') ? 'active' : ''} onClick={handleSetting}>
                                 <SettingIcon />
-
                                 <span>Settings</span>
                             </li>
-                            <li className="Sidebar-menu-3" onClick={handleNotification}>
-
+                            <li className={isActive('/notification') ? 'active' : ''} onClick={handleNotification}>
                                 <NotificationIcon />
-                                <span>Notification</span>
+                                <span>Notifications</span>
                             </li>
-                            <li className='Sidebar-menu-4' onClick={handleStarred}>
-
-                                <StarIcon size={20} />
-                                <span>Starred Message</span>
+                            <li className={isActive('/StarredMsg') ? 'active' : ''} onClick={handleStarred}>
+                                <StarIcon size={20} color={'currentColor'} />
+                                <span>Starred</span>
                             </li>
-                            <li className='Sidebar-menu-5' onClick={handleMedia}>
+                            <li className={isActive('/Media') ? 'active' : ''} onClick={handleMedia}>
                                 <MediaIcon />
                                 <span>Media</span>
+                            </li>
+                            <li className={isActive('/Subscription') ? 'active' : ''} onClick={handleSubscription}>
+                                <SubscriptionIcon />
+                                <span>Subscription</span>
                             </li>
                         </ul>
                         <div />
@@ -198,7 +220,7 @@ export default function Sidebar() {
                     </div>
                 </div>
             </div >
-            {isOpen && window.innerWidth <= 1024 && (
+            {isOpen && isMobile && (
                 <div
                     className="sidebar-overlay"
                     onClick={handleOverLay}

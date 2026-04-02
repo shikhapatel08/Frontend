@@ -19,14 +19,12 @@ export default function SendMsgModal({ onCancel }) {
     const [searchText, setSearchText] = useState("");
     const [selectedUser, setSelectedUser] = useState(null);
 
-
-
     useEffect(() => {
         dispatch(FetchAllUser());
     }, [dispatch]);
 
-
     useEffect(() => {
+        setSelectedUser(null);
 
         const timer = setTimeout(() => {
             if (searchText.trim()) {
@@ -40,18 +38,18 @@ export default function SendMsgModal({ onCancel }) {
 
     }, [searchText, dispatch]);
 
-    const finalUsers = searchText.trim() ? searchUsers : allusers;
+    const finalUsers = (searchText.trim() ? searchUsers : allusers) || [];
 
-    const handleOnclick = useCallback((userId) => {
+    const handleOnClick = useCallback((userId) => {
         dispatch(createOrGetChat({ receiverId: userId }))
             .unwrap()
-            .then(async (chat) => {
+            .then((chat) => {
                 dispatch(SelectedChat(chat));
-                await dispatch(fetchMyChats({ page: 1 }));
+                dispatch(fetchMyChats({ page: 1 }));
                 onCancel();
                 navigate("/MessagePage");
             }).catch(console.error);
-    }, [dispatch]);
+    }, [dispatch, navigate, onCancel]);
 
     return (
         <div className="sendModal">
@@ -114,7 +112,7 @@ export default function SendMsgModal({ onCancel }) {
             <Button
                 className="chatBtn"
                 disabled={!selectedUser}
-                onClick={() => handleOnclick(selectedUser.id)}
+                onClick={() => handleOnClick(selectedUser.id)}
             >
                 Chat
             </Button>

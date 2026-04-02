@@ -6,6 +6,7 @@ import { useLayoutStyle } from '../../Components/Common Components/Common/Common
 import { useContext, useEffect } from 'react';
 import { ThemeContext } from '../../Context/ThemeContext';
 import { Fetchsubscriptiondata } from '../../Redux/Features/subscriptions';
+import { ProfileUser } from '../../Redux/Features/ProfileSlice';
 
 export default function MessagePage() {
     const { selectedChat } = useSelector(state => state.createchat);
@@ -13,9 +14,11 @@ export default function MessagePage() {
     const dispatch = useDispatch();
     const { getThemeStyle, theme } = useContext(ThemeContext);
 
+
     useEffect(() => {
         dispatch(Fetchsubscriptiondata());
-    }, []);
+        dispatch(ProfileUser())
+    }, [dispatch]);
 
 
     return (

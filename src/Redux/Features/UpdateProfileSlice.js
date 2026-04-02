@@ -8,13 +8,13 @@ const BASE_API = import.meta.env.VITE_API_URL;
 
 export const UpdateUser = createAsyncThunk(
     'updateprofile/UpdateUser',
-    async ({data,type}, thunkAPI) => {
+    async ({ data, type }, thunkAPI) => {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.put(`${BASE_API}/api/v1/users/update`,
                 {
                     ...data,
-                    action : type,
+                    action: type,
                 },
                 {
                     headers: {
@@ -24,7 +24,10 @@ export const UpdateUser = createAsyncThunk(
             );
             return res.data;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
+            return thunkAPI.rejectWithValue({
+                status: error.response?.status,
+                message: error.response?.data?.message,
+            });
         }
     }
 )
@@ -34,12 +37,12 @@ const UpdateProfileSlice = createSlice({
     initialState: {
         error: null,
         loading: false,
-        currentAction:null,
+        currentAction: null,
     },
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(UpdateUser.pending, (state,action) => {
+            .addCase(UpdateUser.pending, (state, action) => {
                 state.loading = true;
                 state.currentAction = action.meta.arg.type;
             })
@@ -49,6 +52,8 @@ const UpdateProfileSlice = createSlice({
                 state.currentAction = null;
             })
             .addCase(UpdateUser.rejected, (state, action) => {
+                state.loading = false;
+                state.currentAction = null;
                 state.error = action.payload;
             })
     },

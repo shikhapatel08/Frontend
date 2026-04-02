@@ -124,9 +124,16 @@
     font-weight: 600;
     color: #555;
   }
+<<<<<<< HEAD
    .hamburger-icon {
         display: block;
     }
+=======
+
+  .hamburger-icon {
+    display: block;
+  }
+>>>>>>> 87b273e (feat: implement full-stack chat application architecture including Redux state management, socket integration, Firebase messaging, and modular UI components.)
 }
 
 @media (max-width: 480px) {
@@ -137,7 +144,15 @@
   .transactions-container td {
     font-size: 13px;
   }
+<<<<<<< HEAD
    .hamburger-icon {
         display: block;
     }
 }
+=======
+
+  .hamburger-icon {
+    display: block;
+  }
+}
+>>>>>>> 87b273e (feat: implement full-stack chat application architecture including Redux state management, socket integration, Firebase messaging, and modular UI components.)

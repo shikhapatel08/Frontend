@@ -1,10 +1,9 @@
 import { useEffect } from "react";
-import { getSocket } from "../../../Socket.io/socket";
 import { useDispatch } from "react-redux";
 import { UnreadCount } from "../../../Redux/Features/CreateChat";
 import { useSocket } from "../../../Context/SocketContext";
 
-export const useUnreadCount = (messages) => {
+export const useUnreadCount = () => {
     const dispatch = useDispatch();
     const socket = useSocket();
     useEffect(() => {
@@ -19,5 +18,5 @@ export const useUnreadCount = (messages) => {
         return () => {
             socket.off("unread_count", handleCount);
         };
-    }, [messages , socket]);
+    }, [dispatch, socket]);
 }

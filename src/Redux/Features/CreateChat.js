@@ -5,6 +5,7 @@ import { BlockedUser } from "./BlockedSlice";
 import { PinedUser } from "./Pinslice";
 import { MuteUser } from "./MuteSlice";
 import { toast } from "react-toastify";
+import axiosInstance from "../../utils/axiosInstance";
 
 const BASE_API = import.meta.env.VITE_API_URL;
 // ================================= Create or Get Chat ================================= //
@@ -36,20 +37,21 @@ export const fetchMyChats = createAsyncThunk(
   "chat/fetchMyChats",
   async ({ page, limit = 10 }, thunkAPI) => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(`${BASE_API}/api/v1/chat/my-chats?page=${page}&limit=${limit}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const res = await axiosInstance.get(`/api/v1/chat/my-chats`, {
+        params: { page, limit }
       });
+
       return res.data.data;
     } catch (error) {
       if (error.response?.status === 401) {
-        toast.error("Session Expired Please Login again!");
+        toast.error("Session Expired! Please login again.");
         localStorage.removeItem("token");
-        window.location.href = "/";
+        localStorage.removeItem("selectedChat");
       }
-      return thunkAPI.rejectWithValue(error.message);
+
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message
+      );
     }
   }
 );
@@ -71,6 +73,7 @@ const createChatSlice = createSlice({
       const payload = action.payload;
       if (!payload) {
         state.selectedChat = null;
+        localStorage.removeItem("selectedChat");
         return;
       }
       let formattedChat;
@@ -114,7 +117,7 @@ const createChatSlice = createSlice({
         if (chat.UserOne.id === uid) {
           chat.UserOne.is_online = on === 1;
         }
-        if (chat.UserTwo.id === uid) {
+        if (chat.UserTwo?.id === uid) {
           chat.UserTwo.is_online = on === 1;
         }
         return chat;
@@ -127,7 +130,6 @@ const createChatSlice = createSlice({
     },
     UnreadCount: (state, action) => {
       const { chatId, unread_count } = action.payload;
-      console.log(action.payload)
       state.chats = state.chats.map(chat =>
         Number(chat.id) === Number(chatId)
           ? { ...chat, unread_count }
@@ -151,7 +153,7 @@ const createChatSlice = createSlice({
         const settings = chat.ChatSettings?.[0];
 
         if (state.selectedChat?.id !== chat.id) {
-          chat.unread_count = (chat.unread_count || 0) + 1;
+          chat.unread_count = (chat.unread_count || 0);
         } else {
           chat.unread_count = 0;
         }
@@ -182,7 +184,9 @@ const createChatSlice = createSlice({
       }
     },
     seen: (state, action) => {
-      const cid = action.payload.cid;
+      const cid = typeof action.payload === "object"
+        ? action.payload?.cid
+        : action.payload;
 
       state.chats = state.chats.map(chat =>
         Number(chat.id) === Number(cid)
@@ -204,8 +208,11 @@ const createChatSlice = createSlice({
       })
       .addCase(fetchMyChats.fulfilled, (state, action) => {
         state.loading = false;
+        state.error = null;
 
-        const newchat = action.payload.map(chat => {
+        const requestedPage = Number(action.meta.arg?.page || 1);
+        const limit = Number(action.meta.arg?.limit || 10);
+        const newchat = (action.payload || []).map(chat => {
           const settings = chat.ChatSettings?.[0] || {};
 
           return {
@@ -217,16 +224,20 @@ const createChatSlice = createSlice({
           };
         });
 
-        if (state.page === 1) {
+        if (requestedPage === 1) {
           state.chats = newchat;
+          state.hasMore = true;
         } else {
-          state.chats = [...state.chats, ...newchat];
+          const existingIds = new Set(state.chats.map(chat => chat.id));
+          const deduped = newchat.filter(chat => !existingIds.has(chat.id));
+          state.chats = [...state.chats, ...deduped];
         }
 
-        if (newchat.length < 10) {
+        if (newchat.length < limit) {
           state.hasMore = false;
+          state.page = requestedPage;
         } else {
-          state.page = + 1;
+          state.page = requestedPage + 1;
         }
       })
       .addCase(fetchMyChats.rejected, (state, action) => {
