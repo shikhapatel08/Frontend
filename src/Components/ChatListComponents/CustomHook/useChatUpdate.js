@@ -12,7 +12,6 @@ export const useChatUpdate = () => {
 
         const handleChatUpdate = (msg) => {
 
-            // Dispatch to update chat in Redux
             dispatch(UpdateChat(msg));
         };
 

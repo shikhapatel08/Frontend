@@ -20,19 +20,14 @@ export default function OtpPage() {
 
     const email = location.state?.email;
     const flow = location.state?.from;
-    // const action = location.state?.action;
 
-    const [timer, setTimer] = useState(120); // 10 min = 600 sec
-
-    /* ---------------- REDIRECT GUARD ---------------- */
+    const [timer, setTimer] = useState(120);
 
     useEffect(() => {
         if (!email || !flow) {
             navigate("/");
         }
     }, [email, flow, navigate]);
-
-    /* ---------------- TIMER ---------------- */
 
     useEffect(() => {
         if (timer === 0) return;
@@ -44,15 +39,11 @@ export default function OtpPage() {
         return () => clearInterval(interval);
     }, [timer]);
 
-    /* ---------------- FORMAT TIMER ---------------- */
-
     const formatTime = (time) => {
         const minutes = Math.floor(time / 60);
         const seconds = time % 60;
         return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
     };
-
-    /* ---------------- FORM ---------------- */
 
     const initialValues = {
         name: location.state?.name || "",
@@ -66,16 +57,12 @@ export default function OtpPage() {
             .required("OTP is required")
     });
 
-
-    /* ---------------- SUBMIT ---------------- */
-
     const handleSubmit = (values) => {
 
 
         dispatch(verifyOtp({
             email: values.email,
             otp: values.otp,
-            // action: action
         }))
             .unwrap()
             .then(() => {
@@ -100,8 +87,6 @@ export default function OtpPage() {
                 toast.error(err?.message || "Invalid OTP");
             });
     };
-
-    /* ---------------- RESEND OTP ---------------- */
 
     const handleResendOtp = () => {
         dispatch(SendOtp({ email, action: flow }));
@@ -136,7 +121,6 @@ export default function OtpPage() {
                                 </div>
                                 <ErrorMessage name="otp" component="span" className="error" />
 
-                                {/* ================================= TIMER ================================= */}
                                 {timer > 0 ? (
                                     <p className="timer" style={{ color: 'grey', textAlign: 'right' }}>OTP expires in {formatTime(timer)}</p>
                                 ) : (

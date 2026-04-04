@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import "./EditeProfile.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,7 +14,6 @@ import { SettingsSkeleton } from "../../Components/Common Components/Loader/Page
 
 
 export default function ProfileSettings({ onBack, type }) {
-  // ================================= Hook ================================= //
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const Signup = useSelector(state => state.signup.SignupUser);
@@ -24,8 +23,6 @@ export default function ProfileSettings({ onBack, type }) {
   const User = Object.keys(Signin).length > 0 ? Signin : Signup;
   const style = useLayoutStyle();
   const { getThemeStyle, theme } = useContext(ThemeContext);
-
-  // ---------------- VALIDATION ----------------
 
   const validationSchema = Yup.object({
     name: Yup.string()
@@ -59,8 +56,6 @@ export default function ProfileSettings({ onBack, type }) {
     }
   }
 
-  // ---------------- FORMIK ----------------
-
   const formik = useFormik({
     initialValues: {
       name: User?.name || "",
@@ -71,8 +66,6 @@ export default function ProfileSettings({ onBack, type }) {
 
     onSubmit: OnSubmit
   });
-
-  // ---------------- ERROR HELPER ----------------
 
   const renderError = (field) =>
     formik.touched[field] &&

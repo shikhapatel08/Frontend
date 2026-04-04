@@ -1,24 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BASE_API = import.meta.env.VITE_API_URL;
-
-// ================================= Delete Profile ================================= //
+import axiosInstance from "../../utils/axiosInstance";
 
 export const DeleteProfile = createAsyncThunk(
     'deleteprofile/DeleteProfile',
     async (userData, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.delete(`${BASE_API}/api/v1/users/delete`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    data:userData,
-                }
-            );
+            const res = await axiosInstance.delete('/api/v1/users/delete', {
+                data: userData
+            });
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);

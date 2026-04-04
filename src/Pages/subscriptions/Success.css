@@ -1,65 +1,65 @@
-.success-container{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  background: linear-gradient(90deg,#d1fae5,#a7f3d0,#6ee7b7);
+.success-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(90deg, #d1fae5, #a7f3d0, #6ee7b7);
 }
 
-.success-card{
-  background:inherit;
-  padding:40px;
-  border-radius:16px;
-  max-width:400px;
-  width:100%;
-  text-align:center;
-  box-shadow:0 10px 25px rgba(0,0,0,0.15);
+.success-card {
+  background: inherit;
+  padding: 40px;
+  border-radius: 16px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
-.success-icon{
-  width:80px;
-  height:80px;
-  margin:auto;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:inherit;
-  border-radius:50%;
+.success-icon {
+  width: 80px;
+  height: 80px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: inherit;
+  border-radius: 50%;
 }
 
-.check-icon{
-  width:40px;
-  height:40px;
-  color:#16a34a;
+.check-icon {
+  width: 40px;
+  height: 40px;
+  color: #16a34a;
 }
 
-.success-title{
-  margin-top:20px;
-  font-size:28px;
-  font-weight:bold;
-  color:#1f2937;
+.success-title {
+  margin-top: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  color: inherit;
 }
 
-.success-text{
-  margin-top:10px;
-  color:inherit;
-  font-size:15px;
+.success-text {
+  margin-top: 10px;
+  color: inherit;
+  font-size: 15px;
 }
 
-.success-button{
-  margin-top:30px;
-  width:100%;
-  padding:12px;
-  border:none;
-  background:#16a34a;
-  color:inherit;
-  font-weight:600;
-  border-radius:8px;
-  cursor:pointer;
-  transition:0.3s;
+.success-button {
+  margin-top: 30px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background: #16a34a;
+  color: inherit;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-.success-button:hover{
-  background:#15803d;
+.success-button:hover {
+  background: #15803d;
 }

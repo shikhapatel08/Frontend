@@ -15,7 +15,6 @@ import Loader from "../../Components/Common Components/Loader/Loader";
 import Skeleton from "../../Components/Common Components/Loader/Skeleton";
 import { FetchMessages, resetMessages } from "../../Redux/Features/SendMessage";
 
-
 export default function Notification() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -25,8 +24,6 @@ export default function Notification() {
     const { notifications, loading, page, hasMore } = useSelector(state => state.notifications);
     const { chats } = useSelector(state => state.createchat);
     const { theme, getThemeStyle } = useContext(ThemeContext);
-
-    /* ---------------- FETCH NOTIFICATION ---------------- */
 
     const FetchMore = () => {
         if (!hasMore) return;
@@ -38,23 +35,13 @@ export default function Notification() {
         dispatch(FetchNotifications({ page: 1 }))
     }, [dispatch]);
 
-    /* ---------------- NAVIGATION ---------------- */
-
-    // const handleBackbtn = () => {
-    //     navigate(-1);
-    // }
-
     const handleSidebar = () => {
         dispatch(toggleSidebar());
     }
 
-    /* ---------------- MENU ---------------- */
-
     const toggleMenu = (id) => {
         setOpenMenuId(openMenuId === id ? null : id);
     };
-
-    /* ---------------- CLICK OUTSIDE ---------------- */
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -65,9 +52,6 @@ export default function Notification() {
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
-
-    /* ---------------- NOTIFICATION CLICK ---------------- */
-
 
     const handleNotification = (item) => {
 
@@ -87,10 +71,6 @@ export default function Notification() {
 
         navigate("/MessagePage");
     };
-
-
-
-    /* ---------------- DELETE ---------------- */
 
     const handleDeleteNotification = (id) => {
         dispatch(DeleteNotification(id));

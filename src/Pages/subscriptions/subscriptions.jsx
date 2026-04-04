@@ -11,8 +11,6 @@ import { useNavigate } from "react-router-dom";
 
 export default function SubscriptionPlans() {
 
-    /* ---------------- HOOKS ---------------- */
-
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -22,15 +20,10 @@ export default function SubscriptionPlans() {
 
     const currentPlan = Data?.Plan?.type;
 
-
-    /* ---------------- FETCH DATA ---------------- */
-
     useEffect(() => {
         dispatch(subscribeToChat());
         dispatch(Fetchsubscriptiondata());
     }, [dispatch]);
-
-    /* ---------------- SUBSCRIBE ---------------- */
 
     const handleSubscription = async (planId) => {
         try {
@@ -44,8 +37,6 @@ export default function SubscriptionPlans() {
             console.error(err);
         }
     };
-
-    /* ---------------- LOADING ---------------- */
 
     if (loading || !plans?.data || plans.data.length === 0) {
         return (
@@ -66,27 +57,27 @@ export default function SubscriptionPlans() {
     const handleBackbtn = () => {
         navigate(-1);
     };
-    /* ---------------- UI ---------------- */
 
     return (
 
         <div className="plans-container" style={getThemeStyle(theme)}>
-
-            {/* HEADER */}
-
-            <div className="subscription-header">
+            <div className="title" style={{ display: 'flex', alignItems: 'center' }}>
+                <span onClick={handleHamburgerIcon} style={{ cursor: 'pointer', display: 'flex' }}>
+                    <MenuIcon />
+                </span>
                 <span className="back-btn" onClick={handleBackbtn}>
                     <BackbtnIcon />
                 </span>
-                <span className="hamburger-icon" onClick={handleHamburgerIcon}>
-                    <MenuIcon />
+                <span>
+                    <h2 style={{
+                        margin: '0px',
+                        marginLeft: '15px',
+                        fontSize: '1.5rem'
+                    }}>
+                        Subscription
+                    </h2>
                 </span>
-
-                <h2>Subscription</h2>
-
             </div>
-
-            {/* TITLE */}
 
             <div className="plan-header">
 
@@ -110,7 +101,6 @@ export default function SubscriptionPlans() {
 
             </div>
 
-            {/* PLANS */}
 
             <div className="plans-grid">
 
@@ -124,8 +114,6 @@ export default function SubscriptionPlans() {
                             key={plan.id}
                             className={`plan-card ${currentPlan === plan.type ? "active" : ""} ${plan.type === "Premium" ? "most-popular" : ""}`}>
 
-                            {/* PLAN HEADER */}
-
                             <div className="plan-header">
                                 <h3>{plan.type} Plan</h3>
                                 <div className="price">
@@ -133,8 +121,6 @@ export default function SubscriptionPlans() {
                                     <span>/mo</span>
                                 </div>
                             </div>
-
-                            {/* BUTTON */}
 
                             <button
                                 className="get-started-btn"
@@ -150,7 +136,6 @@ export default function SubscriptionPlans() {
 
                             </button>
 
-                            {/* FEATURES */}
 
                             <ul className="features-list">
 

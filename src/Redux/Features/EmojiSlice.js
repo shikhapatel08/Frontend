@@ -1,27 +1,15 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 import { toast } from "react-toastify";
-
-const BASE_API = import.meta.env.VITE_API_URL;
-
+import axiosInstance from "../../utils/axiosInstance";
 
 export const sendReaction = createAsyncThunk(
     "Emoji/EmojiSlice",
     async ({ messageId, emoji }, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.post(`${BASE_API}/api/v3/reaction/react`,
-                {
-                    msgId: messageId,
-                    emoji: emoji
-                },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`,
-                    },
-                }
-            );
+            const res = await axiosInstance.post('/api/v3/reaction/react', {
+                msgId: messageId,
+                emoji: emoji
+            });
             return res.data;
         } catch (error) {
             const errMsg =
@@ -59,5 +47,4 @@ const emojiSlice = createSlice({
     }
 });
 
-// export const { setReactionLocal } = emojiSlice.actions;
 export default emojiSlice.reducer;

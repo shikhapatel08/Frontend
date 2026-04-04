@@ -1,43 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 import { toast } from "react-toastify";
-
-const BASE_API = import.meta.env.VITE_API_URL;
-
-// ================================= Send Message ================================= //
+import axiosInstance from "../../utils/axiosInstance";
 
 export const SendMessage = createAsyncThunk(
     'message/SendMessage',
-    async ({ chatId, messageText, file, replyTo, tempId }, thunkAPI) => {
+    async ({ formData }, thunkAPI) => {
         try {
-            const token = localStorage.getItem("token");
-
-            const formData = new FormData();
-            formData.append("chatId", chatId);
-            formData.append("text", messageText);
-            if (replyTo !== null && replyTo !== undefined) {
-                formData.append("replyTo", replyTo)
-            }
-
-            if (file && file.length > 0) {
-                file.forEach((f) => {
-                    formData.append("images", f);
-                });
-            }
-
-            const res = await axios.post(
-                `${BASE_API}/api/v1/message/send`,
-                formData,
+            const res = await axiosInstance.post('/api/v1/message/send', formData,
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,
-                        // "Content-Type": "multipart/form-data",
-                    },
+                        "Content-Type": "multipart/form-data"
+                    }
                 }
             );
 
-            return { message: res.data.msg, tempId: tempId };
+            return { message: res.data.msg };
         } catch (error) {
 
             const errMsg =
@@ -54,20 +32,28 @@ export const SendMessage = createAsyncThunk(
     }
 );
 
-// ================================= Fetch Messages ================================= //
+export const forwardMessage = createAsyncThunk(
+    "message/forwardMessage",
+    async ({ msgId, chatIds }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post("/api/v1/message/forward", {
+                msgId,
+                chatIds,
+            });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
 
 export const FetchMessages = createAsyncThunk(
     'message/FetchMessages',
     async ({ chatId, page, limit = 20 }, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`${BASE_API}/api/v1/message/${chatId}?page=${page}&limit=${limit}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const res = await axiosInstance.get(`/api/v1/message/${chatId}`, {
+                params: { page, limit }
+            });
             return res.data;
         } catch (error) {
             const errMsg =
@@ -84,23 +70,11 @@ export const FetchMessages = createAsyncThunk(
     }
 );
 
-
-// ================================= Star Message ================================= //
-
 export const StarMsg = createAsyncThunk(
     "message/starMsg",
     async (msgId, thunkAPI) => {
         try {
-            const token = localStorage.getItem("token");
-
-            await axios.patch(
-                `${BASE_API}/api/v2/messagesetting/star/${msgId}`,
-                {},
-                {
-                    headers: { Authorization: `Bearer ${token}` }
-                }
-            );
-
+            await axiosInstance.patch(`/api/v2/messagesetting/star/${msgId}`, {});
             return msgId;
         } catch (error) {
             const errMsg =
@@ -117,24 +91,11 @@ export const StarMsg = createAsyncThunk(
     }
 );
 
-
-// ================================= Pin Message ================================= //
-
 export const PinMsg = createAsyncThunk(
     'message/PinMsg',
     async ({ msgId, chatId }, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.patch(`${BASE_API}/api/v1/message/pin/${msgId}`,
-                {
-                    chatId
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const res = await axiosInstance.patch(`/api/v1/message/pin/${msgId}`, { chatId });
             return res.data;
         } catch (error) {
             const errMsg =
@@ -155,14 +116,9 @@ export const FetchAllPinnedMsg = createAsyncThunk(
     'message/FetchAllPinnedMsg',
     async ({ chatId, limit = 20 }, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`${BASE_API}/api/v1/message/get-pin-messages/${chatId}?limit=${limit}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const res = await axiosInstance.get(`/api/v1/message/get-pin-messages/${chatId}`, {
+                params: { limit }
+            });
             return res.data;
         } catch (error) {
             const errMsg =
@@ -178,8 +134,6 @@ export const FetchAllPinnedMsg = createAsyncThunk(
         }
     }
 );
-
-// ================================= Message Slice ================================= //
 
 const MessageSlice = createSlice({
     name: 'message',
@@ -281,7 +235,6 @@ const MessageSlice = createSlice({
                 r => r.user_id === userId
             );
 
-            //  REMOVE (same emoji click)
             if (emoji === null) {
                 if (existingIndex !== -1) {
                     message.reactions.splice(existingIndex, 1);
@@ -289,12 +242,10 @@ const MessageSlice = createSlice({
                 return;
             }
 
-            //  UPDATE (same user different emoji)
             if (existingIndex !== -1) {
                 message.reactions[existingIndex].emoji = emoji;
             }
 
-            //  ADD (new user reaction)
             else {
                 message.reactions.push({
                     user_id: userId,
@@ -312,9 +263,7 @@ const MessageSlice = createSlice({
             .addCase(SendMessage.fulfilled, (state, action) => {
                 state.loading = false;
 
-                const { tempId, message } = action.payload;
-
-                const index = state.messages.findIndex(msg => msg.id === tempId);
+                const { message } = action.payload;
 
                 const normalizedMessage = {
                     ...message,
@@ -340,7 +289,7 @@ const MessageSlice = createSlice({
                             ? state.messages.find(m => m.id === message.reply_to) || null
                             : null,
                     pending: false,
-                    status: state.messages.find(m => m.id === tempId)?.status || message.status || 'sent',
+                    status: message.status || 'sent',
                 };
 
                 if (index !== -1) {
@@ -350,18 +299,6 @@ const MessageSlice = createSlice({
                 }
             })
             .addCase(SendMessage.rejected, (state, action) => {
-                const { tempId } = action.meta.arg;
-
-                const msg = state.messages.find(m => m.id === tempId);
-
-                if (msg) {
-                    msg.status = "error";
-                }
-
-                if (action.payload?.status === 403) {
-                    state.canSendMessage = false;
-                }
-
                 state.loading = false;
                 state.error = action.payload;
             })
@@ -396,7 +333,6 @@ const MessageSlice = createSlice({
                                 parsedImages = JSON.parse(m.image_url);
                             } catch (error) {
                                 parsedImages = [m.image_url];
-                                console.log("Error parsing image_url:", error)
                             }
                         }
                     }
@@ -420,8 +356,6 @@ const MessageSlice = createSlice({
                     state.hasMore = true;
                     state.page = requestPage + 1;
                 }
-
-                console.log("Added", parsedNewMSg.length, "new messages. Total:", state.messages.length);
 
             })
 
@@ -464,6 +398,14 @@ const MessageSlice = createSlice({
                 state.pinnedMessages = action.payload.data;
             })
             .addCase(FetchAllPinnedMsg.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(forwardMessage.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = null;
+            })
+            .addCase(forwardMessage.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

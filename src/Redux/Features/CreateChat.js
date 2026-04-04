@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 import { Delete } from "./DeleteSlice";
 import { BlockedUser } from "./BlockedSlice";
 import { PinedUser } from "./Pinslice";
@@ -7,31 +6,19 @@ import { MuteUser } from "./MuteSlice";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axiosInstance";
 
-const BASE_API = import.meta.env.VITE_API_URL;
-// ================================= Create or Get Chat ================================= //
 export const createOrGetChat = createAsyncThunk(
   "chat/createOrGetChat",
   async ({ receiverId }, thunkAPI) => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.post(`${BASE_API}/api/v1/chat/create`,
-        {
-          receiverId: receiverId
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await axiosInstance.post('/api/v1/chat/create', {
+        receiverId: receiverId
+      });
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
-
-// ================================= Fetch My Chats ================================= //
 
 export const fetchMyChats = createAsyncThunk(
   "chat/fetchMyChats",
@@ -47,6 +34,7 @@ export const fetchMyChats = createAsyncThunk(
         toast.error("Session Expired! Please login again.");
         localStorage.removeItem("token");
         localStorage.removeItem("selectedChat");
+        window.location.href = "/";
       }
 
       return thunkAPI.rejectWithValue(
@@ -56,7 +44,6 @@ export const fetchMyChats = createAsyncThunk(
   }
 );
 
-// ================================= Create Chat Slice ================================= //
 const createChatSlice = createSlice({
   name: "createchat",
   initialState: {
@@ -77,7 +64,6 @@ const createChatSlice = createSlice({
         return;
       }
       let formattedChat;
-      //Case 1 → from SearchPage (API response)
       if (payload?.data && payload?.receiver) {
         formattedChat = {
           id: payload.data.id,
@@ -93,7 +79,6 @@ const createChatSlice = createSlice({
         };
       }
 
-      //Case 2 → from ChatList
       else {
 
         formattedChat = {
@@ -123,7 +108,6 @@ const createChatSlice = createSlice({
         return chat;
       });
 
-      // selected chat mate
       if (state.selectedChat?.User?.id === uid) {
         state.selectedChat.User.is_online = on === 1;
       }
@@ -138,52 +122,40 @@ const createChatSlice = createSlice({
     },
     UpdateChat: (state, action) => {
       const msg = action.payload;
+      const chatId = msg.chat?.id || msg.chat_id;
 
-      // First, check if chat already exists
-      const existingChatIndex = state.chats.findIndex(c => c.id === msg.chat?.id || msg.chat_id);
+      const existingChatIndex = state.chats.findIndex(c => c.id === chatId);
 
       if (existingChatIndex !== -1) {
-        // Chat exists → update it
-        const chat = state.chats[existingChatIndex];
+        const oldChat = state.chats[existingChatIndex];
 
-        chat.updatedAt = msg.chat?.updatedAt || msg.updatedAt || chat.updatedAt;
-        chat.last_message = msg.chat?.last_message || msg.text || chat.last_message;
-        chat.last_message_time = msg.chat?.last_message_time || chat.last_message_time;
+        const updatedChat = {
+          ...oldChat,
+          updatedAt: msg.chat?.updatedAt || msg.updatedAt || oldChat.updatedAt,
+          last_message: msg.chat?.last_message || msg.text || oldChat.last_message,
+          last_message_time: msg.chat?.last_message_time || msg.createdAt || oldChat.last_message_time,
+          unread_count: state.selectedChat?.id !== chatId
+            ? (oldChat.unread_count || 0)
+            : 0
+        };
 
-        const settings = chat.ChatSettings?.[0];
-
-        if (state.selectedChat?.id !== chat.id) {
-          chat.unread_count = (chat.unread_count || 0);
-        } else {
-          chat.unread_count = 0;
-        }
-        // Move updated chat to top
-        state.chats = [
-          chat,
-          ...state.chats.filter(c => c.id !== chat.id),
-        ];
+        const otherChats = state.chats.filter(c => c.id !== chatId);
+        state.chats = [updatedChat, ...otherChats];
 
       } else if (msg.chat) {
-        // New chat → add safely
         const newChat = {
-          id: msg.chat.id,
-          last_message: msg.chat.last_message || "",
-          last_message_time: msg.chat.last_message_time || "",
-          updatedAt: msg.chat.updatedAt || new Date().toISOString(),
-          ChatSettings: [{ unread_count: msg.unread_count }],
-          unread_count: msg.unread_count,
+          ...msg.chat,
+          unread_count: msg.unread_count || 1,
           is_pin: false,
           is_muted: false,
           is_block: false,
           UserOne: msg.chat.UserOne || {},
-          UserTwo: msg.chat.UserTwo || {},
+          UserTwo: msg.chat.UserTwo || {}
         };
 
-        // Add to top without duplicating
         state.chats = [newChat, ...state.chats];
       }
-    },
-    seen: (state, action) => {
+    }, seen: (state, action) => {
       const cid = typeof action.payload === "object"
         ? action.payload?.cid
         : action.payload;

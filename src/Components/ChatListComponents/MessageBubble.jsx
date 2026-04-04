@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
-import { StarIcon, EditIcon, ReplyIcon, DeleteIcon, EmojiIcon, DownArrow, ProfileIcon, SingleTicksIcon, DoubleTicksIcon, MsgErrorIcon } from "../Common Components/Icon/Icon";
+import { useContext, useEffect, useState } from "react";
+import { StarIcon, EditIcon, ReplyIcon, DeleteIcon, EmojiIcon, DownArrow, ProfileIcon, SingleTicksIcon, DoubleTicksIcon, MsgErrorIcon, ForwardIcon } from "../Common Components/Icon/Icon";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deleteForEveryoneLocal, deleteForMeLocal, PinMsg, Pinmsg, setReactionLocal, StarMsg, Starmsg } from "../../Redux/Features/SendMessage";
@@ -17,6 +17,9 @@ import { ThemeContext } from "../../Context/ThemeContext";
 import { useSocket } from "../../Context/SocketContext";
 import { sendReaction } from "../../Redux/Features/EmojiSlice";
 import { formatChatTime } from "./DateFormat";
+import EmojiPicker from "emoji-picker-react";
+import ForwardModal from "../Modal/ForwardModal";
+import { openPreview } from "../../Redux/Features/ImagePreviewSlice"
 
 
 export default function ChatBubble({
@@ -32,6 +35,7 @@ export default function ChatBubble({
     const { openModal, closeModal } = useModal();
     const [openMsgMenu, setOpenMsgMenu] = useState(null);
     const [showReactions, setShowReactions] = useState(null);
+    const [showPicker, setShowPicker] = useState(null);
 
     const Signup = useSelector(state => state.signup.SignupUser);
     const Signin = useSelector(state => state.signin.SigninUser);
@@ -48,30 +52,28 @@ export default function ChatBubble({
     const isOwn = msg.sender_id === JoinUser;
 
 
-    // const toggleMenu = (id) => {
-    //     setOpenMsgMenu(prev => prev === id ? null : id);
-    // };
+    const toggleMenu = (id) => {
+        setOpenMsgMenu(prev => prev === id ? null : id);
+    };
 
-    const reactions = ["😊", "😂", "❤️", "👍", "🙏"];
+    const reactions = [/*"😊",*/ "😂", "❤️", "👍", /* "🙏" */];
 
     const hasAttachment = msg.image_url && msg.image_url.length > 0;
 
     const bubbleClass = `chat-bubble ${isOwn ? "right" : "left"} ${hasAttachment ? "has-attachment" : ""} ${String(msg.id) === String(selectedMessageId) ? "highlight" : ""} ${hasReaction ? "has-reaction" : ""} ${msg.is_pin ? "pinned-highlight" : ""}`;
 
-    // ---------------- CLICK OUTSIDE MENU ----------------
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            const msgBubbleOpen = chatRefs.current[openMsgMenu]?.contains(event.target);
-            if (openMsgMenu && !msgBubbleOpen) {
+            if (openMsgMenu) {
                 setOpenMsgMenu(null);
+                setShowPicker(false);
             }
         }
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [chatRefs, openMsgMenu]);
+    }, [openMsgMenu]);
 
-    // ---------------- DELETE ----------------
 
     const handleDeleteMe = (msg) => {
         dispatch(deleteForMeLocal(msg.id));
@@ -92,15 +94,13 @@ export default function ChatBubble({
             msgId: msg.id,
             chatId: msg.chatId || msg.chat_id,
             text: "This message was deleted",
+            image_url: "",
             is_deleted: true,
             delete_for_all: true
         }));
 
         closeModal();
     };
-
-
-
 
     const openDeleteModal = (msg) => {
         openModal(
@@ -121,16 +121,12 @@ export default function ChatBubble({
         setOpenMsgMenu(null);
     }
 
-    // ---------------- STAR ----------------
-
     const handleTogglestar = (e) => {
         e.stopPropagation();
         dispatch(Starmsg(msg.id));
         dispatch(StarMsg(msg.id));
         setOpenMsgMenu(null);
     }
-
-    // ---------------- PIN ----------------
 
     const handelTogglepin = async (e) => {
         e.stopPropagation();
@@ -144,7 +140,6 @@ export default function ChatBubble({
             return;
         }
 
-        // Optimistic UI update
         dispatch(Pinmsg(msg.id));
 
         try {
@@ -153,15 +148,12 @@ export default function ChatBubble({
             ).unwrap();
 
         } catch (error) {
-            //  API fail → revert UI
             dispatch(Pinmsg(msg.id));
-
             toast.error("Pin failed, reverted");
         }
 
         setOpenMsgMenu(null);
     };
-    // ---------------- REPLY ----------------
 
     const handleReply = (e) => {
         e.stopPropagation();
@@ -177,10 +169,8 @@ export default function ChatBubble({
             el?.scrollIntoView({ behavior: "smooth", block: "center" });
         }
 
-        // setReplyMsg(msg);
     };
 
-    // ---------------- EDIT ----------------
 
     const openEditModal = (msg) => {
         openModal(
@@ -215,7 +205,6 @@ export default function ChatBubble({
         try {
             const existing = msg.reactions?.find(r => r.user_id === user.id);
 
-            // SAME emoji → remove
             if (existing && existing.emoji === emoji) {
                 dispatch(sendReaction({
                     messageId: msg.id,
@@ -233,7 +222,6 @@ export default function ChatBubble({
                 });
 
             } else {
-                // add/update reaction
                 dispatch(sendReaction({
                     messageId: msg.id,
                     emoji
@@ -251,9 +239,9 @@ export default function ChatBubble({
                 });
             }
 
-            // Close UI menus
             setShowReactions(null);
             setOpenMsgMenu(null);
+            setShowPicker(null);
 
         } catch (error) {
             console.error("Failed to handle reaction:", error);
@@ -279,11 +267,47 @@ export default function ChatBubble({
             : trimmed;
     };
 
+    const handleForward = (e) => {
+        e.stopPropagation();
+        setOpenMsgMenu(null);
+
+        if (msg.delete_for_all) return;
+
+        openModal(
+            <GlobalModal onClose={closeModal}>
+                <ForwardModal
+                    msgId={msg.id}
+                    onClose={closeModal}
+                />
+            </GlobalModal>
+        );
+    };
+
+    const renderMessageText = (text) => {
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+        return text.split(urlRegex).map((part, index) => {
+            if (part.match(urlRegex)) {
+                return (
+                    <a
+                        key={index}
+                        href={part}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="link"
+                        style={{ textDecoration: 'underline' }}
+                    >
+                        {part}
+                    </a>
+                );
+            }
+            return part;
+        });
+    };
     return (
         <div
             ref={el => {
                 if (el) chatRefs.current[msg.id] = el;
-                // else delete chatRefs.current[msg.id];
             }}
             className={`chat-message-item ${isOwn ? "own" : "other"}`}
         >
@@ -291,6 +315,7 @@ export default function ChatBubble({
             <div className="msg-time-header">
                 <span className="time">{formatChatTime(msg.createdAt, "list")}</span>
                 {msg.is_edited && <span className="edited"> • Edited</span>}
+                {msg.is_forwarded && <span className="edited"> • Forwarded</span>}
                 {msg.is_pin && (
                     <div className="pinned-label">
                         📌 Pinned
@@ -312,15 +337,12 @@ export default function ChatBubble({
                 )}
             </div>
 
-
-
             <div className={bubbleClass} >
-
                 <div
                     className="msg-arrow"
                     onClick={(e) => {
                         e.stopPropagation();
-                        setOpenMsgMenu(prev => prev === msg.id ? null : msg.id);
+                        toggleMenu(msg.id);
                     }}
                 >
                     <DownArrow />
@@ -341,61 +363,91 @@ export default function ChatBubble({
                     </div>
                 )}
 
-                {/* Images */}
-                <Attachments msg={msg} />
+                <div className="bubble-content-wrapper">
+                    <Attachments msg={msg} />
 
-                {/* Caption (Text) */}
-                {msg.text && (
-                    <div className="media-caption">
-                        {msg.text}
+                    {msg.text && (
+                        <div className="message-text">
+                            {renderMessageText(msg.text)}
+                        </div>
+                    )}
+                </div>
+
+                {msg.gif_url && (
+                    <div
+                        className="message-gif-container"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            dispatch(openPreview(msg.gif_url));
+                        }}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        <img
+                            src={msg.gif_url}
+                            alt="GIF"
+                            className="message-gif"
+                            style={{ borderRadius: "8px", maxWidth: "100%", display: "block" }}
+                        />
                     </div>
                 )}
 
-                {/* Dropdown Menu */}
                 {openMsgMenu === msg.id && !msg.delete_for_all && (
-                    <div className="Dropdown" style={getThemeStyle(theme)}>
-                        <div className="Dropdown-Item" onMouseDown={handleTogglestar}>
-                            <StarIcon
-                                size={16}
-                                color={msg.is_star ? "#FFD700" : "currentColor"}
-                                fill={msg.is_star ? "#FFD700" : "none"}
-                            />
-                        </div>
-                        <div className="Dropdown-Item" onMouseDown={handelTogglepin}>
-                            <span className="material-symbols-outlined" style={{ color: 'inherit', fontSize: '18px' }}>keep</span>
+                    <div className="Dropdown-Container">
 
+                        <div className="Dropdown-Section reaction-section" style={getThemeStyle(theme)}>
+                            {reactions.map((emoji, index) => (
+                                <span
+                                    key={index}
+                                    className="emoji-item"
+                                    onMouseDown={(e) => { e.stopPropagation(); handleReact(emoji) }}
+                                >
+                                    {emoji}
+                                </span>
+                            ))}
                         </div>
-                        {msg.text && isOwn &&
-                            <div className="Dropdown-Item" onMouseDown={handleEditMsg}>
-                                <EditIcon />
+
+                        <div className="Dropdown-Section action-section" style={getThemeStyle(theme)}>
+                            <div className="Dropdown-Item" onMouseDown={handleTogglestar} data-tooltip="Star">
+                                <StarIcon size={16} color={msg.is_star ? "#FFD700" : "currentColor"} fill={msg.is_star ? "#FFD700" : "none"} />
                             </div>
-                        }
-                        <div className="Dropdown-Item"
-                            onMouseDown={(e) => {
-                                e.stopPropagation();
-                                setShowReactions(prev => prev === msg.id ? null : msg.id);
-                            }}
-                        >
-                            <EmojiIcon />
+                            <div className="Dropdown-Item" onMouseDown={(e) => { e.stopPropagation(); setShowPicker(!showPicker); }} data-tooltip="Emoji">
 
-                            {showReactions === msg.id && (
-                                <div className="reaction-box">
-                                    {reactions.map((emoji, index) => (
-                                        <span
-                                            key={index}
-                                            onMouseDown={(e) => { e.stopPropagation(); handleReact(emoji) }}
-                                        >
-                                            {emoji}
-                                        </span>
-                                    ))}
+                                <EmojiIcon />
+
+                                {showPicker && (
+                                    <div className="absolute-picker-position" onMouseDown={(e) => e.stopPropagation()}>
+                                        <EmojiPicker onEmojiClick={(emojiObj) => handleReact(emojiObj.emoji)}
+                                            theme="inherit"
+                                            autoFocusSearch={false}
+                                            searchDisabled={false}
+                                            skinTonesDisabled={false}
+                                            previewConfig={{ showPreview: false }}
+                                            width={300}
+                                            height={400} />
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="Dropdown-Item" onMouseDown={handelTogglepin} data-tooltip="Pin">
+                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>keep</span>
+                            </div>
+
+                            <div className="Dropdown-Item" onMouseDown={handleReply} data-tooltip="Reply">
+                                <ReplyIcon />
+                            </div>
+
+                            <div className="Dropdown-Item" onMouseDown={handleForward} data-tooltip="Forward">
+                                <ForwardIcon />
+                            </div>
+
+                            {msg.text && isOwn &&
+                                <div className="Dropdown-Item" onMouseDown={handleEditMsg} data-tooltip="Edit">
+                                    <EditIcon />
                                 </div>
-                            )}
-                        </div>
-                        <div className="Dropdown-Item" onMouseDown={handleReply}>
-                            <ReplyIcon />
-                        </div>
-                        <div className="Dropdown-Item delete-action" onMouseDown={handleDelete}>
-                            <DeleteIcon />
+                            }
+                            <div className="Dropdown-Item delete-action" onMouseDown={handleDelete} data-tooltip="Delete">
+                                <DeleteIcon />
+                            </div>
                         </div>
                     </div>
                 )}
@@ -419,6 +471,7 @@ export default function ChatBubble({
                         }
                     </>
                 }
+
             </div>
         </div >
     );

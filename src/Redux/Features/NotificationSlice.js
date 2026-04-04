@@ -1,17 +1,16 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
-const BASE_API = import.meta.env.VITE_API_URL;
 
 export const FetchNotifications = createAsyncThunk(
     'notification/FetchNotifications',
     async ({ page, limit = 10 }, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`${BASE_API}/api/v2/notification/get-all?page=${page}&limit=${limit}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            const res = await axiosInstance.get('/api/v2/notification/get-all', {
+                params: {
+                    page,
+                    limit
+                }
             });
             return res.data.data;
         } catch (error) {
@@ -27,11 +26,11 @@ export const SeenNotification = createAsyncThunk(
     'notification/SeenNotification',
     async (id, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`${BASE_API}/api/v2/notification/seen/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            const res = await axiosInstance.get('/api/v2/notification/get-all', {
+                params: {
+                    page,
+                    limit
+                }
             });
             return res.data;
         } catch (error) {
@@ -44,12 +43,7 @@ export const DeleteNotification = createAsyncThunk(
     'notification/DeleteNotification',
     async (id, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.delete(`${BASE_API}/api/v2/notification/delete/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            const res = await axiosInstance.delete(`/api/v2/notification/delete/${id}`);
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -93,7 +87,6 @@ const NotificationSlice = createSlice({
 
                 const newNotifications = action.payload || [];
 
-                // Merge and deduplicate
                 const allNotifications = requestPage === 1
                     ? newNotifications
                     : [...state.notifications, ...newNotifications];

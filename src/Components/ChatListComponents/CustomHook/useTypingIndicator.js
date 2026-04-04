@@ -2,36 +2,43 @@ import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useSocket } from "../../../Context/SocketContext";
 
-export const useTypingIndicator = (selectedChat, setIsOtherTyping, currentChat) => {
+export const useTypingIndicator = (setTypingChatId) => {
     const typingTimeout = useRef(null);
+    const socket = useSocket();
+
     const Signup = useSelector(state => state.signup.SignupUser);
     const Signin = useSelector(state => state.signin.SigninUser);
     const user = Object.keys(Signin).length > 0 ? Signin : Signup;
-    const socket = useSocket();
+
     useEffect(() => {
-        if (!socket || !selectedChat?.id) return;
-        if (!selectedChat?.id) return;
+        if (!socket || !user?.id) return;
 
         const handleTypingListener = (data) => {
-            if (currentChat?.is_block) return;
-            console.log("TYPING EVENT RECEIVED:", data);
             const socketData = typeof data === "string" ? JSON.parse(data) : data;
-            if (
-                Number(socketData.cid) === Number(selectedChat.id) &&
-                Number(socketData.uid) !== Number(user.id)
-            ) {
-                setIsOtherTyping(socketData.typing);
-                clearTimeout(typingTimeout.current);
-                typingTimeout.current = setTimeout(() => {
-                    setIsOtherTyping(false);
-                }, 1000);
+
+            const incomingChatId = Number(socketData.cid);
+            const incomingUserId = Number(socketData.uid);
+
+            if (incomingUserId !== Number(user.id)) {
+                if (socketData.typing) {
+                    setTypingChatId(incomingChatId);
+
+                    if (typingTimeout.current) clearTimeout(typingTimeout.current);
+
+                    typingTimeout.current = setTimeout(() => {
+                        setTypingChatId(null);
+                    }, 2000);
+                } else {
+                    setTypingChatId(null);
+                }
             }
         };
+
         socket.on('typing', handleTypingListener);
+
         return () => {
             socket.off('typing', handleTypingListener);
-            clearTimeout(typingTimeout.current);
+            if (typingTimeout.current) clearTimeout(typingTimeout.current);
         };
-    }, [currentChat?.is_block, selectedChat?.id, user?.id, setIsOtherTyping, socket]);
-
-}
+    }, [socket, user?.id, setTypingChatId]);
+};

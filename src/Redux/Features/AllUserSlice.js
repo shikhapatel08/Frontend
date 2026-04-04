@@ -1,21 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
-const BASE_API = import.meta.env.VITE_API_URL;
-// ================================= Fetch All User  ================================= //
 export const FetchAllUser = createAsyncThunk(
     'alluser/FetchAllUser',
     async (_, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`${BASE_API}/api/v1/users/getall`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
-                }
-            );
+            const res = await axiosInstance.get(`/api/v1/users/getall`);
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -31,8 +22,8 @@ const FetchAllUserSlice = createSlice({
     },
     reducers: {
         setUserFromUpdate: (state, action) => {
-        state.User = action.payload;
-    }
+            state.User = action.payload;
+        }
     },
     extraReducers: (builder) => {
         builder

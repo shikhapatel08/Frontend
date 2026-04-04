@@ -19,19 +19,13 @@ const Signin = () => {
 
     const { loading } = useSelector(state => state.signin);
 
-
-    // ---------------- INITIAL VALUES ----------------
-
     const initialValues = {
         email: "",
         password: "",
     };
 
-    // ---------------- VALIDATION ----------------
-
     const validationSchema = Yup.object({
         email: Yup.string()
-            // .matches(/^[0-9]{10}$/, "Phone must be 10 digits")
             .email("Invalid email format")
             .required("Email is required"),
         password: Yup.string()
@@ -42,28 +36,19 @@ const Signin = () => {
             .required("Password is required"),
     });
 
-    // ---------------- LOGIN ----------------
-
     const handleSubmit = async (values) => {
 
         try {
-
             await dispatch(FetchUser(values)).unwrap();
-
             toast.success("Welcome back!");
             navigate("/MessagePage");
 
         } catch (err) {
 
-            console.log("LOGIN ERROR", err);
-
             toast.error(`${err?.message || "Login failed"}`)
-            console.log(err?.response?.data?.message)
 
         }
     };
-
-    // ---------------- FORGOT PASSWORD ----------------
 
     const handleForgotPassword = async (values) => {
         try {
@@ -77,7 +62,6 @@ const Signin = () => {
                 action: "forgot_password"
             }));
 
-            // optional: check success
             if (res?.payload?.success) {
                 navigate("/OtpPage", {
                     state: {
@@ -96,7 +80,6 @@ const Signin = () => {
     };
 
     return (
-        // ================================= SignIn Page ================================= //
         <div className="Signin">
             <div className="signin-conainer">
                 <div className="Signin-left">

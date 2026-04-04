@@ -14,7 +14,6 @@ export const useStatus = () => {
                 const parsed =
                     typeof data === "string" ? JSON.parse(data) : data;
 
-                console.log("ONLINE EVENT:", parsed);
                 dispatch(updateOnlineStatus(parsed));
             } catch (err) {
                 console.log("PARSE ERROR:", err, data);
@@ -23,5 +22,5 @@ export const useStatus = () => {
         socket.on("online_status", handleStatus);
 
         return () => socket.off("online_status", handleStatus);
-    }, [dispatch , socket]);
+    }, [dispatch, socket]);
 }

@@ -6,7 +6,6 @@ import RouteGuard from "./RouteGuard";
 
 
 export default function AppRoutes() {
-    // ================================= Hook ================================= //
     const location = useLocation();
     const hideNavbarOn = ["/", "/Signup", "/signup", '/OtpPage', '/success', '/cancel', '/ResetPassword'];
 
@@ -14,12 +13,10 @@ export default function AppRoutes() {
         <>
             {!hideNavbarOn.includes(location.pathname) && (
                 <>
-                    {/* <Navbar /> */}
                     <Sidebar />
                 </>
             )}
 
-            {/* ================================= Routes ================================= */}
             <Suspense fallback={<div style={{ padding: "20px" }}>Loading...</div>}>
                 <Routes>
                     {appRoutes.map(({ path, element: Component, isPrivate }) => (

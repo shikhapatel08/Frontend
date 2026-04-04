@@ -1,8 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// ================================= Search Messages ================================= //
-
 export const SearchMsg = createAsyncThunk(
     'searchMsg/SearchMsg',
     async ({ chatId, searchTerm, page, limit = 20 }, thunkAPI) => {

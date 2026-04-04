@@ -12,8 +12,6 @@ import { FetchAllUser } from "../../Redux/Features/AllUserSlice";
 import { ThemeContext } from "../../Context/ThemeContext";
 import { SearchSkeleton } from "../../Components/Common Components/Loader/PageSkeletons";
 
-
-
 export default function SearchPage() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -25,13 +23,9 @@ export default function SearchPage() {
 
     const [searchText, setSearchText] = useState("");
 
-    /* ---------------- FETCH USERS ---------------- */
-
     useEffect(() => {
         dispatch(FetchAllUser())
     }, [dispatch]);
-
-    /* ---------------- SEARCH (DEBOUNCE) ---------------- */
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -45,8 +39,6 @@ export default function SearchPage() {
         return () => clearTimeout(timer);
     }, [searchText, dispatch]);
 
-    /* ---------------- OPEN CHAT ---------------- */
-
     const handleUserClick = useCallback((userId) => {
         dispatch(createOrGetChat({ receiverId: userId }))
             .unwrap()
@@ -58,20 +50,15 @@ export default function SearchPage() {
             }).catch(console.error);
     }, [dispatch, navigate]);
 
-    /* ---------------- SIDEBAR ---------------- */
-
     const handleSidebar = () => {
         dispatch(toggleSidebar());
     }
-
-    /* ---------------- FINAL USERS ---------------- */
 
     const usersToShow = searchText.trim() ? searchUsers : allusers;
 
     return (
         <div className="search-container"
             style={{ ...style, ...getThemeStyle(theme) }}>
-            {/* HEADER */}
             <div className="title" style={{ display: 'flex', alignItems: 'center' }}>
                 <span onClick={handleSidebar} style={{ cursor: 'pointer', display: 'flex' }}>
                     <MenuIcon />
@@ -87,7 +74,6 @@ export default function SearchPage() {
                 </span>
             </div>
 
-            {/* SEARCH INPUT */}
             <div className="Search">
                 <input
                     type="text"
@@ -98,7 +84,6 @@ export default function SearchPage() {
                 />
             </div>
 
-            {/* RESULTS */}
             <div className="search-results" style={getThemeStyle(theme)}>
                 {loading ? (
                     <SearchSkeleton count={5} />
@@ -120,4 +105,3 @@ export default function SearchPage() {
         </div>
     );
 }
-

@@ -1,17 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BASE_API = import.meta.env.VITE_API_URL;
-
-// ================================= OTP Actions ================================= //
+import axiosInstance from "../../utils/axiosInstance";
 
 export const SendOtp = createAsyncThunk(
     "otp/sendOtp",
     async ({ email, action }, thunkAPI) => {
         try {
-            const res = await axios.post(`${BASE_API}/api/v1/users/send-otp`, {
-                email: email,
-                action: action
+            const res = await axiosInstance.post('/api/v1/users/send-otp', {
+                email,
+                action
             });
             return res.data;
         } catch (error) {
@@ -23,13 +19,14 @@ export const SendOtp = createAsyncThunk(
     }
 );
 
-// ================================= Verify OTP Actions ================================= //
-
 export const verifyOtp = createAsyncThunk(
     "otp/verifyOtp",
     async ({ email, otp }, thunkAPI) => {
         try {
-            const res = await axios.post(`${BASE_API}/api/v1/users/verify-otp`, { email: email, otp });
+            const res = await axiosInstance.post('/api/v1/users/verify-otp', {
+                email,
+                otp
+            });
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response?.data || { message: "OTP verification failed" });

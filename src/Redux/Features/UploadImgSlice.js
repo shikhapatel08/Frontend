@@ -1,23 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BASE_API = import.meta.env.VITE_API_URL;
-
-// ================================= Upload Image ================================= //
+import axiosInstance from "../../utils/axiosInstance";
 
 export const UploadImg = createAsyncThunk(
     'uploading/UploadImg',
     async (formdata, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.post(`${BASE_API}/api/v1/users/upload`, formdata,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
-                }
-            );
+            const res = await axiosInstance.post('/api/v1/users/upload', formdata);
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue({

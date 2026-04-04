@@ -5,7 +5,7 @@ import { ThemeContext } from "../../Context/ThemeContext";
 
 const Cancel = () => {
   const navigate = useNavigate();
-  const { theme, getThemeStyle } = useContext(ThemeContext); //theme toggle/ style apply
+  const { theme, getThemeStyle } = useContext(ThemeContext);
 
   return (
     <div className="cancel-container" style={getThemeStyle(theme)}>

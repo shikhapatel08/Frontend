@@ -6,18 +6,17 @@ import { useEffect } from "react";
 import ImageMessage from "../../Components/ChatListComponents/ImageMessage";
 import { MediaSkeleton } from "../../Components/Common Components/Loader/PageSkeletons";
 
-
-const isVideo = (url) => {
-  return url.match(/\.(mp4|webm|ogg|mov)$/i);
+const isVideo = (name) => {
+  return name.match(/\.(mp4|webm|ogg|mov)$/i);
 };
 
-const isAudio = (url) => {
-  return url.match(/\.(mp3|wav|aac|m4a)$/i);
+const isAudio = (name) => {
+  return name.match(/\.(mp3|wav|aac|m4a)$/i);
 };
 
 export default function MediaPage({ type, chatId }) {
   const dispatch = useDispatch();
-    const { Media, loading, page, hasMore } = useSelector((state) => state.media);
+  const { Media, loading, page, hasMore } = useSelector((state) => state.media);
 
   const fetchMedia = () => {
     if (!hasMore) return;
@@ -48,7 +47,7 @@ export default function MediaPage({ type, chatId }) {
         style={{ display: 'flex', flexDirection: 'column' }}
       >
         {loading ? (
-           <MediaSkeleton count={12} />
+          <MediaSkeleton count={12} />
         ) : (
 
           <>
@@ -69,30 +68,32 @@ export default function MediaPage({ type, chatId }) {
                     }
                   }
 
-                  return files.map((file, i) => (
-                    <div key={msg.id + "-" + i} className="media-item">
+                  return files.map((file, i) => {
+                    const fileUrl = typeof file === "string" ? file : file.url;
+                    const fileName = typeof file === "string" ? file : file.name;
 
-                      {/* IMAGE */}
-                      {!isVideo(file) && !isAudio(file) && (
-                        <ImageMessage src={file} />
-                      )}
+                    return (
+                      <div key={msg.id + "-" + i} className="media-item">
 
-                      {/* VIDEO */}
-                      {isVideo(file) && (
-                        <video controls>
-                          <source src={file} />
-                        </video>
-                      )}
+                        {!isVideo(fileName) && !isAudio(fileName) && (
+                          <ImageMessage src={fileUrl} />
+                        )}
 
-                      {/* AUDIO */}
-                      {isAudio(file) && (
-                        <audio controls>
-                          <source src={file} />
-                        </audio>
-                      )}
+                        {isVideo(fileName) && (
+                          <video controls>
+                            <source src={fileUrl} />
+                          </video>
+                        )}
 
-                    </div>
-                  ));
+                        {isAudio(fileName) && (
+                          <audio controls>
+                            <source src={fileUrl} />
+                          </audio>
+                        )}
+
+                      </div>
+                    );
+                  });
                 })}
               </div>
             )}

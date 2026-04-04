@@ -1,7 +1,5 @@
 import Button from "../Button/Button";
 
-// ================================= Logout Modal ================================= //
-
 export default function LogoutModal({ onCancel, onConfirm }) {
 
     return (

@@ -15,9 +15,10 @@ import { useModal } from "../../Context/ModalContext";
 import SendMsgModal from "../Modal/SendMessageModal";
 import Button from "../Button/Button";
 import { ChatListSkeleton } from "../Common Components/Loader/PageSkeletons";
+import { ChatItem } from "./ChatItem";
 
 
-export default function ChatList({ isOtherTyping }) {
+export default function ChatList({ typingChatId }) {
     const dispatch = useDispatch();
     const { chats, selectedChat, page, hasMore, loading } = useSelector(state => state.createchat);
 
@@ -40,7 +41,6 @@ export default function ChatList({ isOtherTyping }) {
     useChatUpdate();
     useEditText();
 
-    // ---------------- FETCH MORE ----------------
 
     const fetchMore = useCallback(() => {
         if (!hasMore) return;
@@ -48,12 +48,9 @@ export default function ChatList({ isOtherTyping }) {
         if (hasMore) dispatch(fetchMyChats({ page }));
     }, [dispatch, hasMore, page]);
 
-    // ---------------- SORT CHATS ----------------
 
     const sortedChats = useMemo(() => {
-        // Early return if there are no chats
         if (!chats) return [];
-        // Separate pinned and unpinned chats
         const pinnedChats = [];
         const unpinnedChats = [];
 
@@ -64,9 +61,7 @@ export default function ChatList({ isOtherTyping }) {
                 unpinnedChats.push(chat);
             }
         });
-        // Sort pinned chats by latest activity
         pinnedChats.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-        // Sort unpinned chats
         unpinnedChats.sort((a, b) => {
             const aUnread = a.unread_count || a.ChatSettings?.[0]?.unread_count || 0;
             const bUnread = b.unread_count || b.ChatSettings?.[0]?.unread_count || 0;
@@ -76,19 +71,8 @@ export default function ChatList({ isOtherTyping }) {
 
             return new Date(b.updatedAt) - new Date(a.updatedAt);
         });
-        // Combine pinned + unpinned
         return [...pinnedChats, ...unpinnedChats];
     }, [chats]);
-
-    // ---------------- CHAT USER ----------------
-
-    const getChatUser = (chat, joinUserId) => {
-        return chat.UserOne.id === joinUserId
-            ? chat.UserTwo
-            : chat.UserOne;
-    };
-
-    // ---------------- SELECT CHAT ----------------
 
     const handleChatList = useCallback((chat, otherUser) => {
         dispatch(UnreadCount({ chatId: chat.id, unread_count: 0 }));
@@ -102,13 +86,10 @@ export default function ChatList({ isOtherTyping }) {
         dispatch(SelectedChat(chatData));
     }, [dispatch]);
 
-    // ---------------- SIDEBAR ----------------
 
     const handleHamburgerIcon = () => {
         dispatch(toggleSidebar());
     };
-
-    // ---------------- UTILS ----------------
 
     const truncateMessage = (message, limit = 15) => {
         if (!message) return "";
@@ -128,13 +109,9 @@ export default function ChatList({ isOtherTyping }) {
         )
     }
 
+
     return (
         <div className="Message-detail" id="chatListScrollable">
-            {/* {loading ? (
-                <div className="loader-conatainer">
-                    <div className="loader"></div>
-                </div>
-            ) : (<> */}
             <div className="Message">
                 <div className="title" style={{ display: 'flex', alignItems: 'center' }}>
                     <span onClick={handleHamburgerIcon} style={{ cursor: 'pointer', display: 'flex' }}>
@@ -144,16 +121,12 @@ export default function ChatList({ isOtherTyping }) {
                         <h2 style={{
                             margin: '0px',
                             marginLeft: '15px',
-                            fontSize: '1.5rem' // જરૂર મુજબ સાઈઝ સેટ કરી શકાય
+                            fontSize: '1.5rem'
                         }}>
                             Message
                         </h2>
                     </span>
                 </div>
-                {/* <input
-                    placeholder="searching..."
-                    className="Message-user-searching"
-                /> */}
             </div>
             {loading && chats.length === 0 ? (
                 <ChatListSkeleton count={8} />
@@ -168,31 +141,20 @@ export default function ChatList({ isOtherTyping }) {
                     style={{ overflow: 'visible' }}
                 >
                     {sortedChats.length > 0 ?
-                        (sortedChats.map((chat) => {
-                            const otherUser = getChatUser(chat, JoinUser);
-                            const unreadCount = chat.unread_count || chat.ChatSettings?.[0]?.unread_count || 0;
-                            return (
-                                <div className={unreadCount > 0 && selectedChat?.id !== chat.id ? 'MessageUser' : "Message-User"} key={chat.id} onClick={() => handleChatList(chat, otherUser)} style={{ cursor: "pointer" }}>
-                                    <>
-                                        <div className="Message-Profile-img">
-                                            <img src={otherUser?.photo ? otherUser?.photo : profileImg} alt='profile' />
-                                            {/* {chats.unread_count > 0 && <span className="online-dot"></span>} */}
-                                        </div>
-                                        <div className="Message-Username">
-                                            <h2 className="chat-name">{otherUser?.name}</h2>
-                                            {isOtherTyping ? <span style={{ color: 'green' }}>Typing...</span> : <span className="chat-last-message" style={{ color: 'grey' }}>{truncateMessage(chat?.last_message)}</span>}
-                                        </div>
-                                        <ChatListDropdown
-                                            chat={chat}
-                                            otherUser={otherUser}
-                                            unreadCount={unreadCount}
-                                        />
-                                    </>
-                                </div>
-                            )
-                        })) : (
+                        (sortedChats.map((chat) => (
+                            <ChatItem
+                                key={chat.id}
+                                chat={chat}
+                                selectedChat={selectedChat}
+                                handleChatList={handleChatList}
+                                typingChatId={typingChatId}
+                                truncateMessage={truncateMessage}
+                                JoinUser={JoinUser}
+                                profileImg={profileImg}
+                            />
+                        ))) : (
                             <>
-                                <p style={{ color: 'grey' }}>Chat will appear here after you send or receive a message.</p>
+                                <p style={{ color: 'grey' }} className="default">Chat will appear here after you send or receive a message.</p>
 
                                 {isMobile &&
 
@@ -209,8 +171,6 @@ export default function ChatList({ isOtherTyping }) {
                     }
                 </InfiniteScroll>
             )}
-            {/* </>)} */}
-
         </div >
     )
 }

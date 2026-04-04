@@ -1,18 +1,16 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
-const BASE_API = import.meta.env.VITE_API_URL;
 
 export const GetMedia = createAsyncThunk(
     'media/UploadMedia',
     async ({ limit = 10, page }, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`${BASE_API}/api/v2/user-data/get-media?page=${page}&limit=${limit}`, {
-                headers: {
-
-                    Authorization: `Bearer ${token}`,
-                },
+            const res = await axiosInstance.get('/api/v2/user-data/get-media', {
+                params: {
+                    page,
+                    limit
+                }
             });
             return res.data.data;
         } catch (error) {
@@ -28,11 +26,11 @@ export const GetMediaByChatId = createAsyncThunk(
     'media/GetMediaByChatId',
     async ({ chatId, page, limit = 10 }, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`${BASE_API}/api/v2/user-data/get-media-in-chat/${chatId}?page=${page}&limit=${limit}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            const res = await axiosInstance.get(`/api/v2/user-data/get-media-in-chat/${chatId}`, {
+                params: {
+                    page,
+                    limit
+                }
             });
             return res.data.data;
         } catch (error) {
@@ -45,12 +43,11 @@ export const GetDocs = createAsyncThunk(
     'media/GetDocs',
     async ({ page, limit = 10 }, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`${BASE_API}/api/v2/user-data/get-docs?page=${page}&limit=${limit}`, {
-                headers: {
-
-                    Authorization: `Bearer ${token}`,
-                },
+            const res = await axiosInstance.get('/api/v2/user-data/get-docs', {
+                params: {
+                    page,
+                    limit
+                }
             });
             return res.data.data;
         } catch (error) {
@@ -63,11 +60,11 @@ export const GetDocsByChatId = createAsyncThunk(
     'media/GetDocsByChatId',
     async ({ chatId, page, limit = 10 }, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`${BASE_API}/api/v2/user-data/get-docs-in-chat/${chatId}?page=${page}&limit=${limit}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            const res = await axiosInstance.get(`/api/v2/user-data/get-docs-in-chat/${chatId}`, {
+                params: {
+                    page,
+                    limit
+                }
             });
             return res.data.data;
         } catch (error) {
@@ -80,11 +77,11 @@ export const GetLinks = createAsyncThunk(
     'media/GetLinks',
     async ({ page, limit = 10 }, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`${BASE_API}/api/v2/user-data/get-links?page=${page}&limit=${limit}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            const res = await axiosInstance.get('/api/v2/user-data/get-links', {
+                params: {
+                    page,
+                    limit
+                }
             });
             return res.data.data;
         }
@@ -98,11 +95,11 @@ export const GetLinksByChatId = createAsyncThunk(
     'media/GetLinksByChatId',
     async ({ chatId, page, limit = 10 }, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`${BASE_API}/api/v2/user-data/get-links-in-chat/${chatId}?page=${page}&limit=${limit}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            const res = await axiosInstance.get(`/api/v2/user-data/get-links-in-chat/${chatId}`, {
+                params: {
+                    page,
+                    limit
+                }
             });
             return res.data.data;
         } catch (error) {

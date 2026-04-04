@@ -16,21 +16,17 @@ export const useUpdateStatus = (selectedChat) => {
     useEffect(() => {
         if (!socket || !selectedChat?.id || !myId) return;
 
-        // 1. Tell backend we've opened/seen this chat
         socket.emit("fe_seen", {
             cid: selectedChat.id,
             uid: myId,
         });
 
-        // 2. Handle "seen" events from other users
         const handleSeen = (data) => {
             const { cid } = data;
 
-            // Only update if it's the current chat
             if (cid === selectedChat.id) {
                 dispatch(seen({ cid }));
 
-                // Mark all our messages in this chat as seen
                 dispatch(updateMessageStatus({
                     chatId: cid,
                     status: "seen",

@@ -32,7 +32,6 @@ export default function ChatListDropdown({
     const { loading } = useSelector(state => state.blocked);
     const DeleteLoading = useSelector(state => state.delete.loading);
 
-
     const toggleMenu = (id) => {
         setOpenMenuId(openMenuId === id ? null : id);
     };
@@ -63,9 +62,6 @@ export default function ChatListDropdown({
             })
             .catch((err) => {
                 toast.error(`${err.message}`)
-                // if (err) {
-                //     toast.error(`You can pin only ${limit} chats`);
-                // }
             });
     };
 

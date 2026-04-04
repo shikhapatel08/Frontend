@@ -1,24 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 import { toast } from "react-toastify";
-
-const BASE_API = import.meta.env.VITE_API_URL;
 
 export const shortenMessageText = createAsyncThunk(
     "textFunctionally/TextFunctionally",
     async (text) => {
-        const token = localStorage.getItem("token");
         try {
-            const response = await axios.post(`${BASE_API}/api/v3/ai/generate-short-explanation`,
-                {
-                    text: text
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
-            );
+            const response = await axiosInstance.post('/api/v3/ai/generate-short-explanation', {
+                text: text
+            });
             return response.data;
         } catch (error) {
             const err = error.response.data.message;

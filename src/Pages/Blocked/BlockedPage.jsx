@@ -23,12 +23,9 @@ export default function Blocked({ onBack }) {
     const user = Object.keys(Signin).length > 0 ? Signin : Signup;
     const JoinUser = user?.id;
 
-    // ---------------- GET OTHER USER ----------------
     const getOtherUser = (chat, joinUserId) => {
         return chat.UserOne.id === joinUserId ? chat.UserTwo : chat.UserOne;
     };
-
-    // ---------------- BLOCKED USERS LIST ----------------
 
     const blockedChats = chats
         .filter(chat => chat.is_block)
@@ -37,7 +34,6 @@ export default function Blocked({ onBack }) {
             chatId: chat.id,
         }));
 
-    // ---------------- UNBLOCK HANDLER ----------------
 
     const Unblocked = async (user) => {
         await dispatch(BlockedUser(user.chatId))
@@ -59,7 +55,6 @@ export default function Blocked({ onBack }) {
             </GlobalModal>
         );
     };
-
 
     return (
         <div className="bolcked-container" style={getThemeStyle(theme)}>

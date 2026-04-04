@@ -1,24 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
 const BASE_API = import.meta.env.VITE_API_URL;
 
-// ================================= Sign In ================================= //
 
 export const FetchUser = createAsyncThunk(
     'signin/FetchUser',
     async (userData, thunkAPI) => {
         try {
-            const res = await axios.post(
-                `${BASE_API}/api/v1/users/login`,
-                userData,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
+            const res = await axiosInstance.post('/api/v1/users/login', userData);
 
             return res.data;
         } catch (err) {

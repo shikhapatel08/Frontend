@@ -6,9 +6,6 @@ import '../Media/Media.css'
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { DocsSkeleton } from "../../Components/Common Components/Loader/PageSkeletons";
 
-
-
-
 const getFileIcon = (url) => {
     if (url.endsWith(".pdf")) return <FaFilePdf className="pdf" />;
     if (url.endsWith(".doc") || url.endsWith(".docx")) return <FaFileWord className="word" />;

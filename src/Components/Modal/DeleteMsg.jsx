@@ -1,7 +1,5 @@
 import Button from "../Button/Button";
 
-// ================================= Delete Messages Modal ================================= //
-
 export default function DeleteMsg({
   onCancel,
   onConfirmMe,

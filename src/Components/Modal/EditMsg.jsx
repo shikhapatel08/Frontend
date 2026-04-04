@@ -1,8 +1,6 @@
 import { useState } from "react";
 import Button from "../Button/Button";
 
-//================================= Delete Chat Modal ================================= //
-
 export default function EditMsgModal({ onCancel, onConfirm, message }) {
     const [text, setText] = useState(message.text)
 

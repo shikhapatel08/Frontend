@@ -54,13 +54,10 @@ export default function SendMsgModal({ onCancel }) {
     return (
         <div className="sendModal">
 
-            {/* HEADER */}
             <div className="modalHeader">
                 <h3>New message</h3>
-                {/* <span className="closeBtn" onClick={onCancel}>✕</span> */}
             </div>
 
-            {/* SEARCH */}
             <div className="searchRow">
                 <span>To:</span>
                 <input
@@ -71,7 +68,6 @@ export default function SendMsgModal({ onCancel }) {
                 />
             </div>
 
-            {/* USER LIST */}
             <div className="userList">
 
                 {loading ? (
@@ -108,7 +104,6 @@ export default function SendMsgModal({ onCancel }) {
 
             </div>
 
-            {/* BUTTON */}
             <Button
                 className="chatBtn"
                 disabled={!selectedUser}

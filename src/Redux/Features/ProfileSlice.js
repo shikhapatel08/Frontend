@@ -1,23 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BASE_API = import.meta.env.VITE_API_URL;
-
-// ================================= Profile User ================================= //
+import axiosInstance from "../../utils/axiosInstance";
 
 export const ProfileUser = createAsyncThunk(
     'profileuser/ProfileUser',
     async (_, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`${BASE_API}/api/v1/users/profile`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
-                }
-            );
+            const res = await axiosInstance.get('/api/v1/users/profile');
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue({
@@ -31,16 +20,9 @@ export const AnotherUserProfile = createAsyncThunk(
     'profileuser/AnotherUserProfile',
     async (userId, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.post(`${BASE_API}/api/v1/users/other-user-profile`,
-                {
-                    id: userId
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
-                });
+            const res = await axiosInstance.post('/api/v1/users/other-user-profile', {
+                id: userId
+            });
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue({

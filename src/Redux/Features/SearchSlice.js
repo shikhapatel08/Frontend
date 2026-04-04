@@ -1,25 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BASE_API = import.meta.env.VITE_API_URL;
-
-// ================================= Search Users ================================= //
+import axiosInstance from "../../utils/axiosInstance";
 
 export const Searching = createAsyncThunk(
     'search/Searching',
     async ({ name, limit = 4 }, thunkAPI) => {
         const token = localStorage.getItem('token');
         try {
-            const res = await axios.get(`${BASE_API}/api/v1/users/search`, {
+            const res = await axiosInstance.get('/api/v1/users/search', {
                 params: {
                     name,
                     limit
-                },
-                headers: {
-                    Authorization: `Bearer ${token}`,
                 }
-            }
-            );
+            });
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue({

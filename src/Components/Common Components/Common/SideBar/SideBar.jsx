@@ -11,9 +11,9 @@ import { Logo, LogoutIcon, MediaIcon, MessageIcon, NotificationIcon, ProfileIcon
 import { useContext, useEffect, useState } from 'react';
 import { ThemeContext } from '../../../../Context/ThemeContext';
 import { SelectedChat } from '../../../../Redux/Features/CreateChat';
+import profile from "../../../../assets/Profile/profile.svg";
 
 export default function Sidebar() {
-    // ================================= Hook ================================= //
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
@@ -31,9 +31,6 @@ export default function Sidebar() {
     const { type } = useSelector(state => state.subscriptions);
     const { getThemeStyle, theme, toggleTheme } = useContext(ThemeContext);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
-
-
-    // ================================= Function ================================= //
 
     const handleNavigate = (path, options) => {
         navigate(path, options);
@@ -140,7 +137,6 @@ export default function Sidebar() {
     }
 
     return (
-        // ================================= SideBar ================================= //
         <>
             <div className={`Sidebar-container ${isOpen ? "open" : "collapsed"}`} style={getThemeStyle(theme)}>
                 <div className="Sidebar-logo" >
@@ -188,7 +184,7 @@ export default function Sidebar() {
                         <div />
                         <ul className="Sidebar-botton-menu">
                             <li onClick={() => handleProfile(user?.id)} className="profile-menu-item">
-                                <ProfileIcon />
+                                <img className="profileImg" src={User?.photo ? User?.photo : profile} alt="" />
                                 <div className="profile-text">
                                     <span>{User?.name}</span>
                                     <p>{type}</p>

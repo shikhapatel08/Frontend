@@ -13,7 +13,7 @@ const ImagePreviewModal = () => {
 
   const handleClose = () => {
     dispatch(closePreview());
-    setScale(1); // Reset scale when closing
+    setScale(1);
   };
 
   const zoomIn = (e) => {

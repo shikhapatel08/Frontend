@@ -119,7 +119,7 @@ export const DeleteIcon = () => {
 
 export const SubscriptionIcon = () => {
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><title xmlns="">outline-subscriptions</title><path fill="currentColor" d="M4 6h16v2H4zm2-4h12v2H6zm14 8H4c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2m0 10H4v-8h16zm-10-7.27v6.53L16 16z" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" height="25px" viewBox="0 -960 960 960" width="25px" fill="currentColor"><path d="m391-415 34-110-89-70h109l35-108 35 108h109l-89 70 34 110-89-68-89 68ZM263-48v-280q-43-37-69-99t-26-125q0-130 91-221t221-91q130 0 221 91t91 221q0 64-24 125.5T696-327v279L480-96 263-48Zm387-334q70-70 70-170t-70-170q-70-70-170-70t-170 70q-70 70-70 170t70 170q70 70 170 70t170-70ZM335-138l145-32 144 32v-138q-33 18-69.5 27t-74.5 9q-38 0-75-8.5T335-276v138Zm145-70Z" /></svg>
     )
 }
 
@@ -166,7 +166,6 @@ export const SideBarOpen = () => {
         </svg>
     )
 }
-
 
 export const PinIcon = () => {
     return (
@@ -369,23 +368,7 @@ export const EditIcon = () => (
 )
 
 export const ReplyIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg"
-        width="64"
-        height="55"
-        viewBox="0 0 64 55"
-        fill="currentColor">
-
-        <g transform="translate(0,55) scale(0.1,-0.1)">
-            <path d="M102 447 c-45 -45 -82 -89 -82 -97 0 -9 37 -53 83 -98 
-             60 -60 88 -81 100 -76 28 10 20 25 -45 91 l-62 63 
-             199 0 c170 0 205 -3 235 -18 56 -27 70 -68 70 -199 
-             0 -90 3 -113 14 -113 20 0 23 13 25 135 2 97 -1 115 
-             -21 154 -39 76 -58 81 -308 81 l-214 0 62 63 
-             c45 45 61 68 56 80 -3 9 -11 17 -18 17 
-             -6 0 -48 -37 -94 -83z"/>
-        </g>
-
-    </svg>
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M320-280 80-520l240-240 57 56-184 184 184 184-57 56Zm480 80v-160q0-50-35-85t-85-35H433l144 144-57 56-240-240 240-240 57 56-144 144h247q83 0 141.5 58.5T880-360v160h-80Z" /></svg>
 )
 
 export const BillingIcon = () => (
@@ -458,3 +441,13 @@ export const DownArrow = () => (
         />
     </svg>
 );
+
+export const GifIcon = ({ size = 24, color = "currentColor" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M216-144q-29 0-50.5-21.5T144-216v-528q0-29.7 21.5-50.85Q187-816 216-816h528q29.7 0 50.85 21.15Q816-773.7 816-744v528q0 29-21.15 50.5T744-144H216Zm0-72h528v-528H216v528Zm240-168h48v-192h-48v192Zm-144 0h48q20.4 0 34.2-13.8Q408-411.6 408-432v-48h-48v48h-48v-96h96v-14q0-10-13.8-22T360-576h-48q-20.4 0-34.2 13.8Q264-548.4 264-528v96q0 20.4 13.8 34.2Q291.6-384 312-384Zm240 0h48v-72h72v-48h-72v-24h96v-48H552v192ZM216-216v-528 528Z" /></svg>
+);
+
+export const ForwardIcon = () => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="m640-280-57-56 184-184-184-184 57-56 240 240-240 240ZM80-200v-160q0-83 58.5-141.5T280-560h247L383-704l57-56 240 240-240 240-57-56 144-144H280q-50 0-85 35t-35 85v160H80Z" /></svg>
+    )
+}

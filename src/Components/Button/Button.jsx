@@ -1,6 +1,3 @@
-import React from "react";
-
-// ================================= Button Common Component ================================= //
 const Button = ({ variant = "primary", children, onClick }) => {
 
   const getStyle = () => {

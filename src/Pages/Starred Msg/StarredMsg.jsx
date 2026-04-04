@@ -19,24 +19,16 @@ import Loader from "../../Components/Common Components/Loader/Loader";
 import { StarredSkeleton } from "../../Components/Common Components/Loader/PageSkeletons";
 import { FetchMessages, resetMessages } from "../../Redux/Features/SendMessage";
 
-
-
 export default function StarredMsg({ type, chatId }) {
 
-    /* ---------------- HOOKS ---------------- */
 
     const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const style = useLayoutStyle();
 
     const { starredMessages, loading, page, hasMore } = useSelector((state) => state.starredMsg);
-    const { chats, selectedChat } = useSelector((state) => state.createchat);
 
     const { theme, getThemeStyle } = useContext(ThemeContext);
 
     const isChatView = type === "Chat";
-
-    /* ---------------- FETCH DATA ---------------- */
 
     useEffect(() => {
         dispatch(resetStarredState());
@@ -49,7 +41,6 @@ export default function StarredMsg({ type, chatId }) {
 
     }, [dispatch, isChatView, chatId]);
 
-    /* ---------------- LOAD MORE ---------------- */
 
     const fetchMore = () => {
         if (!hasMore) return;
@@ -61,51 +52,7 @@ export default function StarredMsg({ type, chatId }) {
         }
     };
 
-    /* ---------------- OPEN MESSAGE ---------------- */
-
-    // const handleStarredMsg = (msg) => {
-
-    // const chatId = msg.setting?.[0]?.chat_id;
-
-
-    // const chatInStore = chats.find(
-    //     (chat) => chat.id === chatId
-    // );
-
-    // const formattedChatForRedux = {
-    //     id: msg.chat_id,
-    //     User: {
-    //         id: msg.sender?.id,
-    //         name: msg.sender?.name,
-    //         photo: msg.sender?.photo || null,
-    //         is_online: false
-    //     },
-    //     is_block: false,
-    //     is_pin: false,
-    //     is_muted: false
-    // };
-
-    // dispatch(resetMessages())
-
-    // dispatch(FetchMessages({
-    //     chatId: msg.chat_id,
-    //     page: msg.page
-    // }));
-
-    // dispatch(SelectedChat(formattedChatForRedux))
-    // // setTimeout(() => {
-    // dispatch(SelectedMessage(msg.id));
-    // // }, 300);
-
-    // navigate("/MessagePage");
-    // };
-
-
-    /* ---------------- NAVIGATION ---------------- */
-
     const handleSidebar = () => dispatch(toggleSidebar());
-
-    /* ---------------- UI ---------------- */
 
     return (
         <div
@@ -121,7 +68,7 @@ export default function StarredMsg({ type, chatId }) {
                         <h2 style={{
                             margin: '0px',
                             marginLeft: '15px',
-                            fontSize: '1.5rem' // જરૂર મુજબ સાઈઝ સેટ કરી શકાય
+                            fontSize: '1.5rem'
                         }}>
                             Starred
                         </h2>
@@ -129,8 +76,6 @@ export default function StarredMsg({ type, chatId }) {
                 </div>
             </div>
             }
-
-
             <div className="starred-content-wrapper">
                 {loading && starredMessages.length === 0 ? (
                     <StarredSkeleton count={5} />
@@ -154,7 +99,6 @@ export default function StarredMsg({ type, chatId }) {
                                 <div
                                     key={msg.id}
                                     className="starred-card"
-                                // onClick={() => handleStarredMsg(msg)}
                                 >
                                     <div className="starred-card-inner">
                                         <div className="starred-user-avatar">

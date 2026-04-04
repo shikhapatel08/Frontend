@@ -3,12 +3,16 @@ import { useNavigate } from "react-router";
 import "./Success.css";
 import { ThemeContext } from "../../Context/ThemeContext";
 import { useDispatch } from "react-redux";
-import { Fetchsubscriptiondata, UpdateType } from "../../Redux/Features/subscriptions";
+import { Fetchsubscriptiondata, SubscriptionUserData, UpdateType } from "../../Redux/Features/subscriptions";
 
 const Success = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { theme, getThemeStyle } = useContext(ThemeContext); //theme toggle/ style apply
+  const { theme, getThemeStyle } = useContext(ThemeContext);
+
+  useEffect(() => {
+    dispatch(SubscriptionUserData())
+  }, [])
 
   return (
     <div className="success-container" style={getThemeStyle(theme)}>

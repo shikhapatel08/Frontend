@@ -41,7 +41,7 @@ export default function Media() {
                     <h2 style={{
                         margin: '0px',
                         marginLeft: '15px',
-                        fontSize: '1.5rem' // જરૂર મુજબ સાઈઝ સેટ કરી શકાય
+                        fontSize: '1.5rem'
                     }}>
                         Media
                     </h2>

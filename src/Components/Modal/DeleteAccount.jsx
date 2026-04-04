@@ -1,7 +1,5 @@
 import Button from "../Button/Button";
 
-//================================= Delete Chat Modal ================================= //
-
 export default function DeleteAccountModal({ onCancel, onConfirm }) {
 
     return (

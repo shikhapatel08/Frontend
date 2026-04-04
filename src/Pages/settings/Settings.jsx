@@ -19,8 +19,6 @@ import { toast } from "react-toastify";
 
 export default function Settings() {
 
-    /* ---------------- HOOKS ---------------- */
-
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const style = useLayoutStyle();
@@ -55,8 +53,6 @@ export default function Settings() {
 
     const { getThemeStyle, theme } = useContext(ThemeContext);
 
-    /* ---------------- MENU CONFIG ---------------- */
-
     const menuItems = [
         {
             key: "editProfile",
@@ -86,8 +82,6 @@ export default function Settings() {
         },
     ];
 
-    /* ---------------- MENU CLICK ---------------- */
-
     const handleMenuClick = (item) => {
 
         if (item.action === "billing") {
@@ -98,24 +92,18 @@ export default function Settings() {
         setActivePage(item.key);
     };
 
-    /* ---------------- SIDEBAR ---------------- */
-
     const handleSidebar = () => {
         dispatch(toggleSidebar());
     };
-
-    /* ---------------- BACK BUTTON ---------------- */
 
     const handleBackToMenu = () => {
         setActivePage(null);
     };
 
-    /* ---------------- DELETE ACCOUNT ---------------- */
-
     const deleteProfile = () => {
         if (!user) return toast.error("User not found");
 
-        dispatch(DeleteProfile(user)) // ya je backend ma joiye
+        dispatch(DeleteProfile(user))
             .unwrap()
             .then(() => {
                 [
@@ -149,20 +137,16 @@ export default function Settings() {
                         deleteProfile();
                         closeModal();
                     }}
-                // loading={DeleteAccountLoading}
                 />
             </GlobalModal>
         );
 
     };
 
-    /* ---------------- BILLING ---------------- */
-
     const handleBilling = async () => {
         try {
-            const subData = await dispatch(SubscriptionUserData()).unwrap();
 
-            const id = subData?.customerId || customerId;
+            const id = customerId;
 
             if (!id) {
                 console.error("Customer ID not found");
@@ -180,7 +164,6 @@ export default function Settings() {
             console.error(err);
         }
     };
-    /* ---------------- PAGE RENDER ---------------- */
 
     const renderPage = () => {
 
@@ -200,12 +183,8 @@ export default function Settings() {
 
             default:
                 return null;
-
         }
-
     };
-
-    /* ---------------- UI ---------------- */
 
     return (
 
@@ -224,9 +203,6 @@ export default function Settings() {
                     </div>
                 </div>
             }
-
-            {/* SIDEBAR */}
-
             {(!activePage || !isMobile) && (
 
                 <div
@@ -248,18 +224,8 @@ export default function Settings() {
                             </h2>
                         </span>
                     </div>
-
-                    {/* <span
-                        onClick={handleBack}
-                        className="back-btn"
-                    >
-                        <BackbtnIcon />
-                    </span> */}
-
                     <div className="settings-menu">
-
                         <ul>
-
                             {menuItems.map((item) => (
 
                                 <li
@@ -269,11 +235,8 @@ export default function Settings() {
                                     }
                                     onClick={() => handleMenuClick(item)}
                                 >
-
                                     {item.icon}
-
                                     {item.label}
-
                                 </li>
 
                             ))}
@@ -285,13 +248,9 @@ export default function Settings() {
                                 <DeleteIcon color={"black"} />
                                 Delete Account
                             </li>
-
                         </ul>
-
                     </div>
-
                 </div>
-
             )}
             {activePage && (
                 <div className="settings-detail">

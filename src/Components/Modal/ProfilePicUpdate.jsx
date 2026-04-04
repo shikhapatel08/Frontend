@@ -1,7 +1,5 @@
 import Button from "../Button/Button";
 
-// ================================= Profile Photo Update  Modal ================================= //
-
 export default function ProfilePicUpdate({
   onCancel,
   onConfirmUpload,

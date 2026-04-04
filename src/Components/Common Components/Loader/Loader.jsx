@@ -1,15 +1,15 @@
 import React from 'react';
 import './Loader.css';
 
-const Loader = ({ 
-    size = 'medium', 
-    color = 'primary', 
-    fullPage = false, 
+const Loader = ({
+    size = 'medium',
+    color = 'primary',
+    fullPage = false,
     backdrop = false,
     text = ''
 }) => {
     const loaderClasses = `loader-spinner ${size} ${color}`;
-    
+
     const content = (
         <div className="loader-content">
             <div className={loaderClasses}></div>

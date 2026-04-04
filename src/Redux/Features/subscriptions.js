@@ -1,21 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 import { toast } from "react-toastify";
-
-const BASE_API = import.meta.env.VITE_API_URL;
+import axiosInstance from "../../utils/axiosInstance";
 
 export const subscribeToChat = createAsyncThunk(
     "subscriptions/subscribeToChat",
     async (_, thunkAPI) => {
         try {
-            const token = localStorage.getItem("token");
-            const res = await axios.get(`${BASE_API}/api/v3/plan/getall`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const res = await axiosInstance.get('/api/v3/plan/getall');
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue({
@@ -30,15 +21,7 @@ export const subscriptionCheckout = createAsyncThunk(
     "subscriptions/subscriptionCheckout",
     async (planId, thunkAPI) => {
         try {
-            const token = localStorage.getItem("token");
-            const res = await axios.post(`${BASE_API}/api/v3/subscription/checkout`,
-                { planId },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const res = await axiosInstance.post('/api/v3/subscription/checkout', { planId });
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -50,14 +33,7 @@ export const Fetchsubscriptiondata = createAsyncThunk(
     "subscriptions/Fetchsubscriptiondata",
     async (_, thunkAPI) => {
         try {
-            const token = localStorage.getItem("token");
-            const res = await axios.get(`${BASE_API}/api/v3/subscription/get-subscription`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const res = await axiosInstance.get('/api/v3/subscription/get-subscription');
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -69,14 +45,7 @@ export const SubscriptionUserData = createAsyncThunk(
     "subscriptions/SubscriptionUserData",
     async (_, thunkAPI) => {
         try {
-            const token = localStorage.getItem("token");
-            const res = await axios.get(`${BASE_API}/api/v1/users/get-stripe-id`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const res = await axiosInstance.get('/api/v1/users/get-stripe-id');
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -88,14 +57,7 @@ export const BillingPortal = createAsyncThunk(
     "subscriptions/BillingPortal",
     async (customerId, thunkAPI) => {
         try {
-            const token = localStorage.getItem("token");
-            const res = await axios.get(`${BASE_API}/api/v3/subscription/billing/${customerId}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const res = await axiosInstance.get(`/api/v3/subscription/billing/${customerId}`);
             if (!res.data) {
                 toast.error("Billing data not found.");
                 return thunkAPI.rejectWithValue("No billing data");
@@ -111,14 +73,7 @@ export const TransactionHistory = createAsyncThunk(
     "subscriptions/TransactionHistory",
     async (_, thunkAPI) => {
         try {
-            const token = localStorage.getItem("token");
-            const res = await axios.get(`${BASE_API}/api/v3/transactions/getall`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const res = await axiosInstance.get('/api/v3/transactions/getall');
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);

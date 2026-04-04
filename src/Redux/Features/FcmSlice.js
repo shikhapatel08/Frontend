@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
 const initialState = {
     fcmToken: null,
@@ -7,27 +7,18 @@ const initialState = {
     error: null,
 };
 
-const BASE_API = import.meta.env.VITE_API_URL;
 
 export const getFcmToken = createAsyncThunk(
     "fcm/getFcmToken",
     async (fcm_token, { rejectWithValue }) => {
-        const authToken = localStorage.getItem("token");
 
         try {
-            const response = await axios.put(
-                `${BASE_API}/api/v1/users/update-fcm`,
-                {
-                    fcm_token: fcm_token,
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${authToken}`,
-                    },
-                }
+            const response = await axiosInstance.put(
+                '/api/v1/users/update-fcm',
+                { fcm_token: fcm_token }
             );
 
-            return response.data; // only data
+            return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Error");
         }

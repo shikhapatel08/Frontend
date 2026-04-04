@@ -57,8 +57,6 @@ export default function ProfilePage({ onBack, type }) {
 
   const isOwnProfile = from === "Sidebar";
 
-  /* ---------------- FETCH PROFILE ---------------- */
-
   useEffect(() => {
     if (from === 'Sidebar') {
       dispatch(ProfileUser());
@@ -79,8 +77,6 @@ export default function ProfilePage({ onBack, type }) {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  /* ---------------- FILE SELECT ---------------- */
-
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -89,8 +85,6 @@ export default function ProfilePage({ onBack, type }) {
       setAvatarFile(file);
     }
   };
-
-  /* ---------------- UPLOAD PHOTO ---------------- */
 
   const handleUpload = async () => {
     if (!avatarFile) return toast.error("Please select a photo");
@@ -108,8 +102,6 @@ export default function ProfilePage({ onBack, type }) {
     }
   };
 
-  /* ---------------- NAVIGATION ---------------- */
-
   const navigateTo = (path) => navigate(path);
 
   const handleHamburgerIcon = () => {
@@ -122,8 +114,6 @@ export default function ProfilePage({ onBack, type }) {
     }
   }
 
-  /* ---------------- TABS ---------------- */
-
   const tabs = [
     { key: "media", label: "Media" },
     { key: "docs", label: "Docs" },
@@ -131,17 +121,13 @@ export default function ProfilePage({ onBack, type }) {
     { key: "starred", label: "Starred" },
   ];
 
-
   const Data = isOwnProfile ? User : AnotherUser;
-
 
   return (
     <div className="profile-container" style={{ ...(type === 'setting' ? {} : style), ...getThemeStyle(theme) }}>
       {profileLoading && Object.keys(Data).length === 0 ? (
         <ProfileSkeleton />
       ) : (
-
-
         <>
           <span className="back-btn" onClick={onBack}><BackbtnIcon /></span>
           <div className="profile-header">
@@ -174,7 +160,6 @@ export default function ProfilePage({ onBack, type }) {
             </div>
           </div>
 
-
           <div className="profileInfo">
             <h2>{Data?.name}</h2>
             <p>{Data?.email}</p>
@@ -183,8 +168,6 @@ export default function ProfilePage({ onBack, type }) {
           {isOwnProfile && (
             <>
               <div className="profile-buttons">
-                {/* <button className="btn edit" onClick={handleEditProfile}>Edit Profile</button>
-          <button className="btn del" onClick={handelDeleteProfile}>Delete Profile</button> */}
                 {avatarFile && (
                   <button className="btn upload" onClick={handleUpload} disabled={uploadLoading}>
                     {uploadLoading ? "Uploading..." : "Upload Photo"}

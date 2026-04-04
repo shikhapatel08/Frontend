@@ -22,9 +22,6 @@ export default function ChangePassword({ onBack }) {
     const loading = useSelector((state) => state.updateprofile?.loading);
     const { getThemeStyle, theme } = useContext(ThemeContext);
 
-
-    // ---------------- VALIDATION ----------------
-
     const validationSchema = Yup.object({
         oldPassword: Yup.string().required("Old password required"),
         newPassword: Yup.string()
@@ -38,7 +35,6 @@ export default function ChangePassword({ onBack }) {
             .required("Confirm Password is required"),
     });
 
-    // ---------------- FORMIK ----------------
     const formik = useFormik({
         initialValues: {
             oldPassword: "",
@@ -57,13 +53,6 @@ export default function ChangePassword({ onBack }) {
                 .catch((err) => {
                     console.log(err)
                     toast.error(`${err?.message}`)
-                    // toast.error(`${err}`)
-                    // toast.error("Old Password doesn't match!")
-                    // if (err?.status === 400 || err?.code === 400 || err?.response?.status === 400) {
-                    //     toast.error("Old Password doesn't match!");
-                    // } else {
-                    //     toast.error(err.message)
-                    // }
                 })
         },
     });
@@ -79,8 +68,6 @@ export default function ChangePassword({ onBack }) {
                 <span onClick={onBack} className="back-btn" style={{ color: 'white' }}><BackbtnIcon /></span>
                 <span><h3>Change Password</h3></span>
 
-                {/* Old Password */}
-
                 <div className="form-group">
                     <label>Old Password</label>
                     <span
@@ -94,8 +81,6 @@ export default function ChangePassword({ onBack }) {
                     {renderError("oldPassword")}
                 </div>
 
-                {/* New Password */}
-
                 <div className="form-group">
                     <label>New Password</label>
                     <span
@@ -108,8 +93,6 @@ export default function ChangePassword({ onBack }) {
                     {renderError("newPassword")}
                 </div>
 
-                {/* New Password */}
-
                 <div className="form-group">
                     <label>Confirm Password</label>
                     <span
@@ -121,7 +104,6 @@ export default function ChangePassword({ onBack }) {
                     <input type={showconfirmPassword ? "text" : "password"} name="confirmPassword" onChange={formik.handleChange} value={formik.values.confirmPassword} placeholder="Confirm Password" />
                     {renderError("confirmPassword")}
                 </div>
-
 
                 <button type="submit" className="btn-save" disabled={loading}>
                     {loading ? "Updating..." : "Update Password"}

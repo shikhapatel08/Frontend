@@ -10,7 +10,6 @@ export default function ShortenText({ onCancel, onConfirm, message, initialShort
         <div>
             <h3>Shorten Message</h3>
 
-            {/* 🔹 Original Text */}
             <div style={{
                 background: "#f1f3f4",
                 padding: "8px 12px",
@@ -22,17 +21,6 @@ export default function ShortenText({ onCancel, onConfirm, message, initialShort
                 {message}
             </div>
 
-            {/* 🔹 Shortened Text (Editable) */}
-            {/* <div className="Search">
-                <input
-                    type="text"
-                    value={shortText}
-                    onChange={(e) => setShortText(e.target.value)}
-                    className="Serach-input"
-                />
-            </div> */}
-
-            {/* 🔹 Buttons */}
             <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
                 <button onClick={onCancel}>Cancel</button>
 

@@ -22,10 +22,10 @@ export default function ConversationPanelMiddle({
     selectedMessageId,
     JoinUser,
     selectedChat,
-    isOtherTyping,
+    typingChatId,
     chatRefs,
     setReplyMsg,
-    setIsOtherTyping,
+    setTypingChatId,
     currentChat,
     setText,
 }) {
@@ -36,19 +36,18 @@ export default function ConversationPanelMiddle({
     const { chats } = useSelector(state => state.createchat);
 
     const { loading: textLoading } = useSelector(state => state.textFunctionally);
-    // const socket = useSocket();
 
     const [replySuggestions, setReplySuggestions] = useState([]);
 
+    const isTypingInCurrentChat = typingChatId === selectedChat?.id;
 
     useSocketMessages(selectedChat);
-    useTypingIndicator(selectedChat, setIsOtherTyping, currentChat);
+    useTypingIndicator(setTypingChatId);
     useNotifications(chats, selectedChat);
     useStatus();
     useUpdateStatus(selectedChat);
     useReaction();
     useReplySuggestion(setReplySuggestions, selectedChat);
-
 
     const messagesEndRef = useRef(null);
     const [isNearBottom, setIsNearBottom] = useState(true);
@@ -60,7 +59,7 @@ export default function ConversationPanelMiddle({
             },
             {
                 root: document.getElementById('scrollableDiv'),
-                rootMargin: '150px', // True if within 150px from bottom (accounts for small jumps)
+                rootMargin: '150px',
             }
         );
 
@@ -75,7 +74,6 @@ export default function ConversationPanelMiddle({
         };
     }, []);
 
-
     useEffect(() => {
         if (selectedMessageId) return;
 
@@ -85,10 +83,11 @@ export default function ConversationPanelMiddle({
         if (isNearBottom || isMyNewMessage) {
             const timer = setTimeout(() => {
                 messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-            }, 100);
+            }, 300);
             return () => clearTimeout(timer);
         }
-    }, [messages, isOtherTyping, JoinUser, isNearBottom, selectedMessageId]);
+    }, [messages, typingChatId, JoinUser, isNearBottom, selectedMessageId]);
+
 
     const fetchMore = useCallback(() => {
         if (loading || !hasMore) return;
@@ -110,8 +109,8 @@ export default function ConversationPanelMiddle({
 
                 setTimeout(() => {
                     dispatch(SelectedMessage(null));
-                }, 3000);
-            }, 300);
+                }, 1000);
+            }, 200);
 
             return () => clearTimeout(timer);
         }
@@ -156,7 +155,7 @@ export default function ConversationPanelMiddle({
                                 const showDate = currentDate !== prevDate;
 
                                 return (
-                                    <React.Fragment key={msg.id}>
+                                    <React.Fragment key={index}>
                                         {showDate && (
                                             <div className="date-separator">
                                                 {currentDate}
@@ -176,7 +175,7 @@ export default function ConversationPanelMiddle({
                                 );
 
                             })}
-                            {isOtherTyping && <TypingIndicator />}
+                            {isTypingInCurrentChat && <TypingIndicator />}
                         </>
                     ) : (
                         <div className="ConversationPanel-placeholder">
@@ -186,7 +185,6 @@ export default function ConversationPanelMiddle({
                             <br></br>
                         </div>
                     )}
-
 
                     {replySuggestions?.suggestions?.length > 0 && Number(replySuggestions?.chatId) === Number(selectedChat?.id) && (
                         <div className="reply-suggestions">
@@ -204,7 +202,6 @@ export default function ConversationPanelMiddle({
                             ))}
                         </div>
                     )}
-                    {/* Dummy anchor at the absolute end of the message list */}
                     <div ref={messagesEndRef} style={{ height: "1px" }} />
                 </div>
             </InfiniteScroll>

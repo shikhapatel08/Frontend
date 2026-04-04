@@ -38,9 +38,9 @@
 }
 
 .chat-bubble.has-attachment {
-    background: transparent !important;
+    /* background: transparent !important; */
     box-shadow: none !important;
-    padding: 4px;
+    padding: 7px;
     /* optional */
 }
 
@@ -121,10 +121,12 @@
     border-bottom: 1px solid transparent;
 }
 
+/* 
 /* .Message-User:hover {
     background-color: inherit;
     color: #a1b4cb;
 } */
+*/
 
 /* Selected/unread items */
 .MessageUser {
@@ -157,6 +159,8 @@
     object-fit: cover;
     background-color: #e8eaed;
     border: none;
+    display: block;
+    aspect-ratio: 1 / 1;
 }
 
 .online-dot {
@@ -301,7 +305,10 @@
 
 /* 2. Message Bubble Body */
 .chat-bubble {
-    max-width: 75%;
+    max-width: 55%;
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
     padding: 12px 16px;
     border-radius: 18px;
     position: relative;
@@ -370,8 +377,8 @@
 /* Dropdown Arrow (Trigger) */
 .msg-arrow {
     position: absolute;
-    top: 6px;
-    right: 8px;
+    top: 1px;
+    right: 1px;
     opacity: 0;
     cursor: pointer;
     transition: opacity 0.2s;
@@ -401,13 +408,13 @@
     border: 1px solid #dadce0;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    padding: 8px 0;
+    /* padding: 8px 0; */
     min-width: 160px;
     z-index: 100;
     display: flex;
     flex-direction: column;
     animation: dropdownSlide 0.2s ease;
-    padding: 20px 10px 20px 10px;
+    /* padding: 20px 10px 20px 10px; */
 }
 
 @keyframes dropdownSlide {
@@ -436,6 +443,56 @@
     color: #3c4043;
     font-size: 14px;
     position: relative;
+}
+
+
+.Dropdown-Item::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+
+    background-color: #333;
+    color: #fff;
+    padding: 4px 8px;
+    font-size: 11px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* નાનો એરો (Arrow) બનાવવા માટે */
+.Dropdown-Item::before {
+    content: '';
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #333;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 100;
+}
+
+/* Hover કરવા પર બતાવવું */
+.Dropdown-Item:hover::after,
+.Dropdown-Item:hover::before {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.Dropdown-Menu .Dropdown-Item::after,
+.Dropdown-Menu .Dropdown-Item::before {
+    display: none !important;
+    content: none !important;
 }
 
 .Dropdown-Item:hover {
@@ -641,10 +698,6 @@
     padding: 4px 0;
 }
 
-.chat-bubble.right .Dropdown-Item {
-    bottom: 100%;
-    right: 0;
-}
 
 .chat-bubble.left .Dropdown-Menu {
     bottom: 100%;
@@ -714,32 +767,12 @@
 
 .chat-bubble.left .Dropdown {
     position: absolute;
-    /* top: 100%; */
     bottom: 100%;
-    left: 0;
-
+    left: 80px;
+    top: auto;
+    margin-bottom: 1px;
 }
 
-/* Reaction box adjustment for vertical menu */
-/* .Dropdown-Item .reaction-box {
-    position: absolute;
-    top: 50%;
-    right: 100%;
-    transform: translateY(-50%) translateX(-10px);
-    background: #fff;
-    padding: 8px;
-    border-radius: 24px;
-    display: flex;
-    gap: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    z-index: 1001;
-}
-
-.chat-bubble.left .Dropdown-Item .reaction-box {
-    left: 100%;
-    right: auto;
-    transform: translateY(-50%) translateX(10px);
-} */
 
 /* ===================================================
    CONVERSATION (MAIN CHAT) PANEL
@@ -838,7 +871,7 @@
     flex-direction: column;
     justify-content: flex-end;
     width: 88%;
-    max-width: 900px;
+    /* max-width: 900px; */
     margin: 0 auto;
     gap: 4px;
     padding: 16px 0 10px;
@@ -1025,7 +1058,7 @@
     align-items: center;
     background: inherit;
     border-radius: 28px;
-    padding: 8px 10px 8px 16px;
+    padding: 5px 10px 5px 16px;
     gap: 8px;
     box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
     border: 1px solid #e8eaed;
@@ -1045,6 +1078,7 @@
     flex-shrink: 0;
     width: 20px;
     height: 20px;
+    margin-top: 7px;
 }
 
 .ConversationPanel-serach svg:hover {
@@ -1314,6 +1348,16 @@
 
 .attachment-item {
     position: relative;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-all;
+    white-space: normal;
+}
+
+.image-message-text {
+    max-width: 100%;
+    display: block;
 }
 
 .attachment-item img {
@@ -1524,9 +1568,9 @@
     transition: 0.2s;
 }
 
-.search-arrow:hover {
+/* .search-arrow:hover {
     background-color: #eee;
-}
+} */
 
 /* Cancel button */
 .close-btn {
@@ -1535,8 +1579,13 @@
     white-space: nowrap;
 }
 
+
+
 .media-caption {
     color: inherit;
+
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 /* આખા પેનલને કવર કરવા માટે */
@@ -1564,6 +1613,7 @@
     animation: spin 1s linear infinite;
 }
 
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);
@@ -1572,6 +1622,303 @@
     100% {
         transform: rotate(360deg);
     }
+}
+
+.Emojo {
+    margin-top: 2px;
+}
+
+/* મેઈન કન્ટેનર જે બંને ડબ્બાને લાઈનમાં રાખશે */
+.Dropdown-Container {
+    position: absolute;
+
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    z-index: 100;
+}
+
+.chat-bubble.left .Dropdown-Container {
+    bottom: 100%;
+    left: 65px;
+}
+
+.chat-bubble.right .Dropdown-Container {
+    bottom: 100%;
+    right: 10px;
+}
+
+.Dropdown-Section {
+    display: flex;
+    align-items: center;
+    padding: 2px 1px;
+    border-radius: 12px;
+    background-color: #333;
+    border: 1px solid #756f6f;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.reaction-section {
+    gap: 8px;
+}
+
+.emoji-item {
+    cursor: pointer;
+    font-size: 20px;
+    transition: transform 0.2s;
+}
+
+.emoji-item:hover {
+    transform: scale(1.3);
+}
+
+/* 
+    .action-section {
+        gap: 8px;
+    } */
+
+.Dropdown-Item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    /* justify-content: center; */
+    opacity: 0.8;
+}
+
+.Dropdown-Item:hover {
+    opacity: 1;
+}
+
+.emoji-picker-trigger {
+    position: relative;
+}
+
+.absolute-picker-position {
+    position: absolute;
+    bottom: 45px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
+.gif-picker-popup {
+    position: absolute;
+    bottom: 70px;
+    right: 50px;
+    width: 280px;
+    max-height: 400px;
+    background: #202c33;
+    /* તમારા થીમ મુજબ કલર બદલવો */
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    padding: 10px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+}
+
+.gif-search-input {
+    width: 95%;
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+    background: #2a3942;
+    color: white;
+    margin-bottom: 10px;
+    outline: none;
+}
+
+.gif-results-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.gif-result-item {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.gif-result-item:hover {
+    transform: scale(1.05);
+}
+
+.gif-loader,
+.no-gif {
+    text-align: center;
+    color: #8696a0;
+    padding: 20px;
+}
+
+/* Container for all previews */
+.chat-file-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 10px;
+    background-color: inherit;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #e0e0e0;
+}
+
+/* Individual wrapper for each file/image */
+.preview-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* Image preview styling */
+.image-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Document/File card styling */
+.file-box-card {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    min-width: 180px;
+    max-width: 250px;
+    height: 50px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.file-icon-box {
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.file-info-box {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.file-name-text {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Name lambu hoy to '...' thai jashe */
+}
+
+.file-ext-text {
+    margin: 0;
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+}
+
+/* Remove button (X) styling */
+.remove-file-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s ease;
+    z-index: 10;
+}
+
+.remove-file-btn:hover {
+    background: #cc0000;
+    transform: scale(1.1);
+}
+
+/* Hover effects */
+.file-box-card:hover {
+    border-color: #4285f4;
+    background-color: #f1f3f4;
+}
+
+.remove-btn {
+    position: absolute;
+    top: -8px;
+    right: -151px;
+    background: #656565;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s ease;
+    z-index: 10;
+}
+
+.chat-bubble.right .media-caption {
+    text-align: right;
+    margin-right: 15px;
+    color: inherit;
+
+}
+
+.bubble-content-wrapper {
+    display: inline-block;
+    width: fit-content;
+    max-width: 100%;
+}
+
+.image-message-container {
+    width: 97%;
+    max-width: 100%;
+    display: block;
+}
+
+.message-text {
+    width: 100%;
+    /* padding: 8px 10px; */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.chat-bubble.right {
+    align-self: flex-end;
+}
+
+.default {
+    padding: 10px;
+}
+
+.chat-bubble.left .link {
+    color: #1557b0;
+}
+
+.chat-bubble.right .link {
+    color: #adc9ee;
 }
 
 /* ===================================================

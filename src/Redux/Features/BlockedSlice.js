@@ -1,22 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
-const BASE_API = import.meta.env.VITE_API_URL;
-// ================================= Block User ================================= //
 export const BlockedUser = createAsyncThunk(
     'blocked/BlockedUser',
     async (Id, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.patch(`${BASE_API}/api/v2/chatsetting/block/${Id}`,
-                {},
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
-                }
-            );
+            const res = await axiosInstance.patch(`/api/v2/chatsetting/block/${Id}`, {});
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);

@@ -1,20 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
 export const EditMsg = createAsyncThunk(
     'message/EditMsg',
     async ({ msgId, text, chatId }, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.patch(`${import.meta.env.VITE_API_URL}/api/v1/message/chat/${chatId}/edit-message/${msgId}`,
-                {
-                    text
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+            const res = await axiosInstance.patch(
+                `/api/v1/message/chat/${chatId}/edit-message/${msgId}`,
+                { text }
             );
             return res.data.data;
         } catch (error) {

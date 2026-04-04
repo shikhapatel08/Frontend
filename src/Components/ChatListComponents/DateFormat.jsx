@@ -11,7 +11,6 @@ export const formatChatTime = (time, type = "list") => {
     new Date(now - 86400000).toDateString() ===
     messageDate.toDateString();
 
-  // ================= CHAT WINDOW =================
   if (type === "chat") {
     if (isToday) return "Today";
     if (isYesterday) return "Yesterday";
@@ -23,7 +22,6 @@ export const formatChatTime = (time, type = "list") => {
     });
   }
 
-  // ================= CHAT LIST =================
   const diffInMs = now - messageDate;
   const diffInMinutes = Math.floor(diffInMs / 60000);
 

@@ -2,10 +2,9 @@ import { useContext } from 'react';
 import '../Global Modal/GlobalModal.css'
 import { ThemeContext } from '../../Context/ThemeContext';
 
-// ================================= Global Modal ================================= //
 
 export default function GlobalModal({ children, onClose }) {
-    const { theme, getThemeStyle } = useContext(ThemeContext); //theme toggle/ style apply
+    const { theme, getThemeStyle } = useContext(ThemeContext);
 
     return (
         <div className="modal-overlay" onClick={onClose} >

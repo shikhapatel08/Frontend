@@ -1,22 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
-// ================================= Delete Message for Me ================================= //
-
-const BASE_API = import.meta.env.VITE_API_URL;
 export const DeleteMe = createAsyncThunk(
     'deleteMe/DeleteMe',
     async (msgId, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.patch(`${BASE_API}/api/v2/messagesetting/delete-for-me/${msgId}`,
-                {},
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const res = await axiosInstance.patch(`/api/v2/messagesetting/delete-for-me/${msgId}`, {});
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);

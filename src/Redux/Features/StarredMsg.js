@@ -1,17 +1,16 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
-const API_URL = import.meta.env.VITE_API_URL;
 
 export const GetStarredMsg = createAsyncThunk(
     'starredMsg/StarredMsg',
     async ({ page, limit = 10 }, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`${API_URL}/api/v2/messagesetting/get-star-message?page=${page}&limit=${limit}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            const res = await axiosInstance.get('/api/v2/messagesetting/get-star-message', {
+                params: {
+                    page,
+                    limit
+                }
             });
             return res.data.data;
         } catch (error) {
@@ -27,11 +26,11 @@ export const StarredMsgChat = createAsyncThunk(
     'starredMsg/StarredMsgChat',
     async ({ chatId, page, limit = 10 }, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`${API_URL}/api/v1/message/get-star-message-in-chat/${chatId}?page=${page}&limit=${limit}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            const res = await axiosInstance.get(`/api/v1/message/get-star-message-in-chat/${chatId}`, {
+                params: {
+                    page,
+                    limit
+                }
             });
             return res.data.data;
         } catch (error) {

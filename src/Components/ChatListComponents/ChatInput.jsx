@@ -1,15 +1,15 @@
 import { useRef, useState, useEffect } from "react";
-import { AttachmentIcon, SendMsgIcon, EmojiIcon, TextFunctionallyIcon } from "../Common Components/Icon/Icon";
+import { AttachmentIcon, SendMsgIcon, EmojiIcon, TextFunctionallyIcon, GifIcon } from "../Common Components/Icon/Icon";
 import { useDispatch, useSelector } from "react-redux";
 import { addLocalMessage, SendMessage } from "../../Redux/Features/SendMessage";
 import { useSocket } from "../../Context/SocketContext";
 import { UpdateChat } from "../../Redux/Features/CreateChat";
 import Picker from "emoji-picker-react";
-import { useReplySuggestion } from "./CustomHook/useReplySuggestion";
 import { shortenMessageText } from "../../Redux/Features/TextFunctionally";
 import { useModal } from "../../Context/ModalContext";
 import GlobalModal from "../Global Modal/GlobalModal";
 import ShortenText from "../Modal/ShortenText";
+import { FetchGif } from "../../Redux/Features/GifSlice";
 
 export default function ChatInput({ text, fileInputRef, selectedChat, setText, setFilePreview, setFile, FilePreview, replyMsg, setReplyMsg, File, currentChat, JoinUser }) {
     const dispatch = useDispatch();
@@ -23,21 +23,81 @@ export default function ChatInput({ text, fileInputRef, selectedChat, setText, s
     const user = Object.keys(Signin).length > 0 ? Signin : Signup;
     const socket = useSocket();
 
+    const [showGifPicker, setShowGifPicker] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [gifSearch, setGifSearch] = useState('')
+    const gifPickerRef = useRef(null);
 
     const textRef = useRef(null);
     const pickerRef = useRef(null);
 
+    const { gifs, loading } = useSelector((state) => state.gif);
 
+    const handleGifSearch = (e) => {
+        setGifSearch(e.target.value);
+        if (e.target.value.length > 1) {
+            dispatch(FetchGif(e.target.value));
+        }
+    };
+
+    const handleSendGif = (gifUrl) => {
+        if (currentChat?.is_block) return;
+
+        dispatch(addLocalMessage({
+            chatId: selectedChat.id,
+            text: "",
+            image_url: FilePreview.map(p => p.url),
+            gif_url: [gifUrl],
+            sender_id: user.id,
+            status: 'sending',
+            pending: true,
+            createdAt: new Date().toISOString(),
+        }));
+
+        const formData = new FormData();
+        formData.append("chatId", selectedChat.id);
+        if (text.trim()) {
+            formData.append("text", text);
+        }
+
+        if (gifUrl) {
+            formData.append("gif_url", gifUrl);
+        }
+
+        if (replyMsg) {
+            formData.append("replyTo", replyMsg.id);
+        }
+
+        dispatch(SendMessage({ formData }));
+
+        setReplyMsg(null);
+        setShowGifPicker(false);
+        setGifSearch("");
+    };
+
+    useEffect(() => {
+        if (showGifPicker && gifSearch.length === 0) {
+            dispatch(FetchGif("trending"));
+        }
+    }, [showGifPicker, dispatch]);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (gifPickerRef.current && !gifPickerRef.current.contains(event.target)) {
+                setShowGifPicker(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const autoResize = () => {
         const el = textRef.current;
         if (!el) return;
 
-        el.style.height = "auto";        // reset
-        el.style.height = el.scrollHeight + "px"; // set new height
+        el.style.height = "auto";
+        el.style.height = el.scrollHeight + "px";
     };
-    // ---------------- TYPING ----------------
 
     const handleTypingInput = (e) => {
         if (currentChat?.is_block) return;
@@ -53,7 +113,6 @@ export default function ChatInput({ text, fileInputRef, selectedChat, setText, s
         socket?.emit("fe_typing", data);
     };
 
-    // ---------------- ENTER KEY ----------------
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -62,13 +121,16 @@ export default function ChatInput({ text, fileInputRef, selectedChat, setText, s
         }
     };
 
-    // ---------------- FILE UPLOAD ----------------
 
     const handleFileUpload = (e) => {
         const files = Array.from(e.target.files || []);
         if (!files.length) return;
 
-        const previews = files.map(file => URL.createObjectURL(file));
+        const previews = files.map(file => ({
+            url: URL.createObjectURL(file),
+            type: file.type,
+            name: file.name
+        }));
 
         setFilePreview(prev => [...prev, ...previews]);
         setFile(prev => [...prev, ...files]);
@@ -99,28 +161,30 @@ export default function ChatInput({ text, fileInputRef, selectedChat, setText, s
 
             if (item.type.startsWith("image") || item.kind === "file") {
                 const file = item.getAsFile();
-
                 if (!file) continue;
 
                 hasFile = true;
 
-                const preview = URL.createObjectURL(file);
+                const previews = {
+                    url: URL.createObjectURL(file),
+                    type: file.type,
+                    name: file.name
+                };
 
                 setFile(prev => [...prev, file]);
-                setFilePreview(prev => [...prev, preview]);
+                setFilePreview(prev => [...prev, previews]);
             }
         }
 
         const content = e.clipboardData.getData("text/plain");
         if (content) {
             e.preventDefault();
-            // If some text is selected, replace it
+
             const start = el.selectionStart;
             const end = el.selectionEnd;
             const newText = text.substring(0, start) + content + text.substring(end);
             setText(newText);
 
-            // Set cursor after pasted text
             setTimeout(() => {
                 el.selectionStart = el.selectionEnd = start + content.length;
                 autoResize();
@@ -141,13 +205,16 @@ export default function ChatInput({ text, fileInputRef, selectedChat, setText, s
 
         const files = Array.from(e.dataTransfer.files);
 
-        const previews = files.map(file => URL.createObjectURL(file));
+        const previews = files.map(file => ({
+            url: URL.createObjectURL(file),
+            type: file.type,
+            name: file.name
+        }));
 
         setFile(prev => [...prev, ...files]);
         setFilePreview(prev => [...prev, ...previews]);
     };
 
-    // ---------------- SEND MESSAGE ----------------
 
     const handleSendMessage = () => {
 
@@ -155,14 +222,11 @@ export default function ChatInput({ text, fileInputRef, selectedChat, setText, s
 
         if (!text && (!File || File.length === 0)) return;
 
-        const tempId = Date.now();
 
         dispatch(addLocalMessage({
-            id: tempId,
-            // id:messages.msg.id,
             chatId: selectedChat.id,
             text,
-            image_url: FilePreview,
+            image_url: FilePreview.map(p => p.url),
             sender_id: user.id,
             is_star: false,
             is_pin: false,
@@ -172,13 +236,19 @@ export default function ChatInput({ text, fileInputRef, selectedChat, setText, s
             createdAt: new Date().toISOString(),
         }));
 
-        dispatch(SendMessage({
-            tempId,
-            chatId: selectedChat.id,
-            messageText: text,
-            file: File,
-            replyTo: replyMsg?.id || null
-        }));
+        const formData = new FormData();
+        formData.append("chatId", selectedChat.id);
+        formData.append("text", text);
+
+        if (replyMsg != null) {
+            formData.append("replyTo", replyMsg.id);
+        }
+
+        File.forEach((f) => {
+            formData.append("images", f);
+        });
+
+        dispatch(SendMessage({ formData }));
 
         dispatch(UpdateChat({
             chat: {
@@ -196,7 +266,7 @@ export default function ChatInput({ text, fileInputRef, selectedChat, setText, s
         setText("");
 
         if (textRef.current) {
-            textRef.current.style.height = "40px"; // reset height
+            textRef.current.style.height = "40px";
         }
 
         setTimeout(() => {
@@ -205,7 +275,6 @@ export default function ChatInput({ text, fileInputRef, selectedChat, setText, s
 
         }, 0);
         removeFile();
-        // setReplySuggestions([]);
     };
 
 
@@ -252,7 +321,6 @@ export default function ChatInput({ text, fileInputRef, selectedChat, setText, s
             const res = await dispatch(shortenMessageText(text)).unwrap();
             const shortText = res?.text || res;
             if (!shortText) return;
-            // setText(shortText);
 
             openModal(
                 <GlobalModal onClose={closeModal}>
@@ -273,6 +341,14 @@ export default function ChatInput({ text, fileInputRef, selectedChat, setText, s
         }
     };
 
+
+    useEffect(() => {
+        if (selectedChat?.id) {
+            setText("");
+            setReplyMsg(null);
+        }
+    }, [selectedChat?.id]);
+
     return (
         <>
 
@@ -289,27 +365,25 @@ export default function ChatInput({ text, fileInputRef, selectedChat, setText, s
                 </div>
             )}
             <div className="ConversationPanel-serach"
-                // onPaste={handlePaste}
                 onDrop={handleDrop}
                 onDragOver={(e) => e.preventDefault()}
                 onKeyDown={handleKeyPress}
             >
 
-                <span onClick={() => setShowEmojiPicker(prev => !prev)}><EmojiIcon /></span>
+                <span onClick={() => setShowEmojiPicker(prev => !prev)} className="Emoji"><EmojiIcon /></span>
                 {showEmojiPicker && (
                     <div
                         ref={pickerRef}
                         style={{
                             position: "absolute",
                             bottom: "60px",
-                            // right: "20px",
                             zIndex: 1000,
                             boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
                             borderRadius: "12px",
                             overflow: "hidden"
                         }}
                     >
-                        <Picker onEmojiClick={addEmoji} theme="dark"
+                        <Picker onEmojiClick={addEmoji} theme="inherit"
                             searchDisabled={false}
                             skinTonesDisabled={false}
                             previewConfig={{ showPreview: false }}
@@ -318,7 +392,6 @@ export default function ChatInput({ text, fileInputRef, selectedChat, setText, s
                     </div>
                 )}
                 <textarea
-                    // type='text'
                     ref={textRef}
                     placeholder="Type Your Message..."
                     className="ConversationPanel-serach-input"
@@ -340,6 +413,40 @@ export default function ChatInput({ text, fileInputRef, selectedChat, setText, s
                 {text?.length > 20 && (
                     <span onClick={handleTextFunctionallyClick}><TextFunctionallyIcon /></span>
                 )}
+                <span>
+                    <span onClick={() => setShowGifPicker(!showGifPicker)} style={{ cursor: 'pointer' }}>
+                        <GifIcon />
+                    </span>
+
+                    {showGifPicker && (
+                        <div className="gif-picker-popup" ref={gifPickerRef}>
+                            <input
+                                type="text"
+                                placeholder="Search Tenor GIFs..."
+                                className="gif-search-input"
+                                value={gifSearch}
+                                onChange={handleGifSearch}
+                                autoFocus
+                            />
+                            <div className="gif-results-container">
+                                {loading ? (
+                                    <div className="gif-loader">Loading...</div>
+                                ) : (
+                                    gifs.map((gif) => (
+                                        <img
+                                            key={gif.id}
+                                            src={gif.media_formats.tinygif.url}
+                                            onClick={() => handleSendGif(gif.media_formats.gif.url)}
+                                            alt="gif"
+                                            className="gif-result-item"
+                                        />
+                                    ))
+                                )}
+                                {!loading && gifs.length === 0 && <div className="no-gif">No GIFs found</div>}
+                            </div>
+                        </div>
+                    )}
+                </span>
                 <span onClick={handleAttachClick}><AttachmentIcon /></span>
                 <span onClick={handleSendMessage} ><SendMsgIcon /></span>
             </div>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <defs>
+    <path id="bubble" d="M120,20 C186.274,20 240,64.771 240,120 C240,175.228 186.274,220 120,220 C101.428,220 83.856,216.27 68.04,209.52 C45.361,222.75 22.887,226.79 10.375,228.16 C9.444,228.26 8.528,227.67 8.168,226.78 C7.808,225.9 8.106,224.88 8.892,224.28 C18.995,216.59 27.53,205.8 32.551,192.42 C12.391,173.83 0,148.43 0,120 C0,64.771 53.725,20 120,20 Z" />
+    
+    <mask id="bubble-gap">
+      <rect x="-100" y="-100" width="600" height="600" fill="white" />
+      <use href="#bubble" transform="translate(20, 50)" fill="black" stroke="black" stroke-width="26" stroke-linejoin="round" />
+    </mask>
+  </defs>
+
+  <g mask="url(#bubble-gap)">
+    <use href="#bubble" transform="translate(130, 120) scale(-0.95, 0.95) translate(-240, 0)" fill="#66A5F6" />
+  </g>
+
+  <use href="#bubble" transform="translate(20, 50)" fill="#2C64E3" />
+
+  <circle cx="265" cy="75" r="42" fill="#D93025" stroke="#4A1515" stroke-width="12" />
+
+  <path d="M 325 315 C 332 315 335 312 335 305 C 335 312 338 315 345 315 C 338 315 335 318 335 325 C 335 318 332 315 325 315 Z" fill="#D3E3FD" />
+</svg>

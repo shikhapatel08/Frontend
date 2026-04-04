@@ -30,9 +30,8 @@ import EmojiReducer from '../Features/EmojiSlice'
 import TextFunctionallyReducer from '../Features/TextFunctionally'
 import fcmReducer from '../Features/FcmSlice'
 import imagePreviewReducer from '../Features/ImagePreviewSlice'
+import GifReducer from '../Features/GifSlice'
 
-
-// ================================= Configure Store ================================= //
 
 export const store = configureStore({
   reducer: {
@@ -67,5 +66,6 @@ export const store = configureStore({
     textFunctionally: TextFunctionallyReducer,
     fcm: fcmReducer,
     imagePreview: imagePreviewReducer,
+    gif: GifReducer,
   },
 })

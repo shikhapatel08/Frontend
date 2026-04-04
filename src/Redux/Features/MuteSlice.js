@@ -1,24 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BASE_API = import.meta.env.VITE_API_URL;
-
-// ================================= Mute User ================================= //
+import axiosInstance from "../../utils/axiosInstance";
 
 export const MuteUser = createAsyncThunk(
     'mute/MuteUser',
     async (Id, thunkAPI) => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.patch(`${BASE_API}/api/v2/chatsetting/mute/${Id}`,
-                {},
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
-                }
-            );
+            const res = await axiosInstance.patch(`/api/v2/chatsetting/mute/${Id}`, {});
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue({

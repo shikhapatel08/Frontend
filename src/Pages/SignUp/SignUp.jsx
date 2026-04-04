@@ -17,19 +17,14 @@ const Signup = () => {
     const navigate = useNavigate();
 
     const [showPassword, setShowPassword] = useState(false);
-
-
     const { loading } = useSelector(state => state.otp);
 
-    // ---------------- INITIAL VALUES ----------------
     const initialValues = {
         name: "",
         email: "",
         phone: "",
         password: "",
     };
-
-    // ---------------- VALIDATION ----------------
 
     const validationSchema = Yup.object({
         name: Yup.string()
@@ -50,8 +45,6 @@ const Signup = () => {
             .matches(/[0-9]/, "Must contain at least one number")
             .required("Password is required"),
     });
-
-    // ---------------- SIGNUP ----------------
 
     const handleSubmit = async (values) => {
         if (loading) return;
@@ -76,32 +69,12 @@ const Signup = () => {
 
         } catch (err) {
 
-            console.log("SIGNUP ERROR", err);
-
-            // const backendMessage = err?.response?.data;
-
-            // if (backendMessage?.errors?.length) {
-            //     backendMessage.errors.forEach(e => toast.error(e));
-            // }
-            // else if (err?.status === 500) {
-            //     toast.error("Email or Phone number already registered!");
-            // }
-            // else if (backendMessage?.message) {
-            //     toast.error(backendMessage.message);
-            // }
-            // else if (!err?.response) {
-            //     toast.error("Network error. Please check your connection");
-            // }
-            // else {
-            //     toast.error("Something went wrong");
-            // }
             toast.error(`${err?.message}`)
         }
     };
 
 
     return (
-        // ================================= Signup Page ================================= //
         <div className="Signup">
             <div className="signup-conainer">
                 <div className="Signup-left">

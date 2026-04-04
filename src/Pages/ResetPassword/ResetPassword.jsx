@@ -17,18 +17,13 @@ export default function ResetPassword() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-
     const email = location.state?.email;
-
-    /* ---------------- GUARD ---------------- */
 
     useEffect(() => {
         if (!email) {
             navigate("/");
         }
     }, [email, navigate]);
-
-    /* ---------------- FORM ---------------- */
 
     const initialValues = {
         password: "",
@@ -58,12 +53,10 @@ export default function ResetPassword() {
                 navigate('/');
             })
             .catch((err) => {
-                console.log("LOGIN ERROR", err);
             });
     };
 
     return (
-        // ================================= Reset Password ================================= //alues
         <div className="resetpassword">
             <div className="resetpassword-conainer">
                 <div className="resetpassword-left">

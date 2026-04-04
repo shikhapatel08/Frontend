@@ -168,6 +168,12 @@
     background-color: #f1f3f4;
 }
 
+.profileImg {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+}
+
 .profile-text span {
     font-weight: 600;
     font-size: 14px;

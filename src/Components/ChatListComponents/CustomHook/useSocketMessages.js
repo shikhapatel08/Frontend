@@ -19,17 +19,14 @@ export const useSocketMessages = (selectedChat) => {
             const msg = message.msg || message;
             if (!msg) return;
 
-            // Update chat list info (last message, etc.)
             dispatch(UpdateChat(message));
 
-            // Don't add if it's our own message (already handled by local dispatch)
             if (msg.sender_id === myId) return;
 
             const starSetting = msg.MessageSettings?.find(
                 s => Number(s.user_id) === Number(myId)
             );
 
-            // Safe image_url parsing
             let parsedImages = [];
             if (msg.image_url) {
                 try {
@@ -47,6 +44,7 @@ export const useSocketMessages = (selectedChat) => {
                     chatId: msg.chat_id || msg.chatId,
                     text: msg.text,
                     image_url: parsedImages,
+                    gif_url: msg.gif_url,
                     is_star: starSetting?.is_star || false,
                     is_pin: false,
                     replyTo: msg.replyMessage
@@ -63,7 +61,6 @@ export const useSocketMessages = (selectedChat) => {
                 })
             );
 
-            // If we are currently viewing this chat, notify backend we've seen it
             if (Number(selectedChat?.id) === Number(msg.chat_id)) {
                 socket.emit("fe_seen", {
                     cid: msg.chat_id,

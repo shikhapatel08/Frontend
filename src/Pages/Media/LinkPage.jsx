@@ -6,7 +6,6 @@ import '../Media/Media.css'
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { LinksSkeleton } from "../../Components/Common Components/Loader/PageSkeletons";
 
-
 export default function LinkPage({ type, chatId }) {
     const dispatch = useDispatch();
     const { Links, loading, page, hasMore } = useSelector(state => state.media);

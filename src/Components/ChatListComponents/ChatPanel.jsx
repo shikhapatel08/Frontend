@@ -2,14 +2,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMyChats, SelectedChat } from "../../Redux/Features/CreateChat";
 import { useModal } from "../../Context/ModalContext";
-import { FetchAllPinnedMsg, FetchMessages, PinMsg, Pinmsg, resetMessages, SendMessage, Starmsg, StarMsg } from "../../Redux/Features/SendMessage";
-import { DeleteMe } from "../../Redux/Features/DeleteMeSlice";
-import { DeleteEveryone } from "../../Redux/Features/DeleteEveryoneSlice";
+import { FetchAllPinnedMsg, FetchMessages, resetMessages } from "../../Redux/Features/SendMessage";
 import { BlockedUser } from "../../Redux/Features/BlockedSlice";
 import { toast } from "react-toastify";
 import { SearchMsg, SelectedMessage, UpdatecurrentIndex, UpdateSearchResult, UpdateTotalResults } from "../../Redux/Features/SearchMsgSlice";
-import { FaFileAlt, FaFileExcel, FaFilePdf, FaFileWord } from "react-icons/fa";
-import { AttachmentIcon, BackbtnIcon, DoubleTicksIcon, DownArrow, Icon, MenuIcon, SendMsgIcon, SerachIcon, SingleTicksIcon, StarIcon, UpArrow } from "../Common Components/Icon/Icon";
+import { DownArrow, Icon, MenuIcon, UpArrow } from "../Common Components/Icon/Icon";
 import GlobalModal from "../Global Modal/GlobalModal";
 import ChatHeader from "./ChatHeader";
 import MessageList from './MessageList'
@@ -21,7 +18,7 @@ import SendMsgModal from "../Modal/SendMessageModal";
 import { toggleSidebar } from "../../Redux/Features/SideBarSlice";
 
 
-export default function ChatPanel() {
+export default function ChatPanel({ typingChatId, setTypingChatId }) {
     const dispatch = useDispatch();
     const { chats, selectedChat } = useSelector(state => state.createchat);
     const [openMenuId, setOpenMenuId] = useState(null);
@@ -29,7 +26,6 @@ export default function ChatPanel() {
     const fileInputRef = useRef(null);
     const { messages, pinnedMessages } = useSelector(state => state.message);
     const [text, setText] = useState("");
-    const [isOtherTyping, setIsOtherTyping] = useState(false);
     const [replyMsg, setReplyMsg] = useState(null);
     const [FilePreview, setFilePreview] = useState([]);
     const [File, setFile] = useState([]);
@@ -52,12 +48,11 @@ export default function ChatPanel() {
         if (!pinnedMessages.length) return;
 
         setPinIndex(prev => {
-            const nextIndex = (prev + 1) % pinnedMessages.length; // circular next index
+            const nextIndex = (prev + 1) % pinnedMessages.length;
             const nextPinnedMsg = pinnedMessages[nextIndex];
 
             const isMsgLoaded = messages.some(m => Number(m.id) === Number(nextPinnedMsg.id));
 
-            // Fetch messages for the pinned message's page
             if (!isMsgLoaded) {
                 dispatch(FetchMessages({
                     chatId: selectedChat.id,
@@ -151,7 +146,6 @@ export default function ChatPanel() {
         dispatch(FetchMessages({ chatId: selectedChat?.id, page: 1 }));
         dispatch(FetchAllPinnedMsg({ chatId: selectedChat?.id }))
 
-        console.log("First Me")
 
     }, [selectedChat?.id]);
 
@@ -160,7 +154,6 @@ export default function ChatPanel() {
         dispatch(fetchMyChats({ page: 1 }));
 
     }, [JoinUser]);
-
 
     useEffect(() => {
         if (chatEndRef.current) {
@@ -218,17 +211,15 @@ export default function ChatPanel() {
             return;
         }
 
-        // old timeout clear karo
         if (searchTimeout.current) {
             clearTimeout(searchTimeout.current);
         }
 
-        // new timeout
         searchTimeout.current = setTimeout(async () => {
 
             const res = await dispatch(SearchMsg({
                 chatId: selectedChat.id,
-                searchTerm: value, // value use karo (NOT searchText)
+                searchTerm: value,
                 page: 1
             }));
 
@@ -245,8 +236,6 @@ export default function ChatPanel() {
             dispatch(UpdateTotalResults(total))
 
             const first = results[0];
-
-            // dispatch(resetMessages());
 
             await dispatch(FetchMessages({
                 chatId: selectedChat.id,
@@ -285,7 +274,6 @@ export default function ChatPanel() {
             const nextIndex = currentIndex + 1;
             const item = searchResults[nextIndex];
             dispatch(UpdatecurrentIndex(nextIndex));
-            // dispatch(resetMessages());
 
             dispatch(FetchMessages({
                 chatId: selectedChat.id,
@@ -303,7 +291,6 @@ export default function ChatPanel() {
             const prevIndex = currentIndex - 1;
             const item = searchResults[prevIndex];
             dispatch(UpdatecurrentIndex(prevIndex));
-            // dispatch(resetMessages());
 
             dispatch(FetchMessages({
                 chatId: selectedChat.id,
@@ -330,12 +317,9 @@ export default function ChatPanel() {
     }, [selectedChat?.id])
 
     return (
-        // ================================= Chat Window ================================= //
         <div className="ConversationPanel-User">
             {selectedChat ? (
                 <>
-                    {/* Chat Header */}
-
                     <ChatHeader
                         selectedChat={selectedChat}
                         JoinUser={JoinUser}
@@ -343,7 +327,6 @@ export default function ChatPanel() {
                         setIsSearching={setIsSearching}
                     />
 
-                    {/* Pinned Message */}
                     {isSearching ?
                         <div className="search-bar">
                             <div></div>
@@ -384,27 +367,26 @@ export default function ChatPanel() {
                                 <span className="material-symbols-outlined" style={{ color: 'grey' }}>keep</span>
 
                                 <p className="pin-text">
-                                    {pinnedMessages[pinIndex]?.text}
+                                    {pinnedMessages[pinIndex]?.text || 'Media'}
                                 </p>
 
                             </div>
                         )}
+
                     <MessageList
                         messages={filteredMessages}
                         selectedMessageId={selectedMessageId}
                         JoinUser={JoinUser}
                         selectedChat={selectedChat}
-                        isOtherTyping={isOtherTyping}
+                        typingChatId={typingChatId}
                         chatRefs={chatRefs}
                         chatEndRef={chatEndRef}
                         setReplyMsg={setReplyMsg}
                         currentChat={currentChat}
-                        setIsOtherTyping={setIsOtherTyping}
+                        setTypingChatId={setTypingChatId}
                         chats={chats}
                         setText={setText}
                     />
-                    {/* </>
-                    )} */}
 
                     {currentChat?.is_block && (
                         <div className="blocked-user">
@@ -416,7 +398,6 @@ export default function ChatPanel() {
                         </div>
                     )}
 
-                    {/* File Previews */}
                     <FilePreviewList
                         FilePreview={FilePreview}
                         removeSingleFile={removeSingleFile}
@@ -425,7 +406,6 @@ export default function ChatPanel() {
                     <div className="ConversationPanel-bottom">
                         {!currentChat?.is_block &&
                             <>
-                                {/* Chat Input */}
                                 < ChatInput
                                     text={text}
                                     setText={setText}
@@ -436,7 +416,7 @@ export default function ChatPanel() {
                                     FilePreview={FilePreview}
                                     setReplyMsg={setReplyMsg}
                                     replyMsg={replyMsg}
-                                    setIsOtherTyping={setIsOtherTyping}
+                                    setTypingChatId={setTypingChatId}
                                     File={File}
                                     currentChat={currentChat}
                                     JoinUser={JoinUser}

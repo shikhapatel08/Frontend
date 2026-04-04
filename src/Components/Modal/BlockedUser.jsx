@@ -1,8 +1,6 @@
 import Button from "../Button/Button";
 
-// ================================= Blocked && Unblocked Modal ================================= //
-
-export default function BlockedChatModal({ onCancel, onConfirm, isBlocked , loading}) {
+export default function BlockedChatModal({ onCancel, onConfirm, isBlocked, loading }) {
 
     return (
         <div>

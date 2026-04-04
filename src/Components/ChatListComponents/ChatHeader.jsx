@@ -10,8 +10,6 @@ import { ThemeContext } from "../../Context/ThemeContext";
 export default function ChatHeader({ JoinUser, currentChat, setIsSearching }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const { openModal, closeModal } = useModal();
-  const { chats } = useSelector(state => state.createchat);
   const { getThemeStyle, theme } = useContext(ThemeContext);
 
   const handleBackbtn = () => {
@@ -24,12 +22,11 @@ export default function ChatHeader({ JoinUser, currentChat, setIsSearching }) {
 
   const handleSearching = () => {
     setIsSearching(true);
-    // openModal(
-    //   <Searching oncancel={closeModal} />
-    // )
   };
 
   const getChatUser = (chat, joinUserId) => {
+    if (!chat?.UserOne || !chat?.UserTwo) return {};
+
     return chat.UserOne.id === joinUserId
       ? chat.UserTwo
       : chat.UserOne;
@@ -48,17 +45,15 @@ export default function ChatHeader({ JoinUser, currentChat, setIsSearching }) {
           <img src={liveUser?.photo ? liveUser?.photo : profileImg} alt='profile' />
         </div>
         <div className="Message-Username">
-          <h2>{liveUser?.name || "deleted_user"}</h2>
+          <h2>{liveUser?.name}</h2>
           <p>{liveUser?.is_online ? 'online' : <span style={{ color: 'red' }}>offline</span>}</p>
         </div>
       </div>
       <div className="ConversationPanel-right">
         <div className="ConversationPanel-icon">
-          {/* ================================= Seraching Message ================================= */}
           <span className="SerachIcon" onClick={handleSearching} ><SerachIcon /></span>
         </div>
       </div>
     </>
   );
 }
-
