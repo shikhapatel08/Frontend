@@ -18,8 +18,6 @@ export default function ChatInput({ text, fileInputRef, selectedChat, setText, s
     const { canSendMessage } = useSelector(state => state.message);
 
     const { openModal, closeModal } = useModal();
-
-
     const user = Object.keys(Signin).length > 0 ? Signin : Signup;
     const socket = useSocket();
 
@@ -113,14 +111,12 @@ export default function ChatInput({ text, fileInputRef, selectedChat, setText, s
         socket?.emit("fe_typing", data);
     };
 
-
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             handleSendMessage();
         }
     };
-
 
     const handleFileUpload = (e) => {
         const files = Array.from(e.target.files || []);
@@ -139,7 +135,6 @@ export default function ChatInput({ text, fileInputRef, selectedChat, setText, s
     const handleAttachClick = () => {
         fileInputRef.current?.click();
     };
-
 
     const removeFile = () => {
         setFile([]);

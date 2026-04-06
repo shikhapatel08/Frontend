@@ -180,7 +180,6 @@ export default function ChatPanel({ typingChatId, setTypingChatId }) {
         return () => clearTimeout(timer);
     }, [selectedMessageId, messages]);
 
-
     useEffect(() => {
         if (pinnedMessages?.length) {
             localStorage.setItem('PinnedMsg', JSON.stringify(pinnedMessages));
@@ -269,6 +268,7 @@ export default function ChatPanel({ typingChatId, setTypingChatId }) {
             }));
         }
     };
+
     const handleNext = () => {
         if (currentIndex < searchResults.length - 1) {
             const nextIndex = currentIndex + 1;

@@ -1,4 +1,3 @@
-import React from "react";
 import { FaFilePdf, FaFileWord, FaFileExcel, FaFileAlt } from "react-icons/fa";
 
 export default function FilePreviewList({ FilePreview, removeSingleFile }) {

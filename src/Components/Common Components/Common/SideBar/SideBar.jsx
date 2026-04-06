@@ -99,6 +99,7 @@ export default function Sidebar() {
             window.removeEventListener('resize', handleResize);
         };
     }, []);
+
     const handleLogo = () => {
         handleNavigate('/MessagePage');
     }
@@ -118,12 +119,15 @@ export default function Sidebar() {
     const handleSetting = () => {
         handleNavigate('/Settings');
     }
+
     const handleNotification = () => {
         handleNavigate('/notification');
     }
+
     const handleStarred = () => {
         handleNavigate('/StarredMsg');
     }
+
     const handleMedia = () => {
         handleNavigate('/Media');
     }

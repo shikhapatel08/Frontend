@@ -30,6 +30,8 @@ export default function StarredMsg({ type, chatId }) {
 
     const isChatView = type === "Chat";
 
+    const style = useLayoutStyle();
+
     useEffect(() => {
         dispatch(resetStarredState());
 

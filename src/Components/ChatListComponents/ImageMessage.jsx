@@ -1,4 +1,3 @@
-import React from "react";
 import { useDispatch } from "react-redux";
 import { openPreview } from "../../Redux/Features/ImagePreviewSlice";
 import "./ImageMessage.css";
